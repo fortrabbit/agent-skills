@@ -17,7 +17,7 @@ compatibility: >
   SSH commands work natively on Windows 10+.
 license: MIT
 metadata:
-  version: "0.2.5"
+  version: "0.3.0"
   author: fortrabbit
 user-invocable: true
 allowed-tools: Bash Read Glob Grep
@@ -71,7 +71,8 @@ Read config in this order (`.fortrabbit` is source of truth):
 
 1. **Read `.fortrabbit` first.** If it exists, use `app-env-id` and `region` from it.
 2. **Supplement from `.env`** — if either value is missing from `.fortrabbit`, read `FORTRABBIT_APP_ENV_ID` and/or `FORTRABBIT_REGION` from `.env`.
-3. **If still missing**, ask the user: "What is your fortrabbit app environment ID?" (format: `en-wjl0ai`) and "What region is your app in?" (default: `eu-w1a`).
+3. **If `app-env-id` is still missing and an MCP server is configured**, look it up via MCP instead of asking: call `list_apps`/`list_environments` — the environment `publicId` (`en-…`) is the `app-env-id`. See references/mcp.md. (MCP does not return `region` — still get that from `.env`, the user, or the dashboard.)
+4. **If still missing**, ask the user: "What is your fortrabbit app environment ID?" (format: `en-wjl0ai`) and "What region is your app in?" (default: `eu-w1a`).
 4. **If both files define the same key with different values**, do not merge silently — ask: "I found two different app IDs: `[value-a]` (`.fortrabbit`) and `[value-b]` (`.env`). Which is correct?"
 
 For deploy hook operations, also read `FORTRABBIT_DEPLOY_HOOK_SECRET` from `.env`. Construct the URL as:
@@ -96,7 +97,11 @@ This gives clean markdown instead of HTML.
 Match the user's input against these conditions in order (first match wins):
 
 ```
-IF input contains any of: "deploy", "push", "trigger", "hook", "git push"
+IF input contains any of: "mcp", "api token", "list apps", "my apps", "which apps", "list environments", "list domains", "discover apps", "provision"
+  → Load references/mcp.md
+     (for token setup itself, use the fortrabbit-api-tokens skill)
+
+ELSE IF input contains any of: "deploy", "push", "trigger", "hook", "git push"
   → Load references/deploy.md
 
 ELSE IF input contains any of: "ssh key", "public key", "permission denied", "key setup", "add key"
@@ -159,8 +164,9 @@ ELSE
 ## Capability summary (shown for `/fortrabbit help`)
 
 ```
-fortrabbit agent-skills — v0.2.5
+fortrabbit agent-skills — v0.3.0
 
+  /fortrabbit mcp            Discover and provision apps via the MCP server (list apps, environments, domains; create app/environment)
   /fortrabbit deploy         Trigger a deployment (via deploy hook or git push reminder)
   /fortrabbit ssh            Run a command on the remote environment via SSH
   /fortrabbit db pull        Download the remote database to your local environment

@@ -13,6 +13,7 @@ The project provides the same operational guidance in platform-specific formats:
 | File / Path | Platform |
 |-------------|----------|
 | `skills/fortrabbit/SKILL.md` | Claude Code + OpenAI Codex (canonical source) |
+| `skills/fortrabbit-api-tokens/SKILL.md` | Claude Code + OpenAI Codex — Public API/MCP token setup |
 | `AGENTS.md` | OpenAI Codex contributor context (this file) |
 | `.github/instructions/fortrabbit.instructions.md` | GitHub Copilot |
 

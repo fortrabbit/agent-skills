@@ -4,12 +4,18 @@ fortrabbit agent-skills extends your coding assistant with domain knowledge on f
 
 Early access version (already helpful). [fortrabbit](https://www.fortrabbit.com) — 2026 PHP as a Service.
 
+The package ships two skills, both installed together:
+
+- **`fortrabbit`** — deploy, SSH, database, sync, and (new) MCP-based discovery/provisioning.
+- **`fortrabbit-api-tokens`** — find, store, and use a Public API token (`frbit-at-…`) for the REST API (`/v1`) and the MCP server (`/mcp`).
+
 ## Available commands
 
 | Command                    | Description                                                     |
 | -------------------------- | --------------------------------------------------------------- |
 | `/fortrabbit start`        | Detect project state and get guided to the right next step      |
 | `/fortrabbit connect`      | First-time setup: account, app, SSH key, connection test        |
+| `/fortrabbit mcp`          | Discover and provision apps via the MCP server (needs an API token) |
 | `/fortrabbit sync up`      | Rsync all project files to the remote environment               |
 | `/fortrabbit sync down`    | Rsync all project files from the remote environment             |
 | `/fortrabbit deploy`       | Trigger a deployment via deploy hook or Git push                |
@@ -60,6 +66,14 @@ Install into the current project only:
 gh skill install fortrabbit/agent-skills fortrabbit --agent claude-code --scope project
 ```
 
+`gh skill install` installs one skill per command. To also get the API/MCP token skill, run it again with the second skill name:
+
+```shell
+gh skill install fortrabbit/agent-skills fortrabbit-api-tokens --agent claude-code --scope user
+```
+
+(The curl install script below installs **both** skills in one go.)
+
 Other supported agents: `codex`, `cursor`, `gemini-cli`, `github-copilot`, and [many more](https://cli.github.com/manual/gh_skill_install). Omit `--agent` to pick interactively.
 
 To update later:
@@ -90,11 +104,13 @@ This also installs **GitHub Copilot** instructions (repo-scoped). Note that a pe
 
 ### What gets installed
 
-| Target         | Per-project                                       | Global                         |
-| -------------- | ------------------------------------------------- | ------------------------------ |
-| Claude Code    | `.claude/skills/fortrabbit/`                      | `~/.claude/skills/fortrabbit/` |
-| OpenAI Codex   | `.agents/skills/fortrabbit/`                      | `~/.agents/skills/fortrabbit/` |
-| GitHub Copilot | `.github/instructions/fortrabbit.instructions.md` | — (repo-scoped)                |
+Both skills (`fortrabbit` and `fortrabbit-api-tokens`) are installed together:
+
+| Target         | Per-project                                          | Global                            |
+| -------------- | ---------------------------------------------------- | --------------------------------- |
+| Claude Code    | `.claude/skills/{fortrabbit,fortrabbit-api-tokens}/` | `~/.claude/skills/{…}/`           |
+| OpenAI Codex   | `.agents/skills/{fortrabbit,fortrabbit-api-tokens}/` | `~/.agents/skills/{…}/`           |
+| GitHub Copilot | `.github/instructions/fortrabbit.instructions.md`    | — (repo-scoped)                   |
 
 ## Uninstall
 
