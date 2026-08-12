@@ -2,7 +2,7 @@
 set -e
 
 # Skills shipped by this package (each is a directory under skills/)
-SKILLS="fortrabbit fortrabbit-api-tokens"
+SKILLS="fortrabbit fortrabbit-api-access"
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 SKILLS_BASE="$(dirname "$SCRIPT_DIR")"   # e.g. ~/.claude/skills or <project>/.claude/skills

@@ -20,7 +20,7 @@ for arg in "$@"; do
 done
 
 # Skills shipped by this package (each is a directory under skills/)
-SKILLS="fortrabbit fortrabbit-api-tokens"
+SKILLS="fortrabbit fortrabbit-api-access"
 
 HAS_CLAUDE=false
 HAS_CODEX=false

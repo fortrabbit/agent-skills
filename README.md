@@ -6,8 +6,8 @@ Early access version (already helpful). [fortrabbit](https://www.fortrabbit.com)
 
 The package ships two skills, both installed together:
 
-- **`fortrabbit`** — deploy, SSH, database, sync, and (new) MCP-based discovery/provisioning.
-- **`fortrabbit-api-tokens`** — find, store, and use a Public API token (`frbit-at-…`) for the REST API (`/v1`) and the MCP server (`/mcp`).
+- **`fortrabbit`** — deploy, SSH, database, sync, and MCP-based discovery, provisioning, and deployment diagnosis.
+- **`fortrabbit-api-access`** — connect an agent to fortrabbit: a one-command browser OAuth install for the MCP server (`/mcp`), or a Public API token (`frbit-at-…`) for the REST API (`/v1`), CI, and clients without OAuth.
 
 ## Available commands
 
@@ -15,7 +15,7 @@ The package ships two skills, both installed together:
 | -------------------------- | --------------------------------------------------------------- |
 | `/fortrabbit start`        | Detect project state and get guided to the right next step      |
 | `/fortrabbit connect`      | First-time setup: account, app, SSH key, connection test        |
-| `/fortrabbit mcp`          | Discover and provision apps via the MCP server (needs an API token) |
+| `/fortrabbit mcp`          | Discover, provision, and diagnose apps via the MCP server        |
 | `/fortrabbit sync up`      | Rsync all project files to the remote environment               |
 | `/fortrabbit sync down`    | Rsync all project files from the remote environment             |
 | `/fortrabbit deploy`       | Trigger a deployment via deploy hook or Git push                |
@@ -66,10 +66,10 @@ Install into the current project only:
 gh skill install fortrabbit/agent-skills fortrabbit --agent claude-code --scope project
 ```
 
-`gh skill install` installs one skill per command. To also get the API/MCP token skill, run it again with the second skill name:
+`gh skill install` installs one skill per command. To also get the API/MCP access skill, run it again with the second skill name:
 
 ```shell
-gh skill install fortrabbit/agent-skills fortrabbit-api-tokens --agent claude-code --scope user
+gh skill install fortrabbit/agent-skills fortrabbit-api-access --agent claude-code --scope user
 ```
 
 (The curl install script below installs **both** skills in one go.)
@@ -104,13 +104,32 @@ This also installs **GitHub Copilot** instructions (repo-scoped). Note that a pe
 
 ### What gets installed
 
-Both skills (`fortrabbit` and `fortrabbit-api-tokens`) are installed together:
+Both skills (`fortrabbit` and `fortrabbit-api-access`) are installed together:
 
 | Target         | Per-project                                          | Global                            |
 | -------------- | ---------------------------------------------------- | --------------------------------- |
-| Claude Code    | `.claude/skills/{fortrabbit,fortrabbit-api-tokens}/` | `~/.claude/skills/{…}/`           |
-| OpenAI Codex   | `.agents/skills/{fortrabbit,fortrabbit-api-tokens}/` | `~/.agents/skills/{…}/`           |
+| Claude Code    | `.claude/skills/{fortrabbit,fortrabbit-api-access}/` | `~/.claude/skills/{…}/`           |
+| OpenAI Codex   | `.agents/skills/{fortrabbit,fortrabbit-api-access}/` | `~/.agents/skills/{…}/`           |
 | GitHub Copilot | `.github/instructions/fortrabbit.instructions.md`    | — (repo-scoped)                   |
+
+## Connect the MCP server
+
+Optional, but it lets your agent list your apps, create apps and environments,
+and read deployment logs without SSH. One command, then approve in the browser —
+no token to copy or store:
+
+```shell
+claude mcp add --transport http fortrabbit https://api.fortrabbit.com/mcp
+```
+
+For OpenAI Codex:
+
+```shell
+codex mcp add fortrabbit --url https://api.fortrabbit.com/mcp --oauth-client-id https://api.fortrabbit.com/.well-known/oauth-client/codex
+```
+
+Ask your agent to "list my fortrabbit apps" to confirm it worked. Scripts and CI
+can use a Public API token instead — see the `fortrabbit-api-access` skill.
 
 ## Uninstall
 

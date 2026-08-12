@@ -38,6 +38,18 @@ SSH host pattern: `APP_ENV_ID@ssh.REGION.frbit.app`
 | content sync | Rsync CMS uploads/content up or down                                                                                                            |
 | status       | Show configured environment and detected project type                                                                                           |
 
+## MCP server (optional)
+
+fortrabbit runs an MCP server at `https://api.fortrabbit.com/mcp`. If the user's editor has it connected, prefer it over asking the user for IDs.
+
+- **Connecting** is a one-command browser OAuth flow, e.g. `claude mcp add --transport http fortrabbit https://api.fortrabbit.com/mcp`. A dashboard-issued Public API token (`frbit-at-…`, from https://dash.fortrabbit.com/new/api-token) also works as an `Authorization: Bearer` header for clients without OAuth, and is what scripts and CI should use for the `/v1` REST API.
+- **Use it for**: listing/inspecting apps, environments, deployments, domains, teams, payment methods; creating apps and environments; reading deployment logs to diagnose a failed deploy.
+- **It does not do**: deploying an existing app, remote commands, database pull/push, file sync, restart, or env vars. Use the SSH and deploy-hook paths for those.
+- **Call `get_me` first** — it reports whether the account is a client account (which cannot create environments) and whether a git account is connected.
+- **Never guess a public ID or an enumerable value.** Resolve IDs with the matching `list_*` tool (`list_apps`, `list_environments`, …); resolve regions, software presets, PHP versions, component sizes, repositories, and branches with `list_regions`, `list_software_presets`, `list_php_versions`, `list_component_plans`, `list_git_repositories`, `list_git_branches`. Public IDs have the form `xx-nnnnnn`.
+- **Filling in `.fortrabbit`**: the environment `publicId` (`en-…`) is the `app-env-id`; `get_app` returns the app's `region`. Confirm both with the user before writing the file.
+- **Creating apps and environments is billed.** Show the full configuration, including the monthly price from `list_component_plans`, and get explicit confirmation before calling `create_app` or `create_environment`.
+
 ## Project type detection
 
 Check signals in this exact order (first match wins):

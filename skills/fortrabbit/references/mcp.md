@@ -1,25 +1,46 @@
-# MCP: read and manage apps through the fortrabbit MCP server
+# MCP: discover, provision, and diagnose apps through the fortrabbit MCP server
 
-fortrabbit exposes a **Model Context Protocol (MCP)** server at
-`https://api.fortrabbit.com/mcp`. When an MCP client is configured with a
-Public API token, you can query and provision fortrabbit resources directly —
-no SSH, no dashboard clicking, no asking the user for IDs you can look up.
+fortrabbit exposes a **Model Context Protocol** server at
+`https://api.fortrabbit.com/mcp` (streamable HTTP). Once a client is connected,
+you can read and provision fortrabbit resources directly — no SSH, no dashboard
+clicking, no asking the user for IDs you can look up.
 
-Use MCP for **discovery and provisioning**. Keep using the SSH/rsync/deploy-hook
-paths for everything MCP does not cover (see "What MCP does not do" below).
+Use MCP for **discovery, provisioning, and deployment diagnosis**. Keep using
+the SSH/rsync/deploy-hook paths for everything MCP does not cover (see "What MCP
+does not do").
 
 ---
 
-## Prerequisite — a Public API token
+## Prerequisite — a connected client
 
-MCP authenticates with the same `frbit-at-…` Bearer token as the `/v1` REST API.
-If no MCP server is configured yet, or calls return `401`, set up the token
-first: **use the `fortrabbit-api-tokens` skill** (it finds an existing token,
-stores it safely, and guides the user to generate one at
-`https://dash.fortrabbit.com/you/settings/api-token`).
+If no fortrabbit MCP server is configured, or calls return `401`, **use the
+`fortrabbit-api-access` skill**. The short version:
 
-The token acts as the user and is tenant-scoped to their apps — every MCP call
-only ever sees resources the token owner can access.
+```sh
+claude mcp add --transport http fortrabbit https://api.fortrabbit.com/mcp
+```
+
+This runs a browser OAuth flow — the user approves, and no token is ever handled
+by you. Dashboard-issued `frbit-at-…` Public API tokens are also accepted as a
+Bearer header for clients without OAuth support.
+
+Every call is tenant-scoped: you only ever see resources the connected account
+can access.
+
+---
+
+## Four rules that prevent most failures
+
+1. **Call `get_me` first.** It reports whether the account is a *client* account
+   (clients cannot create environments) and whether a git account is connected.
+2. **Never guess a public ID.** Resolve it with the matching `list_*` tool. All
+   public IDs have the form `xx-nnnnnn` (`^[a-z]{2}-[0-9a-z]{6}$`).
+3. **Never guess an enumerable value either.** Regions, software presets, PHP
+   versions, component sizes, repositories, and branches each have a `list_*`
+   tool. A guessed value fails validation.
+4. **If an app or environment resource is attached to the conversation, use the
+   `publicId` from its payload directly** — do not re-resolve it through
+   `list_apps` / `list_environments`.
 
 ---
 
@@ -28,100 +49,200 @@ only ever sees resources the token owner can access.
 ```
 IF the task is: list/inspect apps, environments, deployments, domains, teams,
                 payment methods — OR create an app or environment
+                — OR find out why a deployment failed
   → Use MCP (this file)
 
-ELSE IF the task is: deploy, run a remote command, pull/push the database,
-                     rsync files/content, read logs, edit env vars, restart
+ELSE IF the task is: deploy an existing app, run a remote command, pull/push the
+                     database, rsync files/content, edit env vars, restart
   → Use the SSH/deploy paths (deploy.md, ssh-exec.md, database.md, sync.md,
     sync-content.md) — MCP does not expose these
 ```
 
 ---
 
-## Available MCP tools
+## Tool catalogue
 
-Reads (available for any of the user's resources):
+### Discovery — resolve values before a write
 
-| Tool | Returns |
-|------|---------|
-| `list_apps` / `get_app` | apps: `publicId` (`ap-…`), `name`, `description`, trial flag, payment method |
-| `list_environments` / `get_environment` | environments: `publicId` (`en-…`), `name`, `softwareVersion` |
-| `list_deployments` / `get_deployment` | deployments: `branch`, `commitHash`, `commitMessage`, `committedAt`, environment |
-| `list_domains` / `get_domain` | domains for the user |
-| `list_teams` / `get_team` | teams the user belongs to, with their role |
-| `list_payment_methods` / `get_payment_method` | the user's payment methods |
+| Tool | Arguments | Returns |
+|------|-----------|---------|
+| `get_me` | — | `publicId`, `email`, `name`, `type`, `active`, `client`, `gitAccountConnected`, `gitUsername`, `gitInstallationAccounts` |
+| `list_regions` | — | `identifier` (e.g. `eu-w1a`), `name`, `location`, `recommended` |
+| `list_software_presets` | — | `slug`, `name`, `versions`, `defaultVersion` |
+| `list_php_versions` | — | `version`, `eol`, `default` |
+| `list_component_plans` | `regionIdentifier?`, `currency?` (`EUR`\|`USD`) | per component: `slug`, `optional`, `autoscales`, and `sizes[]` with `size`, `name`, `description`, `specs`, `priceInCents` |
+| `list_git_repositories` | — | `owner`, `name`, `fullName`, `defaultBranch`, `private`, `connectedAppPublicId` |
+| `list_git_branches` | `repository` (`"owner/repo"`) | `name`, `protected` |
+| `detect_repository_stack` | `repository`, `branch?` | `hasComposerJson`, `hasPackageJson`, `nodePackageManager`, `stack`, `softwarePresetSlug` |
 
-Provisioning:
+> `list_component_plans` returns `priceInCents: null` unless you pass
+> `regionIdentifier`. Pass it whenever you intend to show the user a price.
+
+### Reads
+
+| Tool | Arguments | Notes |
+|------|-----------|-------|
+| `list_apps` / `get_app` | — / `publicId` | `get_app` returns `region`, `software`, `phpVersion`, `trial`, `paymentMethod`, `people`, `domains`, `environments` |
+| `list_environments` / `get_environment` | — / `publicId` | returns `state`, `components`, `phpVersion`, `softwareVersion`, `domains` |
+| `list_deployments` / `get_deployment` | — / `publicId` | branch, commit, state |
+| `get_deployment_logs` | `publicId` | `logs[]` of `{log, time}` — the build and deploy output |
+| `list_domains` / `get_domain` | — / `publicId` | includes custom apex/subdomains **and** the generated environment URL of every environment |
+| `list_teams` / `get_team` | — / `publicId` | teams and the account's role |
+| `list_payment_methods` / `get_payment_method` | — / `publicId` | the account's payment methods |
+
+Every `list_*` returns a single-key wrapper object (`{apps: […]}`), not a bare
+array, and returns the **whole** scoped set — there are no filter, sort, or limit
+arguments.
+
+### Writes
 
 | Tool | Does |
 |------|------|
-| `create_app` | creates an app **and** its initial environment; can optionally start the first deployment |
-| `create_environment` | creates an environment in an app the user can access |
+| `create_app` | Creates an app **and** its initial environment; optionally starts the first deployment |
+| `create_environment` | Adds an environment to an app the account can access |
 
-There are intentionally **no** MCP tools for update, restart, deploy trigger, or
+There are intentionally **no** tools for update, restart, deploy trigger, or
 standalone deployment creation. Do not assume a tool exists because a dashboard
-action does — only the tools above are available.
+action does.
 
 ---
 
-## Discovering the `.fortrabbit` config via MCP
+## Resolving arguments before a write
 
-`connect.md` normally has the user copy the app environment ID out of the
-dashboard. If MCP is configured, look it up instead:
+Every write argument has a discovery tool behind it. Resolve, never guess:
 
-1. Call `list_apps` (and `list_environments`) and show the user their apps/
-   environments by `name`.
-2. The environment `publicId` **is** the `app-env-id` for `.fortrabbit` — it is
-   the `en-…` value (e.g. `en-wjl0ai`), the same ID used for SSH.
-3. Write it to `.fortrabbit`:
+| Argument | Resolve with |
+|----------|--------------|
+| `region` | `list_regions` → `identifier` |
+| `teamPublicId` | `list_teams` (omit for a personal app) |
+| `paymentMethodPublicId` | `list_payment_methods` |
+| `appPublicId` | `list_apps` |
+| `sourceEnvironmentPublicId` | `list_environments` |
+| `softwarePresetName` | `detect_repository_stack`, or `list_software_presets` → `slug` |
+| `softwareVersion` | `list_software_presets` → `versions` (major only, e.g. `"11"`) |
+| `phpVersion` | `list_php_versions` → `version` (e.g. `"8.4"`) |
+| `components` | `list_component_plans` → `slug` + `size` |
+| `git.repository` | `list_git_repositories` → `fullName` (`"owner/repo"`) |
+| `git.branch` | `list_git_branches` → `name` |
+| why it failed | `get_deployment` → `state`, then `get_deployment_logs` |
+
+---
+
+## Creating an app
+
+`create_app` provisions the app and its first environment in one call.
+
+Required: `name`, `region`. Optional: `teamPublicId`, `paymentMethodPublicId`,
+`startFirstDeployment`, and a nested `initialEnvironment` object
+(`softwarePresetName`, `softwareVersion`, `components`, `autoscaling`,
+`deployment.git`).
+
+Recommended sequence for a repo that should go live:
+
+1. `get_me` — confirm the account can create, and that git is connected.
+2. `detect_repository_stack` on the user's repo → `softwarePresetSlug`.
+3. `list_regions`, `list_software_presets`, `list_component_plans <region>`.
+4. Show the user the exact name, region, preset, components, and **monthly
+   price**, and get explicit confirmation.
+5. `create_app` with `startFirstDeployment: true` (requires
+   `initialEnvironment.deployment.git`).
+6. `get_deployment` for state; `get_deployment_logs` if it failed.
+
+> These are billed, real resources. Always show what you are about to create and
+> wait for explicit confirmation before calling a write tool.
+
+---
+
+## Creating an environment
+
+`create_environment` requires `appPublicId` and `name` (3–32 chars,
+`^[a-z0-9]([a-z0-9-]*[a-z0-9])?$`). Then **one of two paths**:
+
+**Clone an existing environment** — the common case ("add a staging environment
+like production"). No `components` argument needed at all:
+
+```
+create_environment(appPublicId: "ap-a1b2c3", name: "staging",
+                   sourceEnvironmentPublicId: "en-wjl0ai")
+```
+
+**Or specify components explicitly.** Required slugs: `php`, `storage`,
+`traffic`, `backups`. Optional slugs, which default to `off`: `database`,
+`jobs`, `key-value-store`. Values are size keys from `list_component_plans`
+(e.g. `"xs"`, `"sm"`), or `"off"` to disable an optional one:
+
+```
+components: {"php": "xs", "storage": "xs", "traffic": "xs",
+             "backups": "xs", "database": "sm"}
+```
+
+`autoscaling` defaults to `true`. `softwareVersion` defaults to the app's;
+`get_app` reports the app's region and software preset, which constrain it.
+
+---
+
+## Writing `.fortrabbit` from MCP
+
+`connect.md` normally has the user copy values out of the dashboard. With MCP
+you can resolve **both** fields:
+
+1. `list_apps` / `list_environments` — show the user their apps by `name`.
+2. The environment `publicId` (`en-…`) is the `app-env-id`, the same ID used
+   for SSH.
+3. `get_app` returns the app's `region` — use its identifier (e.g. `eu-w1a`),
+   the same format `list_regions` reports.
+4. Confirm both with the user, then write:
    ```
    app-env-id=en-xxxxxx
    region=eu-w1a
    ```
 
-> **Region caveat:** MCP does **not** return the region. Get `region` from the
-> user, from `.env` (`FORTRABBIT_REGION`), or from the dashboard — MCP fills in
-> `app-env-id`, not `region`. Confirm the region before writing `.fortrabbit`.
-
 ---
 
-## Creating an app or environment via MCP
+## Resources — letting the user point at an app
 
-`create_app` provisions the app and its first environment in one call, and can
-start the first deployment when the configuration supports it. `create_environment`
-adds an environment to an existing app. Before calling either:
+The server publishes two resource templates so the user can name a resource
+instead of describing it:
 
-- Confirm the intended `name`, `region`, and (for `create_app`) the team and
-  payment method with the user — these are billed, real resources.
-- Show what you are about to create and get explicit confirmation first.
-- After creation, write the returned environment `publicId` to `.fortrabbit`
-  (plus the region you used) so the SSH/deploy flows can pick up from there.
+- `fortrabbit://app/{publicId}` — payload `{publicId, name}`
+- `fortrabbit://environment/{publicId}` — payload `{publicId, name, appPublicId}`
+  (`appPublicId` is omitted when the owning app is out of scope)
+
+In Claude Code the user writes `@fortrabbit:app/ap-a1b2c3`. Payloads are
+identity-only by design — they tell you *which* resource is meant. For detail,
+call `get_app` / `get_environment`.
 
 ---
 
 ## What MCP does not do
 
-MCP is for reading and provisioning. It has **no** tools for:
+MCP covers reading, provisioning, and deployment diagnosis. It has **no** tools
+for:
 
-- **Deploying** or triggering a deploy → `deploy.md` (git push / deploy hook)
+- **Deploying an existing app** or triggering a deploy → `deploy.md`
+  (deployment happens only as a side effect of `create_app` /
+  `create_environment`)
 - **Remote commands** (artisan, craft console, wp-cli) → `ssh-exec.md`
 - **Database** pull/push → `database.md`
 - **File / content sync** → `sync.md`, `sync-content.md`
-- **Logs, HTTP errors, restart, env vars** → dashboard / `http-error-troubleshooting.md`
-
-Two data caveats even for reads:
-
-- **No region** in app/environment payloads (see the region caveat above).
-- **No deploy status** — `list_deployments` shows *what* was deployed (branch,
-  commit) but not whether it succeeded. For success/failure, check the
-  deployment log in the dashboard.
+- **Restart, env vars, scaling changes** → dashboard
+- **Runtime HTTP errors** → `http-error-troubleshooting.md`
 
 ---
 
 ## Errors
 
-| Symptom | Meaning | Fix |
+Tool failures come back as a normal result with `isError: true` and a plain-text
+message. Read the message — it is written to be self-correcting.
+
+| Message | Meaning | Fix |
 |---------|---------|-----|
-| `401` | Missing/invalid token | Configure the token — see the `fortrabbit-api-tokens` skill |
-| A resource "not found" | It does not belong to the token owner, or the ID is wrong | Confirm the `publicId` via a `list_*` call |
-| A write/create is rejected | Provisioning may be gated during rollout | Fall back to the dashboard (`dash.fortrabbit.com/new/app`) |
+| `401` + `WWW-Authenticate: …` | Not connected, or the OAuth token expired | Use the `fortrabbit-api-access` skill; re-run `claude mcp add` |
+| `App not found.` (or `Environment` / `Deployment` / `Domain` / `Team` / `Payment method`) | The ID is wrong **or** belongs to someone else — deliberately indistinguishable | Re-resolve with the matching `list_*` call |
+| `Access denied.` | Authenticated, but not permitted for this resource or account type | Check `get_me` — client accounts cannot create environments |
+| `Invalid arguments. <field>: <message>` | Validation failed | Fix the named field; resolve its value with the tool from the table above |
+| `components: No plan supplied for component php. Supply a size key for every required component.` | Missing a required component | Supply `php`, `storage`, `traffic`, `backups` — or set `sourceEnvironmentPublicId` to clone |
+| `Error while executing tool` (no detail) | An unexpected server-side error | Do not retry blindly or invent arguments; report it and fall back to the dashboard |
+
+**Rate limit:** roughly 20 requests per minute per connection. Batch your
+discovery calls — do not poll `list_*` in a loop. A `429` carries `Retry-After`.

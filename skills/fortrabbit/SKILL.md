@@ -71,7 +71,7 @@ Read config in this order (`.fortrabbit` is source of truth):
 
 1. **Read `.fortrabbit` first.** If it exists, use `app-env-id` and `region` from it.
 2. **Supplement from `.env`** — if either value is missing from `.fortrabbit`, read `FORTRABBIT_APP_ENV_ID` and/or `FORTRABBIT_REGION` from `.env`.
-3. **If `app-env-id` is still missing and an MCP server is configured**, look it up via MCP instead of asking: call `list_apps`/`list_environments` — the environment `publicId` (`en-…`) is the `app-env-id`. See references/mcp.md. (MCP does not return `region` — still get that from `.env`, the user, or the dashboard.)
+3. **If `app-env-id` or `region` is still missing and an MCP server is configured**, look them up via MCP instead of asking: call `list_apps`/`list_environments` — the environment `publicId` (`en-…`) is the `app-env-id` — and `get_app` for the app's `region`. Confirm both with the user before writing. See references/mcp.md.
 4. **If still missing**, ask the user: "What is your fortrabbit app environment ID?" (format: `en-wjl0ai`) and "What region is your app in?" (default: `eu-w1a`).
 4. **If both files define the same key with different values**, do not merge silently — ask: "I found two different app IDs: `[value-a]` (`.fortrabbit`) and `[value-b]` (`.env`). Which is correct?"
 
@@ -97,9 +97,9 @@ This gives clean markdown instead of HTML.
 Match the user's input against these conditions in order (first match wins):
 
 ```
-IF input contains any of: "mcp", "api token", "list apps", "my apps", "which apps", "list environments", "list domains", "discover apps", "provision"
+IF input contains any of: "mcp", "api token", "list apps", "my apps", "which apps", "list environments", "list domains", "discover apps", "provision", "create app", "create environment", "why did the deployment fail", "deployment log"
   → Load references/mcp.md
-     (for token setup itself, use the fortrabbit-api-tokens skill)
+     (to connect a client or set up a token, use the fortrabbit-api-access skill)
 
 ELSE IF input contains any of: "deploy", "push", "trigger", "hook", "git push"
   → Load references/deploy.md
@@ -166,7 +166,7 @@ ELSE
 ```
 fortrabbit agent-skills — v0.3.0
 
-  /fortrabbit mcp            Discover and provision apps via the MCP server (list apps, environments, domains; create app/environment)
+  /fortrabbit mcp            Discover, provision, and diagnose apps via the MCP server (list apps/environments/domains; create app/environment; read deployment logs)
   /fortrabbit deploy         Trigger a deployment (via deploy hook or git push reminder)
   /fortrabbit ssh            Run a command on the remote environment via SSH
   /fortrabbit db pull        Download the remote database to your local environment

@@ -17,14 +17,16 @@ Ask the user:
 
 > "Do you already have an app on fortrabbit?"
 
-- **No app yet:** Either create one at [dash.fortrabbit.com/new/app](https://dash.fortrabbit.com/new/app), or — if an MCP server is configured — create it via MCP's `create_app` after confirming the name, region, team, and payment method with the user (see mcp.md). Then say: "Let me know when the app is created — the dashboard will show the environment ID and region you'll need next." Wait for the user to confirm before proceeding.
+- **No app yet:** Either create one at [dash.fortrabbit.com/new/app](https://dash.fortrabbit.com/new/app), or — if an MCP server is configured — create it via MCP's `create_app`. Resolve the region, software preset, and component sizes with the `list_*` tools first, then show the user the full configuration **including the monthly price** and get explicit confirmation before calling it (see mcp.md). If creating in the dashboard instead, say: "Let me know when the app is created — the dashboard will show the environment ID and region you'll need next." Wait for the user to confirm before proceeding.
 - **Yes:** Continue to Step 3.
 
 ---
 
 ## Step 3 — Find your app environment ID and region
 
-**If an MCP server is configured, look up the app-env-id automatically** instead of asking the user to hunt for it: call `list_apps`/`list_environments` and use the environment `publicId` (`en-…`) as the app-env-id. See mcp.md. MCP does not return the region, so still get that from `.env`, the user, or the dashboard.
+**If an MCP server is configured, look both values up automatically** instead of asking the user to hunt for them: call `list_apps`/`list_environments` and use the environment `publicId` (`en-…`) as the app-env-id, then `get_app` for the app's `region`. Confirm both with the user before writing them. See mcp.md.
+
+If no MCP server is configured, connecting one takes a single command — see the `fortrabbit-api-access` skill.
 
 Otherwise, both values are shown in the fortrabbit dashboard on the environment page, next to the SSH access details.
 
