@@ -60,7 +60,7 @@ codex mcp add fortrabbit --url https://api.fortrabbit.com/mcp --oauth-client-id 
 ```
 
 After running it, tell the user to complete the browser approval, then verify by
-calling the `get_me` tool — it returns the account the connection authenticates
+calling the `get_you` tool — it returns the account the connection authenticates
 as.
 
 What happens under the hood (useful for diagnosing, not for reimplementing):
@@ -91,7 +91,7 @@ agent nor `curl` can perform it. Direct the user to do it in the dashboard.
 ## Step 2 — Confirm the connection works
 
 ```
-Call get_me
+Call get_you
 ```
 
 It returns `publicId`, `email`, `name`, `type`, `active`, `client`,
@@ -242,7 +242,7 @@ than pasting the literal value.
 |------|---------|
 | Connect an MCP client | `claude mcp add --transport http fortrabbit https://api.fortrabbit.com/mcp` |
 | Connect Codex | add `--oauth-client-id https://api.fortrabbit.com/.well-known/oauth-client/codex` |
-| Verify a connection | Call `get_me` |
+| Verify a connection | Call `get_you` |
 | Find a token | `printenv FORTRABBIT_API_TOKEN`, then grep `.env` for `frbit-at-[0-9a-f]{64}` |
 | Store a token | `FORTRABBIT_API_TOKEN` env var or git-ignored `.env` line |
 | MCP endpoint | `https://api.fortrabbit.com/mcp` |
@@ -260,8 +260,8 @@ than pasting the literal value.
 |---------|---------|-----|
 | `401` on `/mcp`, body `Full authentication is required to access this resource.`, header `WWW-Authenticate: Bearer resource_metadata=…` | The **only** 401 `/mcp` returns — missing, malformed, unknown, expired, revoked, and wrong-audience credentials are deliberately indistinguishable | Let the client re-run its OAuth flow; if it cannot, re-run the install command from Step 1, or re-copy the full `frbit-at-…` value |
 | `401` on `/v1` | Missing `Authorization` header, wrong scheme, or an invalid token — the response does not say which | Send `Authorization: Bearer <token>` exactly — not `Token`, not a query param — then re-copy the token if the header was already right |
-| `403` / `Sorry. Access denied.` on `/mcp` | Authenticated, but the resource isn't the token owner's | Confirm the resource belongs to the account — check `get_me` |
-| `403` on `/v1` | Same cause; the message wording differs from `/mcp` | Confirm the resource belongs to the account — check `get_me` |
+| `403` / `Sorry. Access denied.` on `/mcp` | Authenticated, but the resource isn't the token owner's | Confirm the resource belongs to the account — check `get_you` |
+| `403` on `/v1` | Same cause; the message wording differs from `/mcp` | Confirm the resource belongs to the account — check `get_you` |
 | `403` / `Account blocked.` / `unverified` / `unonboarded` | The account itself is not usable | The user must resolve it in the dashboard |
 | `429` | Rate limit (~20/min per token, shared across `/v1` and `/mcp`) | Back off and retry after `Retry-After`. Never retry a failed auth in a loop — failures are rate-limited per IP |
 | `unsupported_grant_type` from `/oauth2/token` | A client tried a grant other than `authorization_code` / `refresh_token` | Only those two are supported; there is no client-credentials flow |
@@ -295,5 +295,5 @@ I'll [one-sentence description of what you're about to do].
 
 Result: [outcome, token masked as frbit-at-…{last4}]
 
-Next step: [one concrete follow-up, e.g. "Call get_me to confirm which account you're connected as"]
+Next step: [one concrete follow-up, e.g. "Call get_you to confirm which account you're connected as"]
 ```

@@ -31,7 +31,7 @@ can access.
 
 ## Four rules that prevent most failures
 
-1. **Call `get_me` first.** It reports whether the account is a *client* account
+1. **Call `get_you` first.** It reports whether the account is a *client* account
    (clients cannot create environments) and whether a git account is connected.
 2. **Never guess a public ID.** Resolve it with the matching `list_*` tool. All
    public IDs have the form `xx-nnnnnn` (`^[a-z]{2}-[0-9a-z]{6}$`).
@@ -66,7 +66,7 @@ ELSE IF the task is: deploy an existing app, run a remote command, pull/push the
 
 | Tool | Arguments | Returns |
 |------|-----------|---------|
-| `get_me` | — | `publicId`, `email`, `name`, `type`, `active`, `client`, `gitAccountConnected`, `gitUsername`, `gitInstallationAccounts` |
+| `get_you` | — | `publicId`, `email`, `name`, `type`, `active`, `client`, `gitAccountConnected`, `gitUsername`, `gitInstallationAccounts` |
 | `list_regions` | — | `identifier` (e.g. `eu-w1a`), `name`, `location`, `recommended` |
 | `list_software_presets` | — | `slug`, `name`, `versions`, `defaultVersion` |
 | `list_php_versions` | — | `version`, `eol`, `default` |
@@ -139,7 +139,7 @@ Required: `name`, `region`. Optional: `teamPublicId`, `paymentMethodPublicId`,
 
 Recommended sequence for a repo that should go live:
 
-1. `get_me` — confirm the account can create, and that git is connected.
+1. `get_you` — confirm the account can create, and that git is connected.
 2. `detect_repository_stack` on the user's repo → `softwarePresetSlug`.
 3. `list_regions`, `list_software_presets`, `list_component_plans <region>`.
 4. Show the user the exact name, region, preset, components, and **monthly
@@ -239,7 +239,7 @@ message. Read the message — it is written to be self-correcting.
 |---------|---------|-----|
 | `401` + `WWW-Authenticate: …` | Not connected, or the OAuth token expired | Use the `fortrabbit-api-access` skill; re-run `claude mcp add` |
 | `App not found.` (or `Environment` / `Deployment` / `Domain` / `Team` / `Payment method`) | The ID is wrong **or** belongs to someone else — deliberately indistinguishable | Re-resolve with the matching `list_*` call |
-| `Access denied.` | Authenticated, but not permitted for this resource or account type | Check `get_me` — client accounts cannot create environments |
+| `Access denied.` | Authenticated, but not permitted for this resource or account type | Check `get_you` — client accounts cannot create environments |
 | `Invalid arguments. <field>: <message>` | Validation failed | Fix the named field; resolve its value with the tool from the table above |
 | `components: No plan supplied for component php. Supply a size key for every required component.` | Missing a required component | Supply `php`, `storage`, `traffic`, `backups` — or set `sourceEnvironmentPublicId` to clone |
 | `Error while executing tool` (no detail) | An unexpected server-side error | Do not retry blindly or invent arguments; report it and fall back to the dashboard |
