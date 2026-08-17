@@ -18,7 +18,7 @@ compatibility: >
   agent that reads SKILL.md.
 license: MIT
 metadata:
-  version: "0.3.0"
+  version: "0.4.0"
   author: fortrabbit
 user-invocable: true
 allowed-tools: Bash Read Glob Grep
