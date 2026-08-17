@@ -19,16 +19,19 @@ for arg in "$@"; do
   esac
 done
 
+# Skills shipped by this package (each is a directory under skills/)
+SKILLS="fortrabbit fortrabbit-api-access"
+
 HAS_CLAUDE=false
 HAS_CODEX=false
 
 if $LOCAL; then
-  CLAUDE_DIR=".claude/skills/fortrabbit"
-  CODEX_DIR=".agents/skills/fortrabbit"
+  CLAUDE_BASE=".claude/skills"
+  CODEX_BASE=".agents/skills"
   SCOPE="project"
 else
-  CLAUDE_DIR="$HOME/.claude/skills/fortrabbit"
-  CODEX_DIR="$HOME/.agents/skills/fortrabbit"
+  CLAUDE_BASE="$HOME/.claude/skills"
+  CODEX_BASE="$HOME/.agents/skills"
   SCOPE="global"
 
   # For global installs, only target tools that are actually installed
@@ -49,27 +52,32 @@ trap 'rm -rf "$TMP"' EXIT
 
 curl -fsSL "$REPO_URL" | tar xz -C "$TMP" --strip-components=1
 
-install_skill() {
-  DIR="$1"
-  mkdir -p "$DIR"
-  cp -r "$TMP/skills/fortrabbit/." "$DIR/"
-  cp "$TMP/VERSION" "$DIR/.version"
-  cp "$TMP/update.sh" "$DIR/update.sh"
-  cp "$TMP/uninstall.sh" "$DIR/uninstall.sh"
-  chmod +x "$DIR/update.sh" "$DIR/uninstall.sh"
-  date +%s > "$DIR/.last-update-check"
+# Install every skill in $SKILLS into the given skills base directory
+install_skills() {
+  BASE="$1"
+  for SKILL in $SKILLS; do
+    DIR="$BASE/$SKILL"
+    mkdir -p "$DIR"
+    cp -r "$TMP/skills/$SKILL/." "$DIR/"
+    cp "$TMP/VERSION" "$DIR/.version"
+    cp "$TMP/update.sh" "$DIR/update.sh"
+    cp "$TMP/uninstall.sh" "$DIR/uninstall.sh"
+    chmod +x "$DIR/update.sh" "$DIR/uninstall.sh"
+    date +%s > "$DIR/.last-update-check"
+    echo "    $DIR"
+  done
 }
 
 # Claude Code
 if $LOCAL || $HAS_CLAUDE; then
-  install_skill "$CLAUDE_DIR"
-  echo "  Claude Code  →  $CLAUDE_DIR"
+  echo "  Claude Code:"
+  install_skills "$CLAUDE_BASE"
 fi
 
 # OpenAI Codex
 if $LOCAL || $HAS_CODEX; then
-  install_skill "$CODEX_DIR"
-  echo "  Codex        →  $CODEX_DIR"
+  echo "  Codex:"
+  install_skills "$CODEX_BASE"
 fi
 
 # GitHub Copilot (per-project only — instructions are repo-scoped)

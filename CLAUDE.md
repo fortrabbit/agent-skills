@@ -13,6 +13,7 @@ The project provides the same operational guidance in platform-specific formats:
 | File / Path                                       | Platform                                             |
 | ------------------------------------------------- | ---------------------------------------------------- |
 | `skills/fortrabbit/SKILL.md`                      | Claude Code + OpenAI Codex (canonical source)        |
+| `skills/fortrabbit-api-access/SKILL.md`           | Claude Code + OpenAI Codex — MCP OAuth install + Public API tokens |
 | `AGENTS.md`                                       | OpenAI Codex contributor context (mirrors this file) |
 | `.github/instructions/fortrabbit.instructions.md` | GitHub Copilot                                       |
 
@@ -24,6 +25,7 @@ The project provides the same operational guidance in platform-specific formats:
 
 - `start.md` — onboarding / first-run Q&A
 - `connect.md` — fortrabbit onboarding: account, app, SSH key, connection test
+- `mcp.md` — using the fortrabbit MCP server (`api.fortrabbit.com/mcp`) to discover, provision, and diagnose apps/environments; connecting a client is handled by the `fortrabbit-api-access` skill
 - `ssh-key-setup.md` — SSH key generation and dashboard registration
 - `setup-git-github.md` — Git and GitHub setup for deployments
 - `deploy.md` — Git push and deploy hook workflows
@@ -43,9 +45,9 @@ The project provides the same operational guidance in platform-specific formats:
 
 `install.sh`, `update.sh`, and `uninstall.sh` at the repo root are copied into the skill directories on install. They are bundled as-is — no compilation required.
 
-- `install.sh [--global]` — downloads and installs to `.claude/skills/fortrabbit/`, `.agents/skills/fortrabbit/`, and `.github/instructions/` (Copilot, project-only)
+- `install.sh [--project]` — installs **every** skill listed in its `SKILLS` variable (`fortrabbit`, `fortrabbit-api-access`) into `.claude/skills/<skill>/`, `.agents/skills/<skill>/`, plus `.github/instructions/` (Copilot, project-only). When adding a new skill directory under `skills/`, add its name to `SKILLS` in `install.sh` and `uninstall.sh`.
 - `update.sh` — checks `VERSION` against the published version and re-runs `install.sh` if newer
-- `uninstall.sh` — removes all installed skill directories and the Copilot instructions file
+- `uninstall.sh` — removes all installed skill directories (all names in `SKILLS`) and the Copilot instructions file
 
 ## Key Conventions
 

@@ -9,7 +9,7 @@ This reference is loaded when the user invokes the skill with no specific intent
 Before routing, evaluate these four conditions:
 
 - **software detected** — at least one signal from `software-detection.md` matches (see that file for the full ordered check list)
-- **fortrabbit configured** — `.fortrabbit` file exists in the project root, OR `.env` contains `FORTRABBIT_APP_ENV_ID`
+- **fortrabbit configured** — `.fortrabbit` file exists in the project root, OR `.env` contains `FORTRABBIT_APP_ENV_ID`. (If neither exists but an MCP server is configured, you can discover the user's apps/environments via MCP `list_apps`/`list_environments` rather than treating the project as unconfigured — see mcp.md.)
 - **git ready** — ALL of the following are true:
   - `git rev-parse --git-dir` succeeds (repo exists)
   - `git remote get-url origin` returns a URL
