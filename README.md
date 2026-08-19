@@ -90,7 +90,7 @@ Run this anywhere to install globally for your user — available across all you
 curl -fsSL https://raw.githubusercontent.com/fortrabbit/agent-skills/main/install.sh | sh
 ```
 
-The script detects which tools are installed on your machine and only installs into existing config directories (`~/.claude` for Claude Code, `~/.agents` for OpenAI Codex). It exits with an error if neither is found.
+The script detects which tools are installed on your machine (`~/.claude` for Claude Code, `~/.codex` for OpenAI Codex) and installs into their skill directories. It exits with an error if neither is found.
 
 #### Per-project install
 

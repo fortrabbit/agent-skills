@@ -36,11 +36,13 @@ else
 
   # For global installs, only target tools that are actually installed
   [ -d "$HOME/.claude" ] && HAS_CLAUDE=true
-  [ -d "$HOME/.agents" ] && HAS_CODEX=true
+  if [ -d "$HOME/.codex" ] || [ -d "$HOME/.agents" ]; then
+    HAS_CODEX=true
+  fi
 
   if ! $HAS_CLAUDE && ! $HAS_CODEX; then
-    echo "Error: Neither Claude Code (~/.claude) nor OpenAI Codex (~/.agents) appears to be installed."
-    echo "Install one of those tools first, or use --local to install per-project."
+    echo "Error: Neither Claude Code (~/.claude) nor OpenAI Codex (~/.codex) appears to be installed."
+    echo "Install one of those tools first, or use --project to install per-project."
     exit 1
   fi
 fi
