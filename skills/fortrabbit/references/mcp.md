@@ -1,7 +1,7 @@
 # MCP: discover, provision, and diagnose apps through the fortrabbit MCP server
 
 fortrabbit exposes a **Model Context Protocol** server at
-`https://api.fortrabbit.com/mcp` (streamable HTTP). Once a client is connected,
+`https://mcp.fortrabbit.com` (streamable HTTP). Once a client is connected,
 you can read and provision fortrabbit resources directly — no SSH, no dashboard
 clicking, no asking the user for IDs you can look up.
 
@@ -17,7 +17,7 @@ If no fortrabbit MCP server is configured, or calls return `401`, **use the
 `fortrabbit-api-access` skill**. The short version:
 
 ```sh
-claude mcp add --transport http fortrabbit https://api.fortrabbit.com/mcp
+claude mcp add --transport http fortrabbit https://mcp.fortrabbit.com
 ```
 
 This runs a browser OAuth flow — the user approves, and no token is ever handled

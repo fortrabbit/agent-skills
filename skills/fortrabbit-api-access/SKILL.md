@@ -2,7 +2,7 @@
 name: fortrabbit-api-access
 description: >
   Use when connecting an agent, MCP client, or script to fortrabbit — installing
-  the fortrabbit MCP server (`api.fortrabbit.com/mcp`), calling the `/v1` REST
+  the fortrabbit MCP server (`mcp.fortrabbit.com`), calling the `/v1` REST
   API, or resolving `401` / "Authentication required" / "Invalid access token"
   errors. Prefers the browser-based OAuth install (no credential handling) and
   falls back to a dashboard-issued `frbit-at-` Public API token for REST, CI, and
@@ -49,14 +49,14 @@ token in this flow.**
 **Claude Code:**
 
 ```sh
-claude mcp add --transport http fortrabbit https://api.fortrabbit.com/mcp
+claude mcp add --transport http fortrabbit https://mcp.fortrabbit.com
 ```
 
 **OpenAI Codex** — Codex does not publish a Client ID Metadata Document, so it
 must be given the client ID explicitly:
 
 ```sh
-codex mcp add fortrabbit --url https://api.fortrabbit.com/mcp --oauth-client-id https://api.fortrabbit.com/.well-known/oauth-client/codex
+codex mcp add fortrabbit --url https://mcp.fortrabbit.com --oauth-client-id https://api.fortrabbit.com/.well-known/oauth-client/codex
 ```
 
 After running it, tell the user to complete the browser approval, then verify by
@@ -214,7 +214,7 @@ Conventions worth knowing before writing a client:
 
 ### Using a token with an MCP client (fallback)
 
-Only when the client cannot do OAuth. Configure the `/mcp` endpoint with the
+Only when the client cannot do OAuth. Configure the MCP endpoint with the
 Bearer header — keep the file out of version control if it embeds the value:
 
 ```json
@@ -222,7 +222,7 @@ Bearer header — keep the file out of version control if it embeds the value:
   "mcpServers": {
     "fortrabbit": {
       "type": "http",
-      "url": "https://api.fortrabbit.com/mcp",
+      "url": "https://mcp.fortrabbit.com",
       "headers": {
         "Authorization": "Bearer frbit-at-…"
       }
@@ -240,12 +240,12 @@ than pasting the literal value.
 
 | Need | Do this |
 |------|---------|
-| Connect an MCP client | `claude mcp add --transport http fortrabbit https://api.fortrabbit.com/mcp` |
+| Connect an MCP client | `claude mcp add --transport http fortrabbit https://mcp.fortrabbit.com` |
 | Connect Codex | add `--oauth-client-id https://api.fortrabbit.com/.well-known/oauth-client/codex` |
 | Verify a connection | Call `get_you` |
 | Find a token | `printenv FORTRABBIT_API_TOKEN`, then grep `.env` for `frbit-at-[0-9a-f]{64}` |
 | Store a token | `FORTRABBIT_API_TOKEN` env var or git-ignored `.env` line |
-| MCP endpoint | `https://api.fortrabbit.com/mcp` |
+| MCP endpoint | `https://mcp.fortrabbit.com` |
 | REST endpoint | `https://api.fortrabbit.com/v1/…`, header `Authorization: Bearer frbit-at-…` |
 | Discover REST resources | `GET /v1/docs` (public, no token) |
 | Generate a token | https://dash.fortrabbit.com/new/api-token |

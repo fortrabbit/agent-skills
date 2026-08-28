@@ -119,13 +119,13 @@ and read deployment logs without SSH. One command, then approve in the browser â
 no token to copy or store:
 
 ```shell
-claude mcp add --transport http fortrabbit https://api.fortrabbit.com/mcp
+claude mcp add --transport http fortrabbit https://mcp.fortrabbit.com
 ```
 
 For OpenAI Codex:
 
 ```shell
-codex mcp add fortrabbit --url https://api.fortrabbit.com/mcp --oauth-client-id https://api.fortrabbit.com/.well-known/oauth-client/codex
+codex mcp add fortrabbit --url https://mcp.fortrabbit.com --oauth-client-id https://api.fortrabbit.com/.well-known/oauth-client/codex
 ```
 
 Ask your agent to "list my fortrabbit apps" to confirm it worked. Scripts and CI
