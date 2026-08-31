@@ -25,7 +25,7 @@ The project provides the same operational guidance in platform-specific formats:
 
 - `start.md` — onboarding / first-run Q&A
 - `connect.md` — fortrabbit onboarding: account, app, SSH key, connection test
-- `mcp.md` — using the fortrabbit MCP server (`mcp.fortrabbit.com`) to discover, provision, and diagnose apps/environments; connecting a client is handled by the `fortrabbit-api-access` skill
+- `mcp.md` — using the fortrabbit MCP server (`mcp.fortrabbit.com/mcp`) to discover, provision, and diagnose apps/environments; connecting a client is handled by the `fortrabbit-api-access` skill
 - `ssh-key-setup.md` — SSH key generation and dashboard registration
 - `setup-git-github.md` — Git and GitHub setup for deployments
 - `deploy.md` — Git push and deploy hook workflows

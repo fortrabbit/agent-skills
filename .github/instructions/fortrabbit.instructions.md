@@ -40,9 +40,9 @@ SSH host pattern: `APP_ENV_ID@ssh.REGION.frbit.app`
 
 ## MCP server (optional)
 
-fortrabbit runs an MCP server at `https://mcp.fortrabbit.com`. If the user's editor has it connected, prefer it over asking the user for IDs.
+fortrabbit runs an MCP server at `https://mcp.fortrabbit.com/mcp`. If the user's editor has it connected, prefer it over asking the user for IDs.
 
-- **Connecting** is a one-command browser OAuth flow, e.g. `claude mcp add --transport http fortrabbit https://mcp.fortrabbit.com`. A dashboard-issued Public API token (`frbit-at-…`, from https://dash.fortrabbit.com/new/api-token) also works as an `Authorization: Bearer` header for clients without OAuth, and is what scripts and CI should use for the `/v1` REST API.
+- **Connecting** is a one-command browser OAuth flow, e.g. `claude mcp add --transport http fortrabbit https://mcp.fortrabbit.com/mcp`. A dashboard-issued Public API token (`frbit-at-…`, from https://dash.fortrabbit.com/new/api-token) also works as an `Authorization: Bearer` header for clients without OAuth, and is what scripts and CI should use for the `/v1` REST API.
 - **Use it for**: listing/inspecting apps, environments, deployments, domains, teams, payment methods; creating apps and environments; reading deployment logs to diagnose a failed deploy.
 - **It does not do**: deploying an existing app, remote commands, database pull/push, file sync, restart, or env vars. Use the SSH and deploy-hook paths for those.
 - **Call `get_you` first** — it reports whether the account is a client account (which cannot create environments) and whether a git account is connected.
