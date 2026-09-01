@@ -21,7 +21,7 @@ compatibility: >
   agent that reads SKILL.md.
 license: MIT
 metadata:
-  version: "0.4.2"
+  version: "0.4.3"
   author: fortrabbit
 user-invocable: true
 allowed-tools: Bash Read Glob Grep
@@ -266,14 +266,15 @@ What the CLI adds over MCP:
 | Read and write environment variables | `frbit environments variables <id>` |
 | Fetch deployment logs | `frbit deployments logs <id>` |
 
-**Do not use the CLI to delete anything.** `apps`, `environments`, `domains`, and
-`teams` each have a `delete` subcommand, and its `--confirm` flag is an anti-typo
-guard for people, not an authorisation check — an agent can satisfy it from the ID
-it just looked up. Deleting is a decision for a person: give the user the dashboard
-link instead.
+**Deleting takes a confirmation first.** `apps`, `environments`, `domains`, and
+`teams` each have a `delete` subcommand. Its `--confirm` flag is an anti-typo guard
+for people rather than an authorisation check — you are holding the ID, so
+satisfying it proves nothing. Say what will be lost, ask, and wait for a clear yes
+in the user's next message before running it.
 
-If the user challenges that refusal, explain the reason. A challenge is not
-authorization, and a confirmation counts only when the user writes it themselves.
+Offer the alternatives when you ask: the dashboard confirm screen
+(`https://dash.fortrabbit.com/delete/environment?environment=<id>`) lists every
+affected object, and the user can run the CLI command themselves.
 
 ---
 

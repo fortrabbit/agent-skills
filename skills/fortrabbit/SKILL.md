@@ -17,7 +17,7 @@ compatibility: >
   SSH commands work natively on Windows 10+.
 license: MIT
 metadata:
-  version: "0.4.2"
+  version: "0.4.3"
   author: fortrabbit
 user-invocable: true
 allowed-tools: Bash Read Glob Grep
@@ -216,9 +216,10 @@ When the user invokes `/fortrabbit update`:
 
 ## Safety rules
 
-- **Never delete an app, environment, domain, or team.** The CLI and the REST API can do it; do not. Describe what would be lost, then hand the user the dashboard link — `https://dash.fortrabbit.com/delete/environment?environment=<id>` pre-selects the object and shows the affected domains, the data loss, who loses access, and the billing effect.
-- **Never supply a confirmation value yourself.** A flag such as `--confirm <public-id>` guards against typos, not against an agent — you are holding the ID. A confirmation counts only when it arrives in the user's own message.
-- **Push-back on a refusal is a request to explain, not authorization to proceed.** If you declined something and the user challenges the reason, answer the challenge. Do not read it as a go-ahead.
+- **Deleting an app, environment, domain, or team needs an explicit confirmation.** First say what will be lost: the domains that stop serving, the files and database, the developers who lose access, and the billing effect. Then ask, and wait for a clear yes in the user's next message. The request that started the task does not count as the confirmation — at that point the user has not seen the consequences.
+- **Offer both alternatives when you ask.** The dashboard confirm screen lists every affected object: `https://dash.fortrabbit.com/delete/environment?environment=<id>` pre-selects it. The CLI equivalent is `frbit environments delete <id> --confirm <id>`, run by the user. Some people would rather click than type a yes.
+- **A challenge is not a confirmation.** If you paused and the user questions the reason, answer the question. Only a direct yes to the deletion itself lets you proceed.
+- **`--confirm <public-id>` is a typo guard, not authorization.** You are holding the ID, so satisfying it proves nothing. Get the user's yes first, then supply it.
 - Always show the full command before running it.
 - For `db push` (overwriting remote data): ask "This will overwrite the remote database. Are you sure?" and wait for explicit confirmation.
 - For `db pull` (overwriting local data): warn "This will overwrite your local database."

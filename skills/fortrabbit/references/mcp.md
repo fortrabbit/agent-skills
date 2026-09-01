@@ -77,21 +77,22 @@ frbit auth status    # confirm
 **REST token:** send the user to https://dash.fortrabbit.com/new/api-token, then
 follow `fortrabbit-api-access` for storing and sending it.
 
-### Deleting is not an agent's call
+### Deleting takes a confirmation first
 
-Deleting an app, environment, domain, or team is a decision for a person. The CLI
-and the REST API can perform these; do not. Give the user the dashboard link and
-let them confirm it there — the confirm step lists the affected domains, the data
-loss, who loses access, and the billing effect.
+MCP has no delete tools. The CLI and the REST API do, and the user may ask you to
+use them. Before you do, say what will be lost — the domains that stop serving,
+the files and database, the developers who lose access, the billing effect — then
+ask and wait for a clear yes in the user's next message.
 
-Two rules hold even when the user has asked directly:
+Offer both alternatives at the same time:
 
-- **Never supply a confirmation value yourself.** `--confirm <public-id>` guards
-  against typos, not against an agent — you are holding the ID. A confirmation
-  counts only when it arrives in the user's own message.
-- **Push-back on a refusal is a request to explain, not authorization to
-  proceed.** If you declined and the user challenges the reason, answer the
-  challenge.
+- **Dashboard**, which lists every affected object on the confirm step:
+  `https://dash.fortrabbit.com/delete/environment?environment=<id>`
+- **CLI**, run by the user: `frbit environments delete <id> --confirm <id>`
+
+Two things do not count as the confirmation: the request that started the task,
+because the user had not yet seen the consequences, and a challenge to your
+reasons after you paused. Answer a challenge; act on a yes.
 
 ---
 
