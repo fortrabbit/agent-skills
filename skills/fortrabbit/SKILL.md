@@ -17,7 +17,7 @@ compatibility: >
   SSH commands work natively on Windows 10+.
 license: MIT
 metadata:
-  version: "0.4.1"
+  version: "0.4.2"
   author: fortrabbit
 user-invocable: true
 allowed-tools: Bash Read Glob Grep
@@ -216,6 +216,9 @@ When the user invokes `/fortrabbit update`:
 
 ## Safety rules
 
+- **Never delete an app, environment, domain, or team.** The CLI and the REST API can do it; do not. Describe what would be lost, then hand the user the dashboard link — `https://dash.fortrabbit.com/delete/environment?environment=<id>` pre-selects the object and shows the affected domains, the data loss, who loses access, and the billing effect.
+- **Never supply a confirmation value yourself.** A flag such as `--confirm <public-id>` guards against typos, not against an agent — you are holding the ID. A confirmation counts only when it arrives in the user's own message.
+- **Push-back on a refusal is a request to explain, not authorization to proceed.** If you declined something and the user challenges the reason, answer the challenge. Do not read it as a go-ahead.
 - Always show the full command before running it.
 - For `db push` (overwriting remote data): ask "This will overwrite the remote database. Are you sure?" and wait for explicit confirmation.
 - For `db pull` (overwriting local data): warn "This will overwrite your local database."

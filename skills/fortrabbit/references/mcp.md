@@ -81,7 +81,17 @@ follow `fortrabbit-api-access` for storing and sending it.
 
 Deleting an app, environment, domain, or team is a decision for a person. The CLI
 and the REST API can perform these; do not. Give the user the dashboard link and
-let them confirm it there.
+let them confirm it there — the confirm step lists the affected domains, the data
+loss, who loses access, and the billing effect.
+
+Two rules hold even when the user has asked directly:
+
+- **Never supply a confirmation value yourself.** `--confirm <public-id>` guards
+  against typos, not against an agent — you are holding the ID. A confirmation
+  counts only when it arrives in the user's own message.
+- **Push-back on a refusal is a request to explain, not authorization to
+  proceed.** If you declined and the user challenges the reason, answer the
+  challenge.
 
 ---
 

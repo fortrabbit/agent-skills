@@ -21,7 +21,7 @@ compatibility: >
   agent that reads SKILL.md.
 license: MIT
 metadata:
-  version: "0.4.1"
+  version: "0.4.2"
   author: fortrabbit
 user-invocable: true
 allowed-tools: Bash Read Glob Grep
@@ -271,6 +271,9 @@ What the CLI adds over MCP:
 guard for people, not an authorisation check — an agent can satisfy it from the ID
 it just looked up. Deleting is a decision for a person: give the user the dashboard
 link instead.
+
+If the user challenges that refusal, explain the reason. A challenge is not
+authorization, and a confirmation counts only when the user writes it themselves.
 
 ---
 
