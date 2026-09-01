@@ -5,9 +5,9 @@ fortrabbit exposes a **Model Context Protocol** server at
 you can read and provision fortrabbit resources directly — no SSH, no dashboard
 clicking, no asking the user for IDs you can look up.
 
-Use MCP for **discovery, provisioning, and deployment diagnosis**. Keep using
-the SSH/rsync/deploy-hook paths for everything MCP does not cover (see "What MCP
-does not do").
+Use MCP for **discovery, provisioning, and deployment diagnosis**. It exposes a
+subset of the platform — the `frbit` CLI, the `/v1` REST API, and the SSH paths
+reach further. See "Choosing a route".
 
 ---
 
@@ -29,7 +29,7 @@ can access.
 
 ---
 
-## Four rules that prevent most failures
+## Five rules that prevent most failures
 
 1. **Call `get_you` first.** It reports whether the account is a *client* account
    (clients cannot create environments) and whether a git account is connected.
@@ -41,22 +41,47 @@ can access.
 4. **If an app or environment resource is attached to the conversation, use the
    `publicId` from its payload directly** — do not re-resolve it through
    `list_apps` / `list_environments`.
+5. **A missing tool is not a missing capability.** Before telling a user that an
+   operation cannot be done, check "Choosing a route" below. The CLI and the REST
+   API cover more than this server exposes.
 
 ---
 
-## When to use MCP vs SSH
+## Choosing a route
 
-```
-IF the task is: list/inspect apps, environments, deployments, domains, teams,
-                payment methods — OR create an app or environment
-                — OR find out why a deployment failed
-  → Use MCP (this file)
+MCP is one of four ways into fortrabbit. An operation with no MCP tool is **not
+necessarily impossible** — check the other routes before reporting that it cannot
+be done.
 
-ELSE IF the task is: deploy an existing app, run a remote command, pull/push the
-                     database, rsync files/content, edit env vars, restart
-  → Use the SSH/deploy paths (deploy.md, ssh-exec.md, database.md, sync.md,
-    sync-content.md) — MCP does not expose these
+| Route | Covers | Auth |
+|-------|--------|------|
+| **MCP** (this file) | Read apps, environments, deployments, domains, teams, payment methods. Create apps and environments. Read and write environment variables. Diagnose failed deployments. | OAuth, already connected |
+| **`frbit` CLI** | Everything MCP reads, plus deploy, restart, and environment updates. | `frbit auth login` |
+| **`/v1` REST API** | The whole platform surface. `GET /v1/docs` is public and is the source of truth. | `Bearer frbit-at-…` |
+| **SSH / rsync** | Remote commands, database pull and push, file and content sync. | SSH key |
+
+Prefer the CLI over `curl` when both reach the operation. `frbit auth login` opens
+the dashboard token page in a browser and stores the token in the system keychain,
+so the credential never passes through the agent or a file in the repo.
+
+### Setting up a route the customer does not have
+
+**CLI:**
+
+```sh
+brew install fortrabbit/tap/frbit
+frbit auth login     # opens https://dash.fortrabbit.com/new/api-token
+frbit auth status    # confirm
 ```
+
+**REST token:** send the user to https://dash.fortrabbit.com/new/api-token, then
+follow `fortrabbit-api-access` for storing and sending it.
+
+### Deleting is not an agent's call
+
+Deleting an app, environment, domain, or team is a decision for a person. The CLI
+and the REST API can perform these; do not. Give the user the dashboard link and
+let them confirm it there.
 
 ---
 
@@ -216,17 +241,23 @@ call `get_app` / `get_environment`.
 
 ## What MCP does not do
 
-MCP covers reading, provisioning, and deployment diagnosis. It has **no** tools
-for:
+MCP covers reading, provisioning, environment variables, and deployment
+diagnosis. For everything else, take the route in the right-hand column.
 
-- **Deploying an existing app** or triggering a deploy → `deploy.md`
-  (deployment happens only as a side effect of `create_app` /
-  `create_environment`)
-- **Remote commands** (artisan, craft console, wp-cli) → `ssh-exec.md`
-- **Database** pull/push → `database.md`
-- **File / content sync** → `sync.md`, `sync-content.md`
-- **Restart, env vars, scaling changes** → dashboard
-- **Runtime HTTP errors** → `http-error-troubleshooting.md`
+| Operation | Route |
+|-----------|-------|
+| Deploy an existing app | `frbit environments deploy <id>` · `POST /v1/environments/{publicId}/deployments` · `deploy.md` |
+| Restart an environment | `frbit environments restart <id>` · `POST /v1/environments/{publicId}/restart` |
+| Rename an environment, change deployment settings | `frbit environments update <id>` |
+| Scaling and component sizes | dashboard |
+| Remote commands (artisan, craft console, wp-cli) | `ssh-exec.md` |
+| Database pull and push | `database.md` |
+| File and content sync | `sync.md`, `sync-content.md` |
+| Runtime HTTP errors | `http-error-troubleshooting.md` |
+| Delete an app, environment, domain, or team | a person, in the dashboard |
+
+Deployment over MCP happens only as a side effect of `create_app` and
+`create_environment`.
 
 ---
 

@@ -6,9 +6,12 @@ description: >
   API, or resolving `401` / "Authentication required" / "Invalid access token"
   errors. Prefers the browser-based OAuth install (no credential handling) and
   falls back to a dashboard-issued `frbit-at-` Public API token for REST, CI, and
-  clients without OAuth support. Trigger on mentions of "connect fortrabbit",
-  "install the fortrabbit MCP server", "fortrabbit token", "API token",
-  "frbit-at-", "Bearer", "MCP", "/v1", or "dash.fortrabbit.com".
+  clients without OAuth support. Also use when the MCP server has no tool for an
+  operation: the `frbit` CLI and the `/v1` REST API reach further than MCP, so a
+  missing tool is not a missing capability. Trigger on mentions of "connect
+  fortrabbit", "install the fortrabbit MCP server", "fortrabbit token", "API
+  token", "frbit-at-", "Bearer", "MCP", "/v1", "dash.fortrabbit.com", "frbit
+  CLI", "no MCP tool for", "MCP cannot", or "not exposed over MCP".
 compatibility: >
   Requires network access to https://api.fortrabbit.com (serves `/mcp`, `/v1`,
   and the OAuth endpoints) and to https://dash.fortrabbit.com for token
@@ -18,7 +21,7 @@ compatibility: >
   agent that reads SKILL.md.
 license: MIT
 metadata:
-  version: "0.4.0"
+  version: "0.4.1"
   author: fortrabbit
 user-invocable: true
 allowed-tools: Bash Read Glob Grep
@@ -35,6 +38,7 @@ There are two ways in. Pick by what the user is connecting:
 | An MCP client (Claude Code, Codex, Cursor) needs the fortrabbit MCP server | **OAuth install** — Step 1. No token, no secret handling. |
 | A script, CI job, or `curl` needs the `/v1` REST API | **Public API token** — Step 3. |
 | An MCP client with no OAuth support | **Public API token** — Step 3, configured as a Bearer header. |
+| The MCP server has no tool for the operation | **`frbit` CLI** — Step 5. Fall back to a token and `curl` only if the CLI cannot be installed. |
 
 Default to OAuth. Only reach for a token when OAuth cannot apply.
 
@@ -233,6 +237,40 @@ Bearer header — keep the file out of version control if it embeds the value:
 
 Prefer `${FORTRABBIT_API_TOKEN}` interpolation if the client supports it, rather
 than pasting the literal value.
+
+---
+
+## Step 5 — The `frbit` CLI (when MCP has no tool)
+
+MCP exposes a subset of the platform. The CLI reaches the rest without the agent
+ever handling a credential: `frbit auth login` opens the dashboard token page in a
+browser, the user pastes the token, and the CLI stores it in the system keychain.
+
+```sh
+brew install fortrabbit/tap/frbit
+frbit auth login     # opens https://dash.fortrabbit.com/new/api-token
+frbit auth status    # "Authenticated profile \"default\" against …"
+```
+
+Command groups: `apps`, `environments`, `deployments`, `domains`, `teams`,
+`people`, `payment-methods`, `auth`, `mcp`, `skills`, `setup`. Run
+`frbit <group> --help` rather than guessing a subcommand.
+
+What the CLI adds over MCP:
+
+| Need | Command |
+|------|---------|
+| Deploy an existing app | `frbit environments deploy <id>` |
+| Restart an environment | `frbit environments restart <id>` |
+| Rename, change deployment settings | `frbit environments update <id>` |
+| Read and write environment variables | `frbit environments variables <id>` |
+| Fetch deployment logs | `frbit deployments logs <id>` |
+
+**Do not use the CLI to delete anything.** `apps`, `environments`, `domains`, and
+`teams` each have a `delete` subcommand, and its `--confirm` flag is an anti-typo
+guard for people, not an authorisation check — an agent can satisfy it from the ID
+it just looked up. Deleting is a decision for a person: give the user the dashboard
+link instead.
 
 ---
 
