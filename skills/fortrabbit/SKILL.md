@@ -17,7 +17,7 @@ compatibility: >
   SSH commands work natively on Windows 10+.
 license: MIT
 metadata:
-  version: "0.4.3"
+  version: "0.4.4"
   author: fortrabbit
 user-invocable: true
 allowed-tools: Bash Read Glob Grep
@@ -163,8 +163,10 @@ ELSE
 
 ## Capability summary (shown for `/fortrabbit help`)
 
+Read the version from `$SKILL_DIR/.version` (Step 0 locates the directory) and substitute it for `{VERSION}`. Do not hardcode a version here — it drifts from `VERSION` on every release.
+
 ```
-fortrabbit agent-skills — v0.4.0
+fortrabbit agent-skills — v{VERSION}
 
   /fortrabbit mcp            Discover, provision, and diagnose apps via the MCP server (list apps/environments/domains; create app/environment; read deployment logs)
   /fortrabbit deploy         Trigger a deployment (via deploy hook or git push reminder)
