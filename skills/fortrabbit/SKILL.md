@@ -17,7 +17,7 @@ compatibility: >
   SSH commands work natively on Windows 10+.
 license: MIT
 metadata:
-  version: "0.4.4"
+  version: "1.0.0"
   author: fortrabbit
 user-invocable: true
 allowed-tools: Bash Read Glob Grep
