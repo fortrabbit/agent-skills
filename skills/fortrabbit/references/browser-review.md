@@ -65,4 +65,4 @@ curl -I -L https://APP_ENV_ID.REGION.frbit.app
 
 Use after any code deployment, SSH exec, content sync, or database operation.
 
-For more details, see the [fortrabbit test domain documentation](https://docs.fortrabbit.com/platform/dns/test-domain).
+For more details, see the [fortrabbit test domain documentation](https://docs.fortrabbit.com/platform/domains/test-domain).
