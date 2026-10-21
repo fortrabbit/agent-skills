@@ -33,7 +33,7 @@ The project provides the same operational guidance in platform-specific formats:
 - `database.md` — SSH tunnel setup and DB pull/push procedures
 - `sync-content.md` — Per-framework rsync paths and examples
 - `sync.md` — Full file sync via rsync (no-Git fallback)
-- `browser-review.md` — Reviewing changes on the fortrabbit test domain
+- `browser-review.md` — Reviewing changes on the fortrabbit default domain
 - `http-error-troubleshooting.md` — Diagnosing HTTP errors on a deployed app
 - `software-detection.md` — Detecting installed software / CMS
 - `local-development.md` — Detecting local dev tooling / dev container setup

@@ -122,7 +122,7 @@ reasons after you paused. Answer a challenge; act on a yes.
 | `list_environments` / `get_environment` | — / `publicId` | returns `state`, `components`, `phpVersion`, `softwareVersion`, `domains` |
 | `list_deployments` / `get_deployment` | — / `publicId` | branch, commit, state |
 | `get_deployment_logs` | `publicId` | `logs[]` of `{log, time}` — the build and deploy output |
-| `list_domains` / `get_domain` | — / `publicId` | includes custom apex/subdomains **and** the generated environment URL of every environment |
+| `list_domains` / `get_domain` | — / `publicId` | includes custom apex/subdomains **and** the default domain of every environment |
 | `list_teams` / `get_team` | — / `publicId` | teams and the account's role |
 | `list_payment_methods` / `get_payment_method` | — / `publicId` | the account's payment methods |
 

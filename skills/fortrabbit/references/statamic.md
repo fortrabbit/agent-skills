@@ -48,7 +48,7 @@ For projects without Git, deploy all files via rsync — including the hidden `.
 
 1. Connect your GitHub repository to fortrabbit (the setup guide loaded above walks you through the steps).
 2. Push changes to trigger deployment, if app is connected.
-3. Verify the site on the test domain.
+3. Verify the site on the default domain.
 
 ### Content sync
 

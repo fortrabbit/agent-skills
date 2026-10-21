@@ -1,8 +1,8 @@
 # Browser review: test your changes
 
-After making changes to your fortrabbit environment, review them in a browser using the test domain.
+After making changes to your fortrabbit environment, review them in a browser using the default domain.
 
-## Test domain URL
+## Default domain URL
 
 ```text
 https://APP_ENV_ID.REGION.frbit.app
@@ -61,8 +61,8 @@ For a more detailed response (headers, redirect chain):
 curl -I -L https://APP_ENV_ID.REGION.frbit.app
 ```
 
-## When to use test domain
+## When to use default domain
 
 Use after any code deployment, SSH exec, content sync, or database operation.
 
-For more details, see the [fortrabbit test domain documentation](https://docs.fortrabbit.com/platform/domains/test-domain).
+For more details, see the [fortrabbit default domain documentation](https://docs.fortrabbit.com/platform/domains/default-domain).

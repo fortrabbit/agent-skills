@@ -122,7 +122,7 @@ ELSE IF input contains any of: "rsync", "sync files", "sync all", "upload files"
 ELSE IF input contains any of: "github", "git setup", "connect git", "setup deployment", "setup git"
   → Load references/setup-git-github.md
 
-ELSE IF input contains any of: "review", "check site", "is it live", "test domain", "browser"
+ELSE IF input contains any of: "review", "check site", "is it live", "default domain", "test domain", "browser"
   → Load references/browser-review.md
 
 ELSE IF input contains any of: "404", "500", "502", "503", "504", "not loading", "curl fails", "http error"
