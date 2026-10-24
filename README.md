@@ -6,7 +6,16 @@ The skill is written in the open [Agent Skills](https://agentskills.io) format a
 
 ## Install
 
-With the fortrabbit CLI, which also connects the MCP server:
+Claude Code, as a plugin with the skill and the MCP server in one go:
+
+```shell
+/plugin marketplace add fortrabbit/agent-skills
+/plugin install fortrabbit@fortrabbit
+```
+
+On Claude Code 2.1.275 or later in one step: `/plugin install fortrabbit --marketplace fortrabbit/agent-skills`. If you already added the MCP server with `claude mcp add`, remove that one (`claude mcp remove fortrabbit`) so the tools are not listed twice. Updates arrive with `/plugin marketplace update fortrabbit`.
+
+Any agent, with the fortrabbit CLI, which also connects the MCP server:
 
 ```shell
 frbit setup agent           # skills + MCP server
@@ -47,6 +56,8 @@ brew install fortrabbit/tap/frbit && frbit auth login
 ## What's inside
 
 ```
+.claude-plugin/        Claude Code plugin and marketplace manifests
+.mcp.json              the fortrabbit MCP server, for the plugin
 skills/fortrabbit/
 ├── SKILL.md            which tool for what, finding the environment, safety rules
 ├── references/         one file per task, loaded on demand
@@ -61,6 +72,10 @@ skills/fortrabbit/
 
 - [Agent skills](https://docs.fortrabbit.com/platform/automation/agent-skills)
 - [MCP server](https://docs.fortrabbit.com/platform/automation/mcp), [CLI](https://docs.fortrabbit.com/platform/automation/cli), [API](https://docs.fortrabbit.com/platform/automation/api)
+
+## Privacy
+
+The skill runs locally in your agent. The plugin connects your agent to the fortrabbit MCP server; see the [privacy statement](https://www.fortrabbit.com/legal/data-protection/privacy-statement).
 
 ## License
 

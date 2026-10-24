@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "fortrabbit": {
+      "type": "http",
+      "url": "https://mcp.fortrabbit.com/mcp"
+    }
+  }
+}
