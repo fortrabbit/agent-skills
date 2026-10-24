@@ -1,100 +1,13 @@
-# MCP: discover, provision, and diagnose apps through the fortrabbit MCP server
+# MCP: tools, arguments, provisioning
 
-fortrabbit exposes a **Model Context Protocol** server at
-`https://mcp.fortrabbit.com/mcp` (streamable HTTP). Once a client is connected,
-you can read and provision fortrabbit resources directly — no SSH, no dashboard
-clicking, no asking the user for IDs you can look up.
+The fortrabbit MCP server (`https://mcp.fortrabbit.com/mcp`) reads and provisions everything the connected account can access. Not connected yet: [access.md](access.md).
 
-Use MCP for **discovery, provisioning, and deployment diagnosis**. It exposes a
-subset of the platform — the `frbit` CLI, the `/v1` REST API, and the SSH paths
-reach further. See "Choosing a route".
+## Rules
 
----
-
-## Prerequisite — a connected client
-
-If no fortrabbit MCP server is configured, or calls return `401`, **use the
-`fortrabbit-api-access` skill**. The short version:
-
-```sh
-claude mcp add --transport http fortrabbit https://mcp.fortrabbit.com/mcp
-```
-
-This runs a browser OAuth flow — the user approves, and no token is ever handled
-by you. Dashboard-issued `frbit-at-…` Public API tokens are also accepted as a
-Bearer header for clients without OAuth support.
-
-Every call is tenant-scoped: you only ever see resources the connected account
-can access.
-
----
-
-## Five rules that prevent most failures
-
-1. **Call `get_you` first.** It reports whether the account is a *client* account
-   (clients cannot create environments) and whether a git account is connected.
-2. **Never guess a public ID.** Resolve it with the matching `list_*` tool. All
-   public IDs have the form `xx-nnnnnn` (`^[a-z]{2}-[0-9a-z]{6}$`).
-3. **Never guess an enumerable value either.** Regions, software presets, PHP
-   versions, component sizes, repositories, and branches each have a `list_*`
-   tool. A guessed value fails validation.
-4. **If an app or environment resource is attached to the conversation, use the
-   `publicId` from its payload directly** — do not re-resolve it through
-   `list_apps` / `list_environments`.
-5. **A missing tool is not a missing capability.** Before telling a user that an
-   operation cannot be done, check "Choosing a route" below. The CLI and the REST
-   API cover more than this server exposes.
-
----
-
-## Choosing a route
-
-MCP is one of four ways into fortrabbit. An operation with no MCP tool is **not
-necessarily impossible** — check the other routes before reporting that it cannot
-be done.
-
-| Route | Covers | Auth |
-|-------|--------|------|
-| **MCP** (this file) | Read apps, environments, deployments, domains, teams, payment methods. Create apps and environments. Read and write environment variables. Diagnose failed deployments. | OAuth, already connected |
-| **`frbit` CLI** | Everything MCP reads, plus deploy, restart, and environment updates. | `frbit auth login` |
-| **`/v1` REST API** | The whole platform surface. `GET /v1/docs` is public and is the source of truth. | `Bearer frbit-at-…` |
-| **SSH / rsync** | Remote commands, database pull and push, file and content sync. | SSH key |
-
-Prefer the CLI over `curl` when both reach the operation. `frbit auth login` opens
-the dashboard token page in a browser and stores the token in the system keychain,
-so the credential never passes through the agent or a file in the repo.
-
-### Setting up a route the customer does not have
-
-**CLI:**
-
-```sh
-brew install fortrabbit/tap/frbit
-frbit auth login     # opens https://dash.fortrabbit.com/new/api-token
-frbit auth status    # confirm
-```
-
-**REST token:** send the user to https://dash.fortrabbit.com/new/api-token, then
-follow `fortrabbit-api-access` for storing and sending it.
-
-### Deleting takes a confirmation first
-
-MCP has no delete tools. The CLI and the REST API do, and the user may ask you to
-use them. Before you do, say what will be lost — the domains that stop serving,
-the files and database, the developers who lose access, the billing effect — then
-ask and wait for a clear yes in the user's next message.
-
-Offer both alternatives at the same time:
-
-- **Dashboard**, which lists every affected object on the confirm step:
-  `https://dash.fortrabbit.com/delete/environment?environment=<id>`
-- **CLI**, run by the user: `frbit environments delete <id> --confirm <id>`
-
-Two things do not count as the confirmation: the request that started the task,
-because the user had not yet seen the consequences, and a challenge to your
-reasons after you paused. Answer a challenge; act on a yes.
-
----
+1. Call `get_you` first: `client: true` cannot create environments, `gitAccountConnected: false` cannot deploy from git.
+2. Never guess a public ID (`^[a-z]{2}-[0-9a-z]{6}$`) or an enumerable value. Every argument has a `list_*` tool behind it.
+3. An app or environment attached to the conversation (`@fortrabbit:environment/en-…`) carries its `publicId`: use it directly.
+4. Writes create billed resources or change live ones. Show what you will send, with the monthly price for creates, and wait for a yes.
 
 ## Tool catalogue
 
@@ -119,7 +32,7 @@ reasons after you paused. Answer a challenge; act on a yes.
 | Tool | Arguments | Notes |
 |------|-----------|-------|
 | `list_apps` / `get_app` | — / `publicId` | `get_app` returns `region`, `software`, `phpVersion`, `trial`, `paymentMethod`, `people`, `domains`, `environments` |
-| `list_environments` / `get_environment` | — / `publicId` | returns `state`, `components`, `phpVersion`, `softwareVersion`, `domains` |
+| `list_environments` / `get_environment` | — / `publicId` | `name`, `components`, `phpVersion`, `softwareVersion`, `domains`, `git` (repository, branch), `buildCommands`, `postDeployCommands`; `get_environment` adds `environmentVariables` and `platformVariables` (secrets such as the database password are left out) |
 | `list_deployments` / `get_deployment` | — / `publicId` | branch, commit, state |
 | `get_deployment_logs` | `publicId` | `logs[]` of `{log, time}` — the build and deploy output |
 | `list_domains` / `get_domain` | — / `publicId` | includes custom apex/subdomains **and** the default domain of every environment |
@@ -136,10 +49,9 @@ arguments.
 |------|------|
 | `create_app` | Creates an app **and** its initial environment; optionally starts the first deployment |
 | `create_environment` | Adds an environment to an app the account can access |
+| `update_environment` | Changes only the fields you send: `name`, `git` (branch, directory), `buildCommands`, `postDeployCommands`, `phpVersion`, `environmentVariables` |
 
-There are intentionally **no** tools for update, restart, deploy trigger, or
-standalone deployment creation. Do not assume a tool exists because a dashboard
-action does.
+There are no tools for restart, standalone deploy or delete: see "What MCP does not do".
 
 ---
 
@@ -217,21 +129,11 @@ components: {"php": "xs", "storage": "xs", "traffic": "xs",
 
 ---
 
-## Writing `.fortrabbit` from MCP
+## Updating an environment
 
-`connect.md` normally has the user copy values out of the dashboard. With MCP
-you can resolve **both** fields:
+`update_environment` takes `publicId` plus only the fields to change. Environment variables merge: a string value adds or changes a variable, `null` removes it, unnamed variables stay. Platform variables (`FORTRABBIT_*`) cannot be changed. Call `get_environment` first to see `environmentVariables` and `platformVariables`.
 
-1. `list_apps` / `list_environments` — show the user their apps by `name`.
-2. The environment `publicId` (`en-…`) is the `app-env-id`, the same ID used
-   for SSH.
-3. `get_app` returns the app's `region` — use its identifier (e.g. `eu-w1a`),
-   the same format `list_regions` reports.
-4. Confirm both with the user, then write:
-   ```
-   app-env-id=en-xxxxxx
-   region=eu-w1a
-   ```
+A changed variable reaches PHP after a restart or the next deployment: `frbit environments restart <env>`, or push. Ask before both on production.
 
 ---
 
@@ -252,23 +154,14 @@ call `get_app` / `get_environment`.
 
 ## What MCP does not do
 
-MCP covers reading, provisioning, environment variables, and deployment
-diagnosis. For everything else, take the route in the right-hand column.
-
 | Operation | Route |
 |-----------|-------|
-| Deploy an existing app | `frbit environments deploy <id>` · `POST /v1/environments/{publicId}/deployments` · `deploy.md` |
-| Restart an environment | `frbit environments restart <id>` · `POST /v1/environments/{publicId}/restart` |
-| Rename an environment, change deployment settings | `frbit environments update <id>` |
-| Scaling and component sizes | dashboard |
-| Remote commands (artisan, craft console, wp-cli) | `ssh-exec.md` |
-| Database pull and push | `database.md` |
-| File and content sync | `sync.md`, `sync-content.md` |
-| Runtime HTTP errors | `http-error-troubleshooting.md` |
-| Delete an app, environment, domain, or team | a person, in the dashboard |
-
-Deployment over MCP happens only as a side effect of `create_app` and
-`create_environment`.
+| Deploy an existing environment | push to the connected branch, or `frbit environments deploy <env>`: [deploy.md](deploy.md) |
+| Restart an environment | `frbit environments restart <env>` |
+| Scale components, change plans | dashboard |
+| Remote commands, database, files | [ssh.md](ssh.md), [database.md](database.md), [files.md](files.md) |
+| Runtime logs | dashboard Logs tab: [troubleshooting.md](troubleshooting.md) |
+| Delete an app, environment, domain or team | `frbit <group> delete` after a yes, or the dashboard |
 
 ---
 
@@ -279,7 +172,7 @@ message. Read the message — it is written to be self-correcting.
 
 | Message | Meaning | Fix |
 |---------|---------|-----|
-| `401` + `WWW-Authenticate: …` | Not connected, or the OAuth token expired | Use the `fortrabbit-api-access` skill; re-run `claude mcp add` |
+| `401` + `WWW-Authenticate: …` | Not connected, or the OAuth token expired | See [access.md](access.md); re-run the OAuth flow |
 | `App not found.` (or `Environment` / `Deployment` / `Domain` / `Team` / `Payment method`) | The ID is wrong **or** belongs to someone else — deliberately indistinguishable | Re-resolve with the matching `list_*` call |
 | `Access denied.` | Authenticated, but not permitted for this resource or account type | Check `get_you` — client accounts cannot create environments |
 | `Invalid arguments. <field>: <message>` | Validation failed | Fix the named field; resolve its value with the tool from the table above |
