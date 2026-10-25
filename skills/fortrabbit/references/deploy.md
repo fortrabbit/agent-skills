@@ -1,93 +1,41 @@
-# Deploying to fortrabbit
+# Deploying
 
-## Check Git state first
+A deployment builds the latest commit of the connected branch, copies it into the environment and runs the post deploy commands. It never deploys from the local working copy: only what is pushed to GitHub counts.
 
-Before asking the user anything, run these two checks:
+## Before deploying
 
-```shell
-git rev-parse --git-dir 2>/dev/null && echo "repo=yes" || echo "repo=no"
-git remote get-url origin 2>/dev/null && echo "remote=yes" || echo "remote=no"
-```
+1. Find the environment (SKILL.md) and check its `git` settings: repository and branch.
+2. `git status --porcelain` and `git log origin/<branch>..HEAD`: uncommitted or unpushed work does not deploy. Ask whether to commit and push it.
+3. Not connected to a repo (`git` empty, `gitAccountConnected: false`): [git-github.md](git-github.md), or deploy without git by rsync: [files.md](files.md).
 
-Then route based on the result:
+## Trigger
 
-```
-IF repo=yes AND remote=yes (Git is set up)
-  → Show the command and ask for confirmation:
-      git push origin [current-branch]
-    Say: "Ready to deploy via git push — the fortrabbit GitHub App will trigger the deployment automatically."
-    Ask: "Run this now?"
-    IF yes      → run the git push command
-    IF user wants rsync instead → Load sync.md
+| Situation | How |
+|---|---|
+| Push to deploy (default) | `git push origin <branch>`. The fortrabbit GitHub App starts the deployment. |
+| Manual trigger, or redeploy the same commit with changed settings | `frbit environments deploy <env>` |
+| From CI or a CMS publish event | Deploy hook: `curl -X POST "$FORTRABBIT_DEPLOY_HOOK_URL" -H "User-Agent: fortrabbit"` |
 
-ELSE IF repo=no OR remote=no (Git is not set up or incomplete)
-  → Say: "Git deployment isn't configured yet. How would you like to deploy?
-      A) Set up Git now (connects GitHub → fortrabbit webhook, then push to deploy)
-      B) Skip Git and use rsync (upload all files directly)"
-  IF A → Load setup-git-github.md
-  IF B → Load sync.md
-```
+Show the commands and ask before running them. One yes can cover commit, push and deploy when all three were shown together. An older commit cannot be redeployed: revert it in git and push.
 
-## Trigger deployment via git push (recommended)
+The deploy hook URL is a secret: anyone who has it can deploy. It lives in a CI secret or a git-ignored `.env` as `FORTRABBIT_DEPLOY_HOOK_URL`, never in a committed file. The person enables it in the dashboard under Deployment → Deploy hook. It answers `202` with the deployment ID, or `404` for a wrong or revoked URL.
 
-```shell
-# The normal workflow — push to your GitHub remote
-git push origin main
-```
+## Follow the deployment
 
-If your GitHub repo is connected to the fortrabbit app, this triggers a deployment automatically. Check the deployment status in the dashboard.
+1. `list_deployments` → the newest one for the environment, or the ID from `frbit environments deploy --json`.
+2. `get_deployment` → `state`. Check again after 20–30 seconds while it runs; do not poll faster.
+3. Failed: `get_deployment_logs` (or `frbit deployments logs <dp>`). Quote the failing lines to the person.
+4. Done: check the site, see "Is it live?" in [troubleshooting.md](troubleshooting.md).
 
-## Trigger deployment via deploy hook (alternate option)
+## Why deployments fail
 
-If a deploy hook is configured, store only the secret token in `.env`:
+| Log shows | Cause | Fix |
+|---|---|---|
+| Composer error | `composer.lock` out of sync, a private package, a PHP version mismatch | `composer install` locally, commit the lock file; check `phpVersion` |
+| Build command error (`npm run build` …) | Missing dependency or script | Reproduce locally with the same command |
+| Post deploy command failed | Migration or cache command broke | The new code is **already live**. Fix and push again, or run the command over SSH: [ssh.md](ssh.md) |
+| Nothing happens after a push | Pushed to a branch that is not connected, or the trigger is manual | Compare the branch with `git.branch`; use `frbit environments deploy` |
 
-```
-FORTRABBIT_DEPLOY_HOOK_SECRET=your-secret-token
-```
+## Build and post deploy commands
 
-The full URL is constructed from the secret and the `app-env-id` from `.fortrabbit`:
-
-```
-https://api.fortrabbit.com/webhooks/environments/{app-env-id}/deploy/{secret}
-```
-
-Trigger it with:
-
-```shell
-curl -X POST \
-  "https://api.fortrabbit.com/webhooks/environments/APP_ENV_ID/deploy/SECRET" \
-  -H "User-Agent: fortrabbit"
-```
-
-A successful response looks like:
-```json
-{"data": {"publicId": "dp-abc123"}}
-```
-
-Find and configure deploy hooks in the dashboard:
-**Dashboard → Environment → Deployment → Deploy hook**
-
-Deploy hooks are useful for:
-- CMS publish events (trigger deploy when content is published)
-- Manual deploys without a git push
-- Scheduled deployments from a cron job
-
-> **Security:** The secret token grants anyone the ability to trigger a deployment. Store it only in `.env`, never in `.fortrabbit` or any committed file. Rotate it from the dashboard if compromised.
-
-## Check deployment status
-
-Deployment history and logs are visible in the dashboard under:
-**Dashboard → Environment → Deployments**
-
-## Post-deploy commands
-
-Configure framework-specific commands (migrations, cache:clear) in the dashboard under **Deployment → Post deploy commands**. Use `/fortrabbit ssh` to run commands on the remote environment.
-
-## Troubleshooting a failed deployment
-
-1. Check the deployment log in the dashboard for the error message.
-2. The most common failures are Composer errors or failing post-deploy commands.
-3. Post-deploy command failures mean files were already deployed but the command failed — the app may be running new code without the migration applied.
-4. If Composer fails: check `composer.json` for syntax errors or version conflicts.
-
-After deploying, check your site at `https://APP_ENV_ID.REGION.frbit.app`. Use `/fortrabbit review` for a full response check with error diagnosis.
+Read them with `get_environment` (`buildCommands`, `postDeployCommands`), change them with `update_environment` or `frbit environments update`. The software templates set defaults, such as `php artisan migrate --force` for Laravel, and `php craft migrate/all`, `php craft project-config/apply` for Craft CMS: see [software.md](software.md). A deploy file `.fortrabbit/deploy.yml` in the repo overrides the dashboard settings; then edit the file, not the environment.
