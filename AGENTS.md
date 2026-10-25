@@ -25,7 +25,7 @@ skills/fortrabbit/
 
 ## Releases
 
-`VERSION` holds the version, and `metadata.version` in `SKILL.md` must match it. A push to `main` that changes `VERSION` tags and publishes a GitHub release (`.github/workflows/release.yml`). The CLI checks that `VERSION` in the archive matches the release tag.
+`VERSION` holds the version; `metadata.version` in `SKILL.md` and `version` in `.claude-plugin/plugin.json` must match it. Run `claude plugin validate .` after changing a manifest. A push to `main` that changes `VERSION` tags and publishes a GitHub release (`.github/workflows/release.yml`). The CLI checks that `VERSION` in the archive matches the release tag.
 
 ## Testing a change
 

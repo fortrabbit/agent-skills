@@ -1,0 +1,25 @@
+{
+  "name": "fortrabbit",
+  "displayName": "fortrabbit",
+  "description": "Deploy, operate and debug PHP apps on fortrabbit: the fortrabbit skill plus the fortrabbit MCP server.",
+  "version": "2.0.0",
+  "author": {
+    "name": "fortrabbit",
+    "url": "https://www.fortrabbit.com"
+  },
+  "homepage": "https://docs.fortrabbit.com/platform/automation/agent-skills",
+  "repository": "https://github.com/fortrabbit/agent-skills",
+  "license": "MIT",
+  "keywords": [
+    "fortrabbit",
+    "php",
+    "hosting",
+    "deployment",
+    "laravel",
+    "craft-cms",
+    "wordpress",
+    "mcp"
+  ],
+  "icon": ".claude-plugin/icon.png",
+  "privacyPolicyUrl": "https://www.fortrabbit.com/legal/data-protection/privacy-statement"
+}

@@ -1,0 +1,15 @@
+{
+  "name": "fortrabbit",
+  "description": "fortrabbit plugins for Claude Code",
+  "owner": {
+    "name": "fortrabbit",
+    "url": "https://www.fortrabbit.com"
+  },
+  "plugins": [
+    {
+      "name": "fortrabbit",
+      "source": "./",
+      "description": "Deploy, operate and debug PHP apps on fortrabbit: the fortrabbit skill plus the fortrabbit MCP server."
+    }
+  ]
+}
