@@ -38,7 +38,8 @@ Use the first route the agent has. A missing MCP tool is not a missing capabilit
 |---|---|---|---|
 | Account, apps, environments, deployments, domains | `get_you`, `list_*`, `get_*` | `frbit <group> list/get --json` | |
 | Create an app or environment | `create_app`, `create_environment` | `frbit apps create`, `frbit environments create` | |
-| Read and write environment variables, PHP version, build commands | `get_environment`, `update_environment` | `frbit environments variables get/update` | |
+| Environment variables | `get_environment`, `update_environment` | `frbit environments variables get/update` | |
+| PHP version, branch, build and post-deploy commands | `update_environment` | `frbit environments update` (PHP version only with `--file`) | |
 | Deploy | push to the connected branch | `frbit environments deploy <env>` | deploy hook URL |
 | Restart | – | `frbit environments restart <env>` | |
 | Why a deployment failed | `get_deployment`, `get_deployment_logs` | `frbit deployments logs <dp>` | |
@@ -53,8 +54,8 @@ No MCP server and no CLI yet? Connecting takes one command: [references/access.m
 Do not ask for an ID before trying this. Resolve it once per session and reuse it.
 
 1. `git remote get-url origin` → `owner/repo`, and `git branch --show-current`.
-2. MCP: `list_git_repositories` → the entry with that `fullName` has `connectedAppPublicId`. `get_app` on it → `region` (e.g. `eu-w1a`) and its `environments`. `get_environment` on each → the one whose `git.branch` is the current branch. If several match or none does, list the environments by name and ask which one.
-3. Without MCP: `frbit apps list --json`, `frbit apps get <app> --json` and `frbit environments get <env> --json`, matched the same way.
+2. MCP: `list_git_repositories` → the entry with that `fullName` has `connectedAppPublicId`. `get_app` on it → `region` (e.g. `eu-w1a`) and its `environments`. `list_environments` → of those, the one whose `git.branch` is the current branch. If several match or none does, list the environments by name and ask which one.
+3. Without MCP: `frbit apps list --json`, `frbit apps get <app> --json` and `frbit environments list --json`, matched the same way.
 4. Derived from that, nothing to store:
    - SSH: `<env>@ssh.<region>.frbit.app`
    - Default domain: `https://<env>.<region>.frbit.app`

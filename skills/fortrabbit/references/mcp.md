@@ -6,7 +6,7 @@ The fortrabbit MCP server (`https://mcp.fortrabbit.com/mcp`) reads and provision
 
 1. Call `get_you` first: `client: true` cannot create environments, `gitAccountConnected: false` cannot deploy from git.
 2. Never guess a public ID (`^[a-z]{2}-[0-9a-z]{6}$`) or an enumerable value. Every argument has a `list_*` tool behind it.
-3. An app or environment attached to the conversation (`@fortrabbit:environment/en-…`) carries its `publicId`: use it directly.
+3. An app or environment attached to the conversation (`@fortrabbit:fortrabbit://environment/en-…`) carries its `publicId`: use it directly.
 4. Writes create billed resources or change live ones. Show what you will send, with the monthly price for creates, and wait for a yes.
 
 ## Tool catalogue
@@ -32,7 +32,7 @@ The fortrabbit MCP server (`https://mcp.fortrabbit.com/mcp`) reads and provision
 | Tool | Arguments | Notes |
 |------|-----------|-------|
 | `list_apps` / `get_app` | — / `publicId` | `get_app` returns `region`, `software`, `phpVersion`, `trial`, `paymentMethod`, `people`, `domains`, `environments` |
-| `list_environments` / `get_environment` | — / `publicId` | `name`, `components`, `phpVersion`, `softwareVersion`, `domains`, `git` (repository, branch), `buildCommands`, `postDeployCommands`; `get_environment` adds `environmentVariables` and `platformVariables` (secrets such as the database password are left out) |
+| `list_environments` / `get_environment` | — / `publicId` | `name`, `components`, `phpVersion`, `softwareVersion`, `domains`, `git` (branch, directory), `buildCommands`, `postDeployCommands`; `get_environment` adds `environmentVariables` and `platformVariables` (secrets such as the database password are left out) |
 | `list_deployments` / `get_deployment` | — / `publicId` | branch, commit, state |
 | `get_deployment_logs` | `publicId` | `logs[]` of `{log, time}` — the build and deploy output |
 | `list_domains` / `get_domain` | — / `publicId` | includes custom apex/subdomains **and** the default domain of every environment |
@@ -146,7 +146,7 @@ instead of describing it:
 - `fortrabbit://environment/{publicId}` — payload `{publicId, name, appPublicId}`
   (`appPublicId` is omitted when the owning app is out of scope)
 
-In Claude Code the user writes `@fortrabbit:app/ap-a1b2c3`. Payloads are
+In Claude Code the user writes `@fortrabbit:fortrabbit://app/ap-a1b2c3`. Payloads are
 identity-only by design — they tell you *which* resource is meant. For detail,
 call `get_app` / `get_environment`.
 

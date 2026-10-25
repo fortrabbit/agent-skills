@@ -25,7 +25,7 @@ Update with `frbit skills update`, `gh skill update` or `npx skills update`.
 
 ### Upgrading from 1.x
 
-Version 2 merges `fortrabbit-api-access` into `fortrabbit` and drops the install scripts. `frbit skills update` removes the old skill folder and the old Copilot instructions file. After a `gh skill` or manual install, delete them yourself:
+Version 2 merges `fortrabbit-api-access` into `fortrabbit` and drops the install scripts. `frbit skills update` (CLI 1.7.0 or later) removes the old skill folder and the old Copilot instructions file. After a `gh skill` or manual install, delete them yourself:
 
 ```shell
 rm -rf ~/.claude/skills/fortrabbit-api-access ~/.agents/skills/fortrabbit-api-access

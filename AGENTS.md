@@ -21,6 +21,7 @@ skills/fortrabbit/
 - No project config file: the environment is found from the git remote through MCP or the CLI.
 - Never instruct the agent to ask for, print or store a password or token.
 - Scripts: POSIX-friendly bash, `set -euo pipefail`, validate arguments, pass `shellcheck`.
+- `install.sh` at the root is a stub that only prints how to update: 1.x installs fetch it from `main` when they update themselves. Keep it, and keep it installing nothing.
 
 ## Releases
 
