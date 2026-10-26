@@ -17,7 +17,7 @@ Other clients: [access.md](access.md). Restart the agent session if the client a
 
 The first MCP call opens the fortrabbit login page in the browser. The person signs up there (GitHub, Google, GitLab or e-mail) or signs in, verifies the e-mail address, and approves the connection. Tell them it's their step. Never ask for an e-mail address, password or token in the chat.
 
-MCP not available but the CLI is: run `frbit auth login --json` in the background and show the person the URL ([access.md](access.md#sign-in-from-an-agent)). The same sign-in creates the account.
+MCP not available but the CLI is: run `frbit auth login --json` in the background and show the person the URL ([access.md](access.md#sign-in-from-an-agent); CLI missing: install it per the CLI section there). The same sign-in creates the account.
 
 ## 3. Check the account
 

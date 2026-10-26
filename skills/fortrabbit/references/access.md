@@ -33,8 +33,12 @@ frbit auth status --json
 Shell tools often time out after about two minutes, and the person has up to 15 minutes. Run `frbit auth login --json` in the background (or with a long timeout):
 
 1. It prints `{"url": …, "status": "waiting"}` at once. Show the URL to the person: it is their step. `--no-browser` only prints the URL, for a machine without a browser.
-2. Poll `frbit auth status --json` until it reports a credential. The login itself ends with `{"status": "signed_in", "next": …}`.
-3. Follow `next`, an object `{step, instruction, url}`: `connect_git` ([git-github.md](git-github.md)), `add_payment_method` (give the person the `url`), `ready` (carry on). Run `frbit auth status --json` again after each step.
+2. Poll `frbit auth status --json` until it reports a credential. The login itself ends with `{"status": "signed_in", "next": …}`: read `next` straight from that line.
+3. Follow `next`, an object `{step, instruction, url}`, one step at a time:
+   - `connect_git`: [git-github.md](git-github.md).
+   - `add_payment_method`: show the person `next.instruction` and `next.url`. It is their step in the browser; never take card or payment details in the chat. Wait, then re-check status.
+   - `ready`: carry on.
+   After each step run `frbit auth status --json` again. Repeat until `step` is `ready`.
 
 Never ask for a password or token in the chat. Pasting a token (`--token-stdin`) is for CI.
 
