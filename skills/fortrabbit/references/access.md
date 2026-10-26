@@ -16,7 +16,7 @@ codex mcp add fortrabbit --url https://mcp.fortrabbit.com/mcp
 frbit mcp install          # either of the above, picked for the installed agent
 ```
 
-The first tool call opens the browser: the person signs in and approves. Verify with `get_you`. Disconnect with `claude mcp remove fortrabbit`; revoke the grant itself in the dashboard under "AI agents" (`https://dash.fortrabbit.com/you/ai-agents`).
+The first tool call opens the browser: the person signs in and approves. Verify with `get_you`. Disconnect with `claude mcp remove fortrabbit`; revoke the grant itself in the dashboard under "Connections" (`https://dash.fortrabbit.com/you/ai-agents`).
 
 Clients without OAuth can send a Public API token as `Authorization: Bearer` header instead. Keep the config file out of git and prefer `${FORTRABBIT_API_TOKEN}` interpolation over the literal value.
 
@@ -36,7 +36,7 @@ Account state decides the command. Account unknown or existing: `frbit auth logi
 Shell tools often time out after about two minutes, and the person has up to 15 minutes. Run `frbit auth login --json` in the background (or with a long timeout):
 
 1. It prints `{"url": …, "status": "waiting"}` at once. Show the URL to the person: it is their step. `--no-browser` only prints the URL, for a machine without a browser.
-2. Poll `frbit auth status --json` until it reports `"status": "signed_in"`. `"status": "signed_out"` while the login runs means the person has not finished: keep waiting and do not start a second login. `"status": "error"` while the login runs (an old credential was revoked or expired, say) counts the same: keep waiting and read the login's own last JSON line. The login itself ends with `{"status": "signed_in", "next": …}`, or `{"status": "error", "error": …}`: read `next` straight from that line.
+2. Poll `frbit auth status --json` until it reports `"status": "signed_in"`. `"status": "signed_out"` while the login runs means the person has not finished: keep waiting and do not start a second login. `"status": "error"` while the login runs (an old credential was revoked or expired, say) counts the same: keep waiting and read the login's own last JSON line. The login itself ends with `{"status": "signed_in", "next": …}`, or `{"status": "error", "code": …, "error": …}`: read `next` straight from that line. `code` is set for stable failures. On `"code": "access_denied"` the person denied the consent request, and that request is used up: ask the person whether to try again, and run `frbit auth login --json` again only after they say yes. Never retry on your own.
 3. Follow `next`, an object `{step, instruction, url}`, one step at a time:
    - `connect_git`: [git-github.md](git-github.md).
    - `add_payment_method`: show the person `next.instruction` and `next.url`. It is their step in the browser; never take card or payment details in the chat. Wait, then re-check status.
