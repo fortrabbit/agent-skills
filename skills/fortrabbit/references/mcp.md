@@ -4,7 +4,7 @@ The fortrabbit MCP server (`https://mcp.fortrabbit.com/mcp`) reads and provision
 
 ## Rules
 
-1. Call `get_you` first: `client: true` cannot create environments, `gitAccountConnected: false` cannot deploy from git.
+1. Call `get_you` first: `client: true` cannot create environments, `gitAccountConnected: false` cannot deploy from git. Follow `next` (`{step, instruction, url}`) until its step is `ready`.
 2. Never guess a public ID (`^[a-z]{2}-[0-9a-z]{6}$`) or an enumerable value. Every argument has a `list_*` tool behind it.
 3. An app or environment attached to the conversation (`@fortrabbit:fortrabbit://environment/en-…`) carries its `publicId`: use it directly.
 4. Writes create billed resources or change live ones. Show what you will send, with the monthly price for creates, and wait for a yes.

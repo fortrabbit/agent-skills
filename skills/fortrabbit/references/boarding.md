@@ -17,9 +17,11 @@ Other clients: [access.md](access.md). Restart the agent session if the client a
 
 The first MCP call opens the fortrabbit login page in the browser. The person signs up there (GitHub, Google, GitLab or e-mail) or signs in, verifies the e-mail address, and approves the connection. Tell them it's their step. Never ask for an e-mail address, password or token in the chat.
 
+MCP not available but the CLI is: run `frbit auth login --json` in the background and show the person the URL ([access.md](access.md#sign-in-from-an-agent)). The same sign-in creates the account.
+
 ## 3. Check the account
 
-Call `get_you`. It reports:
+Call `get_you` (MCP) or run `frbit auth status --json` (CLI). Both report `next`: `{step, instruction, url}` with `connect_git`, `add_payment_method` or `ready`. Follow it until `ready`. `get_you` also reports:
 
 - `client: true`: a client account, which cannot create environments. Someone with a developer account has to create them.
 - `gitAccountConnected: false`: git deployment needs the fortrabbit GitHub App: [git-github.md](git-github.md).

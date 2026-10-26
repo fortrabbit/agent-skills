@@ -5,7 +5,7 @@ Three ways in, each with its own sign-in. None of them needs a credential in the
 | Route | For | Sign-in |
 |---|---|---|
 | MCP server `https://mcp.fortrabbit.com/mcp` | Agents: read, provision, env vars, deployment logs | OAuth in the browser, the client stores it |
-| `frbit` CLI | Deploy, restart, deletes, CI, everything MCP lacks | `frbit auth login`, token in the system keychain |
+| `frbit` CLI | Deploy, restart, deletes, CI, everything MCP lacks | `frbit auth login` (browser, sign-up included), token in the system keychain |
 | REST API `https://api.fortrabbit.com/v1` | Own scripts and integrations | `Authorization: Bearer frbit-at-…` |
 
 ## MCP
@@ -24,13 +24,23 @@ Clients without OAuth can send a Public API token as `Authorization: Bearer` hea
 
 ```shell
 brew install fortrabbit/tap/frbit      # or: npm install --global @fortrabbit/cli
-frbit auth login                       # opens the token page, stores the token in the keychain
-frbit auth status
+frbit auth login --json                # browser sign-in, sign-up included
+frbit auth status --json
 ```
+
+### Sign in from an agent
+
+Shell tools often time out after about two minutes, and the person has up to 15 minutes. Run `frbit auth login --json` in the background (or with a long timeout):
+
+1. It prints `{"url": …, "status": "waiting"}` at once. Show the URL to the person: it is their step. `--no-browser` only prints the URL, for a machine without a browser.
+2. Poll `frbit auth status --json` until it reports a credential. The login itself ends with `{"status": "signed_in", "next": …}`.
+3. Follow `next`, an object `{step, instruction, url}`: `connect_git` ([git-github.md](git-github.md)), `add_payment_method` (give the person the `url`), `ready` (carry on). Run `frbit auth status --json` again after each step.
+
+Never ask for a password or token in the chat. Pasting a token (`--token-stdin`) is for CI.
 
 Groups: `apps`, `environments`, `deployments`, `domains`, `teams`, `people`, `payment-methods`, `auth`, `mcp`, `skills`, `setup`. Run `frbit <group> --help` rather than guessing a subcommand. `--json` on list, get, create, update, deploy and logs prints the API response.
 
-Every environment command takes the environment ID; there is no default environment. In CI, set `FRBIT_TOKEN` instead of logging in.
+Every environment command takes the environment ID; there is no default environment. In CI, set `FRBIT_TOKEN` (or pipe a token to `--token-stdin`) instead of logging in.
 
 ## REST API
 
