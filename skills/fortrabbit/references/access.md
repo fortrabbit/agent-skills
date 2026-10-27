@@ -35,7 +35,7 @@ Account state decides the command. Account unknown or existing: `frbit auth logi
 
 Shell tools often time out after about two minutes, and the person has up to 15 minutes. Run `frbit auth login --json` in the background (or with a long timeout):
 
-1. It prints `{"url": …, "status": "waiting"}` at once. Show the URL to the person: it is their step. `--no-browser` only prints the URL, for a machine without a browser.
+1. It prints `{"url": …, "confirmation_code": …, "status": "waiting"}` at once. Show the person the URL and the code: they open the URL and type the code on the consent page. It is their step; never type the code yourself. `--no-browser` only prints the URL, for a machine without a browser.
 2. Poll `frbit auth status --json` until it reports `"status": "signed_in"`. `"status": "signed_out"` while the login runs means the person has not finished: keep waiting and do not start a second login. `"status": "error"` while the login runs (an old credential was revoked or expired, say) counts the same: keep waiting and read the login's own last JSON line. The login itself ends with `{"status": "signed_in", "next": …}`, or `{"status": "error", "code": …, "error": …}`: read `next` straight from that line. `code` is set for stable failures. On `"code": "access_denied"` the person denied the consent request, and that request is used up: ask the person whether to try again, and run `frbit auth login --json` again only after they say yes. Never retry on your own.
 3. Follow `next`, an object `{step, instruction, url}`, one step at a time:
    - `connect_git`: [git-github.md](git-github.md).
