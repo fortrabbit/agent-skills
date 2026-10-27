@@ -15,7 +15,7 @@ compatibility: >-
   with the fortrabbit MCP server (https://mcp.fortrabbit.com/mcp) and the frbit CLI connected.
   On Windows, rsync needs WSL.
 metadata:
-  version: "2.0.0"
+  version: "2.1.0"
   author: fortrabbit
 ---
 
@@ -27,7 +27,7 @@ fortrabbit hosts PHP apps. An **app** has one or more **environments** (`en-xxxx
 
 - Production is live. Show the exact command or tool call before anything that changes state, and wait for a yes before: deploying, restarting, changing environment variables, database push or pull, rsync to or from the environment, creating billed resources.
 - Deleting an app, environment, domain or team: say what will be lost (domains, files, database, people, billing), then wait for a clear yes in the user's next message. The request that started the task is not that yes. `--confirm <id>` on the CLI is a typo guard, not consent. Offer the dashboard confirm screen too: `https://dash.fortrabbit.com/delete/environment?environment=<id>`.
-- Never ask for a password or token in the chat, and never write one to a file in the repo. Sign-in happens in the browser (MCP OAuth, `frbit auth login`). The database password stays in the dashboard and is typed into a password prompt by the person.
+- Never ask for a password or token in the chat, and never write one to a file in the repo. Sign-in happens in the browser (MCP OAuth, `frbit auth login`), by the person: show them the sign-in URL, and never open it, fill in or approve the sign-in or consent page with a browser or computer-use tool. The database password stays in the dashboard and is typed into a password prompt by the person.
 - Never guess an ID, region, plan size or software version. Look it up (see below).
 
 ## Which tool for what
