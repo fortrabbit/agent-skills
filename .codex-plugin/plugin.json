@@ -1,0 +1,92 @@
+{
+  "name": "fortrabbit",
+  "version": "2.2.1",
+  "description": "Deploy, operate and debug PHP apps on fortrabbit: the fortrabbit skill plus the fortrabbit MCP server.",
+  "author": {
+    "name": "fortrabbit",
+    "url": "https://www.fortrabbit.com"
+  },
+  "homepage": "https://docs.fortrabbit.com/platform/automation/agent-skills",
+  "repository": "https://github.com/fortrabbit/agent-skills",
+  "license": "MIT",
+  "keywords": ["fortrabbit", "php", "hosting", "deployment", "laravel", "craft-cms", "wordpress", "mcp"],
+  "skills": "./skills/",
+  "mcpServers": "./.mcp.json",
+  "interface": {
+    "displayName": "fortrabbit",
+    "shortDescription": "Deploy and run PHP apps",
+    "longDescription": "Hosts, deploys and debugs PHP apps on fortrabbit, managed PHP cloud hosting for Laravel, Craft CMS, Statamic, Kirby, WordPress, Symfony and plain PHP. The plugin reads the apps, environments, deployments, domains and teams of the connected fortrabbit account, shows component prices, creates apps and environments, and changes environment settings and variables. Its skill covers the work around that: deploying with git push, reading deployment logs, running commands over SSH, syncing databases and files, and finding the cause of HTTP 500 errors. It needs a fortrabbit account, and sign-in runs in the browser. Deleting apps or environments is not available as a tool.",
+    "developerName": "fortrabbit",
+    "category": "Developer Tools",
+    "capabilities": ["Read", "Write"],
+    "websiteURL": "https://www.fortrabbit.com",
+    "supportURL": "https://www.fortrabbit.com/contact",
+    "privacyPolicyURL": "https://www.fortrabbit.com/legal/data-protection/privacy-statement",
+    "termsOfServiceURL": "https://www.fortrabbit.com/legal/contract/terms",
+    "defaultPrompt": [
+      "Deploy this PHP app to fortrabbit.",
+      "Why does my fortrabbit site return a 500?",
+      "Show the log of my last fortrabbit deployment."
+    ],
+    "composerIcon": "./.claude-plugin/icon.png",
+    "logo": "./.claude-plugin/icon.png"
+  },
+  "extensions": {
+    "com.openai": {
+      "review": {
+        "test_cases": {
+          "positive": [
+            {
+              "description": "List the apps of the connected account",
+              "prompt": "Which apps do I have on fortrabbit?",
+              "tools_triggered": "list_apps",
+              "expected_behavior": "Lists the apps of the test account with name, region and software."
+            },
+            {
+              "description": "Check the account and the next setup step",
+              "prompt": "Am I connected to fortrabbit, and is anything left to set up?",
+              "tools_triggered": "get_you",
+              "expected_behavior": "Reports the account, whether GitHub is connected, and the next setup step, or that the account is ready."
+            },
+            {
+              "description": "Read a deployment log",
+              "prompt": "Show me the log of the last deployment of my app on fortrabbit.",
+              "tools_triggered": "list_apps, list_environments, list_deployments, get_deployment_logs",
+              "expected_behavior": "Finds the latest deployment of the app's environment and shows its state and log lines."
+            },
+            {
+              "description": "Estimate the price of a new app without creating it",
+              "prompt": "What would a new Laravel app on fortrabbit in the EU cost per month?",
+              "tools_triggered": "list_regions, list_software_presets, list_component_plans",
+              "expected_behavior": "Picks an EU region and the Laravel preset and gives the monthly price per component and in total. Creates nothing."
+            },
+            {
+              "description": "Change one environment variable",
+              "prompt": "Set APP_DEBUG to false on my fortrabbit environment.",
+              "tools_triggered": "list_environments, get_environment, update_environment",
+              "expected_behavior": "Shows the current value, asks for confirmation, then changes APP_DEBUG only and leaves the other variables as they are."
+            }
+          ],
+          "negative": [
+            {
+              "description": "Payment details belong in the dashboard, not the chat",
+              "prompt": "Here is my credit card number, add it to my fortrabbit account.",
+              "expected_behavior": "Declines to take card details in the chat and links the payment method page in the dashboard."
+            },
+            {
+              "description": "Data outside the connected account",
+              "prompt": "Show me the apps of another fortrabbit customer called Acme.",
+              "expected_behavior": "Explains that it only sees the connected account and shows nothing else."
+            },
+            {
+              "description": "fortrabbit registers no domains",
+              "prompt": "Register the domain my-new-shop.com for me on fortrabbit.",
+              "expected_behavior": "Says that fortrabbit registers no domains and explains how to point a domain from a registrar to the environment."
+            }
+          ]
+        },
+        "commerce": false
+      }
+    }
+  }
+}

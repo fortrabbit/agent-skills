@@ -25,7 +25,9 @@ skills/fortrabbit/
 
 ## Releases
 
-`VERSION` holds the version; `metadata.version` in `SKILL.md` and `version` in `.claude-plugin/plugin.json` must match it. Run `claude plugin validate .` after changing a manifest. A push to `main` that changes `VERSION` tags and publishes a GitHub release (`.github/workflows/release.yml`). The CLI checks that `VERSION` in the archive matches the release tag.
+`VERSION` holds the version; `metadata.version` in `SKILL.md` and `version` in `.claude-plugin/plugin.json` and `.codex-plugin/plugin.json` must match it. `.github/scripts/check-manifests.sh` checks that and the OpenAI listing limits, also in CI. Run `claude plugin validate .` after changing a manifest. A push to `main` that changes `VERSION` tags and publishes a GitHub release (`.github/workflows/release.yml`) with the OpenAI upload ZIP attached. The CLI checks that `VERSION` in the archive matches the release tag.
+
+Two plugin manifests share `skills/` and `.mcp.json`: `.claude-plugin/` for the Claude directory, `.codex-plugin/` for the OpenAI directory (ChatGPT and Codex). The OpenAI one also holds the review test cases: when an MCP tool is renamed in frapi, update `tools_triggered` there. `.github/scripts/build-openai-zip.sh` builds the upload from the committed files.
 
 ## Testing a change
 
