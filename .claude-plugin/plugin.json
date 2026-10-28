@@ -2,7 +2,7 @@
   "name": "fortrabbit",
   "displayName": "fortrabbit",
   "description": "Deploy, operate and debug PHP apps on fortrabbit: the fortrabbit skill plus the fortrabbit MCP server.",
-  "version": "2.2.0",
+  "version": "2.2.1",
   "author": {
     "name": "fortrabbit",
     "url": "https://www.fortrabbit.com"

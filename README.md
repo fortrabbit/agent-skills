@@ -73,9 +73,28 @@ skills/fortrabbit/
 - [Agent skills](https://docs.fortrabbit.com/platform/automation/agent-skills)
 - [MCP server](https://docs.fortrabbit.com/platform/automation/mcp), [CLI](https://docs.fortrabbit.com/platform/automation/cli), [API](https://docs.fortrabbit.com/platform/automation/api)
 
+## What the plugin connects to
+
+The skill is Markdown instructions plus two shell scripts. Nothing runs in the background: every connection below is a tool call or command the agent runs in the session, visible in the transcript. The agent asks before anything that changes state.
+
+| Destination | Purpose | When |
+| -- | -- | -- |
+| `https://mcp.fortrabbit.com/mcp` | The MCP server from `.mcp.json`. Reads apps, environments, deployments, domains, teams and payment methods. Creates apps and environments, updates environments | fortrabbit tool calls, after you sign in through the browser |
+| `https://www.fortrabbit.com/agents.md` | Setup steps for a new account | Once, when setting up an account |
+| `https://docs.fortrabbit.com` | Docs pages as Markdown | Questions the skill doesn't cover |
+| `https://api.fortrabbit.com/v1` | The public API, through the `frbit` CLI or with a token you create | CLI commands and API calls |
+| `<env>@ssh.<region>.frbit.app` | Remote commands, `rsync`, and the database scripts in `scripts/` | Remote commands, file sync, database pull and push |
+| `https://<env>.<region>.frbit.app` | Requests to your site, to read status codes and headers | Debugging an HTTP error |
+| `https://status.fortrabbit.com` | Platform status | Debugging an outage |
+| GitHub | `gh repo create`, the fortrabbit GitHub App | Creating a repository for a new app |
+
+The agent asks before it installs the `frbit` CLI (Homebrew or npm) or creates an SSH key.
+
+The MCP server and the CLI sign in through the browser, and the CLI keeps its credential in the operating system's credential store. The skill never asks for a password or token in the chat. For API calls without the CLI, the agent reads a token you stored yourself as `FORTRABBIT_API_TOKEN`, in the environment or a git-ignored `.env`, and sends it only to `api.fortrabbit.com`. The database scripts run `mysqldump` and `mysql` on the environment, so the database password never leaves it. Dumps land in the system temp folder.
+
 ## Privacy
 
-The skill runs locally in your agent. The plugin connects your agent to the fortrabbit MCP server; see the [privacy statement](https://www.fortrabbit.com/legal/data-protection/privacy-statement).
+The plugin collects no usage data and sends no telemetry. Requests to fortrabbit fall under the [privacy statement](https://www.fortrabbit.com/legal/data-protection/privacy-statement). Disconnect an agent under "AI agents" in the dashboard: `https://dash.fortrabbit.com/you/ai-agents`.
 
 ## License
 
