@@ -16,7 +16,7 @@ codex mcp add fortrabbit --url https://mcp.fortrabbit.com/mcp
 frbit mcp install          # either of the above, picked for the installed agent
 ```
 
-The first tool call opens the browser: the person signs in and approves. Verify with `get_you`. Disconnect with `claude mcp remove fortrabbit`; revoke the grant itself in the dashboard under "Connections" (`https://dash.fortrabbit.com/you/ai-agents`).
+The first tool call opens the browser: the person signs in and approves. Verify with `get_you`. Disconnect with `claude mcp remove fortrabbit`; revoke the grant itself in the dashboard under "AI agents" (`https://dash.fortrabbit.com/you/ai-agents`).
 
 Clients without OAuth can send a Public API token as `Authorization: Bearer` header instead. Keep the config file out of git and prefer `${FORTRABBIT_API_TOKEN}` interpolation over the literal value.
 
