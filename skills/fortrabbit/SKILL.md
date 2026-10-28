@@ -15,7 +15,7 @@ compatibility: >-
   with the fortrabbit MCP server (https://mcp.fortrabbit.com/mcp) and the frbit CLI connected.
   On Windows, rsync needs WSL.
 metadata:
-  version: "2.2.1"
+  version: "2.3.0"
   author: fortrabbit
 ---
 

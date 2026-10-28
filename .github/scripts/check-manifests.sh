@@ -11,6 +11,7 @@ status=0
 fail() { echo "FAIL: $*" >&2; status=1; }
 
 while IFS= read -r file; do
+  [ -f "$file" ] || continue
   jq -e . "$file" >/dev/null 2>&1 || fail "$file is not valid JSON"
 done < <(git ls-files --cached --others --exclude-standard '*.json')
 [ "$status" -eq 0 ] || exit 1
@@ -20,7 +21,11 @@ skill_version=$(sed -n 's/^  version: "\(.*\)"$/\1/p' skills/fortrabbit/SKILL.md
 for found in "$(jq -r .version "$claude")" "$(jq -r .version "$openai")" "$skill_version"; do
   [ "$found" = "$version" ] || fail "version $found does not match VERSION $version (check $claude, $openai, SKILL.md)"
 done
-[ "$(jq -r .name "$claude")" = "$(jq -r .name "$openai")" ] || fail "plugin names differ between $claude and $openai"
+for key in name description author homepage repository license keywords; do
+  [ "$(jq -c ".$key" "$claude")" = "$(jq -c ".$key" "$openai")" ] || fail "$key differs between $claude and $openai"
+done
+[ "$(jq -r .privacyPolicyUrl "$claude")" = "$(jq -r .interface.privacyPolicyURL "$openai")" ] || fail "privacy URL differs between $claude and $openai"
+[ "$(jq -r .description "$claude")" = "$(jq -r '.plugins[0].description' .claude-plugin/marketplace.json)" ] || fail "description differs between $claude and .claude-plugin/marketplace.json"
 
 # OpenAI connects exactly one MCP server per plugin.
 [ "$(jq '.mcpServers | length' .mcp.json)" -eq 1 ] || fail ".mcp.json must declare exactly one server"
@@ -32,11 +37,12 @@ done
 # Submission limits from https://developers.openai.com/plugins/deploy/submission#listing-metadata
 problems=$(jq -r '
   .interface as $i
+  | ($i.defaultPrompt // [] | if type == "string" then [.] else . end) as $prompts
   | (if ($i.displayName | length) > 30 then "displayName is longer than 30 characters" else empty end),
     (if ($i.shortDescription | length) > 30 then "shortDescription is longer than 30 characters" else empty end),
     (if ($i.longDescription | length) > 4000 then "longDescription is longer than 4000 characters" else empty end),
-    (if ($i.defaultPrompt | length) > 3 then "more than 3 defaultPrompt entries" else empty end),
-    ($i.defaultPrompt[] | select(length > 128) | "defaultPrompt longer than 128 characters: \(.)"),
+    (if ($prompts | length) > 3 then "more than 3 defaultPrompt entries" else empty end),
+    ($prompts[] | select(length > 128) | "defaultPrompt longer than 128 characters: \(.)"),
     ([$i.websiteURL, $i.supportURL, $i.privacyPolicyURL, $i.termsOfServiceURL][] | select(. == null or (startswith("https://") | not)) | "a listing URL is missing or not https"),
     (.extensions["com.openai"].review.test_cases // empty
       | (if (.positive | length) != 5 then "review needs exactly 5 positive test cases" else empty end),

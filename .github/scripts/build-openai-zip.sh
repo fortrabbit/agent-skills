@@ -7,15 +7,16 @@ cd "$(git rev-parse --show-toplevel)"
 
 paths=(.codex-plugin .mcp.json skills .claude-plugin/icon.png README.md LICENSE)
 
-# git archive packs HEAD, so uncommitted edits would silently be missing from the upload.
-if ! git diff --quiet HEAD -- "${paths[@]}"; then
-  echo "uncommitted changes in the packaged files; commit them first" >&2
+# git archive packs HEAD, so uncommitted edits and new files would silently be missing from the upload.
+if ! git diff --quiet HEAD -- "${paths[@]}" || [ -n "$(git ls-files --others --exclude-standard -- "${paths[@]}")" ]; then
+  echo "uncommitted changes or untracked files in the packaged paths; commit them first" >&2
   exit 1
 fi
 
 .github/scripts/check-manifests.sh >&2
 
 out="${1:-dist/fortrabbit-openai-$(tr -d '[:space:]' < VERSION).zip}"
+[[ "$out" == *.zip ]] || { echo "usage: build-openai-zip.sh [output.zip]" >&2; exit 2; }
 mkdir -p "$(dirname "$out")"
 git archive --format=zip --output="$out" HEAD -- "${paths[@]}"
 echo "$out"

@@ -4,7 +4,7 @@ Guidance for coding agents working on this repository.
 
 ## What this is
 
-One agent skill, `skills/fortrabbit/`, in the open [Agent Skills](https://agentskills.io/specification) format. No build step. The `frbit` CLI (`frbit skills install`), `gh skill` and `npx skills` install it from the GitHub release.
+One agent skill, `skills/fortrabbit/`, in the open [Agent Skills](https://agentskills.io/specification) format. No build step for the skill; `.github/scripts/build-openai-zip.sh` only packages it for the OpenAI directory. The `frbit` CLI (`frbit skills install`), `gh skill` and `npx skills` install it from the GitHub release.
 
 ```
 skills/fortrabbit/
