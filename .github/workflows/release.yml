@@ -24,8 +24,10 @@ jobs:
             echo "Tag $TAG already exists, skipping."
             exit 0
           fi
+          # Build first: a failed check stops the job before anything is tagged or published.
+          zip=$(.github/scripts/build-openai-zip.sh)
           git tag "$TAG"
           git push origin "$TAG"
-          gh release create "$TAG" --title "$TAG" --generate-notes
+          gh release create "$TAG" --title "$TAG" --generate-notes "$zip"
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
