@@ -47,8 +47,8 @@ arguments.
 
 | Tool | Does |
 |------|------|
-| `create_app` | Creates an app **and** its initial environment; optionally starts the first deployment |
-| `create_environment` | Adds an environment to an app the account can access |
+| `create_app` | Creates a trial app **and** its initial environment; optionally starts the first deployment |
+| `create_environment` | Adds an environment to an app the account can access, unless the app has a payment method |
 | `update_environment` | Changes only the fields you send: `name`, `git` (branch, directory), `buildCommands`, `postDeployCommands`, `phpVersion`, `environmentVariables` |
 
 There are no tools for restart, standalone deploy or delete: see "What MCP does not do".
@@ -63,7 +63,6 @@ Every write argument has a discovery tool behind it. Resolve, never guess:
 |----------|--------------|
 | `region` | `list_regions` → `identifier` |
 | `teamPublicId` | `list_teams` (omit for a personal app) |
-| `paymentMethodPublicId` | `list_payment_methods` |
 | `appPublicId` | `list_apps` |
 | `sourceEnvironmentPublicId` | `list_environments` |
 | `softwarePresetName` | `detect_repository_stack`, or `list_software_presets` → `slug` |
@@ -80,7 +79,7 @@ Every write argument has a discovery tool behind it. Resolve, never guess:
 
 `create_app` provisions the app and its first environment in one call.
 
-Required: `name`, `region`. Optional: `teamPublicId`, `paymentMethodPublicId`,
+Required: `name`, `region`. Optional: `teamPublicId`,
 `startFirstDeployment`, and a nested `initialEnvironment` object
 (`softwarePresetName`, `softwareVersion`, `components`, `autoscaling`,
 `deployment.git`).
@@ -96,8 +95,10 @@ Recommended sequence for a repo that should go live:
    `initialEnvironment.deployment.git`).
 6. `get_deployment` for state; `get_deployment_logs` if it failed.
 
-> These are billed, real resources. Always show what you are about to create and
-> wait for explicit confirmation before calling a write tool.
+> MCP books nothing billed. `create_app` creates a trial app without a payment
+> method; it is deleted at the end of the trial unless the person adds one in the
+> dashboard. Still show what you are about to create, with the monthly price after
+> the trial, and wait for explicit confirmation before calling a write tool.
 
 ---
 
@@ -127,13 +128,24 @@ components: {"php": "xs", "storage": "xs", "traffic": "xs",
 `autoscaling` defaults to `true`. `softwareVersion` defaults to the app's;
 `get_app` reports the app's region and software preset, which constrain it.
 
+On an app with a payment method (`get_app` → `paymentMethod`), `create_environment`
+is refused, because the new environment would be billed. See "Billed changes" below.
+
 ---
 
 ## Updating an environment
 
 `update_environment` takes `publicId` plus only the fields to change. Environment variables merge: a string value adds or changes a variable, `null` removes it, unnamed variables stay. Platform variables (`FORTRABBIT_*`) cannot be changed. Call `get_environment` first to see `environmentVariables` and `platformVariables`.
 
+On an app with a payment method, a `phpVersion` with a surcharge (`list_php_versions` → `surcharge`) is refused, unless the environment runs it already. See "Billed changes" below.
+
 A changed variable reaches PHP after a restart or the next deployment: `frbit environments restart <env>`, or push. Ask before both on production.
+
+---
+
+## Billed changes
+
+MCP refuses every change that is billed: `create_environment` on an app with a payment method, and a `phpVersion` with a surcharge on such an app. The error message ends with a dashboard link. Give the person that link: the change is theirs to make there. With the CLI available, `frbit environments create` works too, after the person confirmed the monthly price.
 
 ---
 
@@ -162,6 +174,7 @@ call `get_app` / `get_environment`.
 | Remote commands, database, files | [ssh.md](ssh.md), [database.md](database.md), [files.md](files.md) |
 | Runtime logs | dashboard Logs tab: [troubleshooting.md](troubleshooting.md) |
 | Delete an app, environment, domain or team | `frbit <group> delete` after a yes, or the dashboard |
+| Anything billed: an environment on an app with a payment method, a PHP version with a surcharge | the dashboard link from the error: see "Billed changes" |
 
 ---
 
@@ -177,6 +190,7 @@ message. Read the message — it is written to be self-correcting.
 | `Access denied.` | Authenticated, but not permitted for this resource or account type | Check `get_you` — client accounts cannot create environments |
 | `Invalid arguments. <field>: <message>` | Validation failed | Fix the named field; resolve its value with the tool from the table above |
 | `components: No plan supplied for component php. Supply a size key for every required component.` | Missing a required component | Supply `php`, `storage`, `traffic`, `backups` — or set `sourceEnvironmentPublicId` to clone |
+| `This change is billed to the app's payment method, so it cannot be made over MCP. …` | The change would be billed | Give the person the dashboard link at the end of the message: see "Billed changes" |
 | `Error while executing tool` (no detail) | An unexpected server-side error | Do not retry blindly or invent arguments; report it and fall back to the dashboard |
 
 **Rate limit:** roughly 20 requests per minute per connection. Batch your
