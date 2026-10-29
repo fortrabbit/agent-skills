@@ -31,7 +31,7 @@ The deploy hook URL is a secret: anyone who has it can deploy. It lives in a CI 
 
 | Log shows | Cause | Fix |
 |---|---|---|
-| Composer error | `composer.lock` out of sync, a private package, a PHP version mismatch | `composer install` locally, commit the lock file; check `phpVersion` |
+| Composer error | `composer.lock` out of sync, a private package, a PHP version mismatch | `composer install` locally, commit the lock file; compare the PHP version in the dashboard with `composer.json` |
 | Build command error (`npm run build` …) | Missing dependency or script | Reproduce locally with the same command |
 | Post deploy command failed | Migration or cache command broke | The new code is **already live**. Fix and push again, or run the command over SSH: [ssh.md](ssh.md) |
 | Nothing happens after a push | Pushed to a branch that is not connected, or the trigger is manual | Compare the branch with `git.branch`; use `frbit environments deploy` |

@@ -1,6 +1,6 @@
 {
   "name": "fortrabbit",
-  "version": "2.4.0",
+  "version": "2.4.1",
   "description": "Deploy, operate and debug PHP apps on fortrabbit: the fortrabbit skill plus the fortrabbit MCP server.",
   "author": {
     "name": "fortrabbit",
