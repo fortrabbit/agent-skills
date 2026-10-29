@@ -15,7 +15,7 @@ compatibility: >-
   with the fortrabbit MCP server (https://mcp.fortrabbit.com/mcp) and the frbit CLI connected.
   On Windows, rsync needs WSL.
 metadata:
-  version: "2.4.0"
+  version: "2.4.1"
   author: fortrabbit
 ---
 
@@ -39,7 +39,8 @@ Use the first route the agent has. A missing MCP tool is not a missing capabilit
 | Account, apps, environments, deployments, domains | `get_you`, `list_*`, `get_*` | `frbit <group> list/get --json` | |
 | Create an app or environment | `create_app`, `create_environment` | `frbit apps create`, `frbit environments create` | |
 | Environment variables | `get_environment`, `update_environment` | `frbit environments variables get/update` | |
-| PHP version, branch, build and post-deploy commands | `update_environment` | `frbit environments update` (PHP version only with `--file`) | |
+| Branch, build and post-deploy commands | `update_environment` | `frbit environments update` | |
+| PHP version | – | `frbit environments update --file` | dashboard |
 | Deploy | push to the connected branch | `frbit environments deploy <env>` | deploy hook URL |
 | Restart | – | `frbit environments restart <env>` | |
 | Why a deployment failed | `get_deployment`, `get_deployment_logs` | `frbit deployments logs <dp>` | |

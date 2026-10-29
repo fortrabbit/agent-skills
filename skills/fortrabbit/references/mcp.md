@@ -18,7 +18,6 @@ The fortrabbit MCP server (`https://mcp.fortrabbit.com/mcp`) reads and provision
 | `get_you` | — | `publicId`, `email`, `name`, `type`, `active`, `client`, `gitAccountConnected`, `gitUsername`, `gitInstallationAccounts` |
 | `list_regions` | — | `identifier` (e.g. `eu-w1a`), `name`, `location`, `recommended` |
 | `list_software_presets` | — | `slug`, `name`, `versions`, `defaultVersion` |
-| `list_php_versions` | — | `version`, `eol`, `default` |
 | `list_component_plans` | `regionIdentifier?`, `currency?` (`EUR`\|`USD`) | per component: `slug`, `optional`, `autoscales`, and `sizes[]` with `size`, `name`, `description`, `specs`, `priceInCents` |
 | `list_git_repositories` | — | `owner`, `name`, `fullName`, `defaultBranch`, `private`, `connectedAppPublicId` |
 | `list_git_branches` | `repository` (`"owner/repo"`) | `name`, `protected` |
@@ -31,8 +30,8 @@ The fortrabbit MCP server (`https://mcp.fortrabbit.com/mcp`) reads and provision
 
 | Tool | Arguments | Notes |
 |------|-----------|-------|
-| `list_apps` / `get_app` | — / `publicId` | `get_app` returns `region`, `software`, `phpVersion`, `trial`, `paymentMethod`, `people`, `domains`, `environments` |
-| `list_environments` / `get_environment` | — / `publicId` | `name`, `components`, `phpVersion`, `softwareVersion`, `domains`, `git` (branch, directory), `buildCommands`, `postDeployCommands`; `get_environment` adds `environmentVariables` and `platformVariables` (secrets such as the database password are left out) |
+| `list_apps` / `get_app` | — / `publicId` | `get_app` returns `region`, `software`, `trial`, `paymentMethod`, `people`, `domains`, `environments` |
+| `list_environments` / `get_environment` | — / `publicId` | `name`, `components`, `softwareVersion`, `domains`, `git` (branch, directory), `buildCommands`, `postDeployCommands`; `get_environment` adds `environmentVariables` and `platformVariables` (secrets such as the database password are left out) |
 | `list_deployments` / `get_deployment` | — / `publicId` | branch, commit, state |
 | `get_deployment_logs` | `publicId` | `logs[]` of `{log, time}` — the build and deploy output |
 | `list_domains` / `get_domain` | — / `publicId` | includes custom apex/subdomains **and** the default domain of every environment |
@@ -49,7 +48,7 @@ arguments.
 |------|------|
 | `create_app` | Creates a trial app **and** its initial environment; optionally starts the first deployment |
 | `create_environment` | Adds an environment to an app the account can access, unless the app has a payment method |
-| `update_environment` | Changes only the fields you send: `name`, `git` (branch, directory), `buildCommands`, `postDeployCommands`, `phpVersion`, `environmentVariables` |
+| `update_environment` | Changes only the fields you send: `name`, `git` (branch, directory), `buildCommands`, `postDeployCommands`, `environmentVariables` |
 
 There are no tools for restart, standalone deploy or delete: see "What MCP does not do".
 
@@ -67,7 +66,6 @@ Every write argument has a discovery tool behind it. Resolve, never guess:
 | `sourceEnvironmentPublicId` | `list_environments` |
 | `softwarePresetName` | `detect_repository_stack`, or `list_software_presets` → `slug` |
 | `softwareVersion` | `list_software_presets` → `versions` (major only, e.g. `"11"`) |
-| `phpVersion` | `list_php_versions` → `version` (e.g. `"8.4"`) |
 | `components` | `list_component_plans` → `slug` + `size` |
 | `git.repository` | `list_git_repositories` → `fullName` (`"owner/repo"`) |
 | `git.branch` | `list_git_branches` → `name` |
@@ -137,7 +135,7 @@ is refused, because the new environment would be billed. See "Billed changes" be
 
 `update_environment` takes `publicId` plus only the fields to change. Environment variables merge: a string value adds or changes a variable, `null` removes it, unnamed variables stay. Platform variables (`FORTRABBIT_*`) cannot be changed. Call `get_environment` first to see `environmentVariables` and `platformVariables`.
 
-On an app with a payment method, a `phpVersion` with a surcharge (`list_php_versions` → `surcharge`) is refused, unless the environment runs it already. See "Billed changes" below.
+MCP neither reads nor sets the PHP version. New environments get the platform default. To check or change it, send the person to the PHP version page of the environment: `https://dash.fortrabbit.com/environments/<env>/php/php-version`.
 
 A changed variable reaches PHP after a restart or the next deployment: `frbit environments restart <env>`, or push. Ask before both on production.
 
@@ -145,7 +143,7 @@ A changed variable reaches PHP after a restart or the next deployment: `frbit en
 
 ## Billed changes
 
-MCP refuses every change that is billed: `create_environment` on an app with a payment method, and a `phpVersion` with a surcharge on such an app. The error message ends with a dashboard link. Give the person that link: the change is theirs to make there. With the CLI available, `frbit environments create` works too, after the person confirmed the monthly price.
+MCP refuses every change that is billed: `create_environment` on an app with a payment method. The error message ends with a dashboard link. Give the person that link: the change is theirs to make there. With the CLI available, `frbit environments create` works too, after the person confirmed the monthly price.
 
 ---
 
@@ -174,7 +172,8 @@ call `get_app` / `get_environment`.
 | Remote commands, database, files | [ssh.md](ssh.md), [database.md](database.md), [files.md](files.md) |
 | Runtime logs | dashboard Logs tab: [troubleshooting.md](troubleshooting.md) |
 | Delete an app, environment, domain or team | `frbit <group> delete` after a yes, or the dashboard |
-| Anything billed: an environment on an app with a payment method, a PHP version with a surcharge | the dashboard link from the error: see "Billed changes" |
+| Read or change the PHP version | dashboard: see "Updating an environment" |
+| Anything billed: an environment on an app with a payment method | the dashboard link from the error: see "Billed changes" |
 
 ---
 
