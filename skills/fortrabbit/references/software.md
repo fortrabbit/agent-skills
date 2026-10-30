@@ -14,7 +14,7 @@ First match wins:
 6. `symfony/framework-bundle` → Symfony
 7. Any other `composer.json` → plain PHP
 
-With a GitHub repo, `detect_repository_stack` gives the matching preset directly.
+With a GitHub repo, `detect_repository_stack` gives the matching software template directly (`softwarePresetSlug`).
 
 ## Per software
 

@@ -7,7 +7,7 @@ Contents: [Rules](#rules) · [Tools](#tools) · [Resolving arguments](#resolving
 ## Rules
 
 1. Call `get_you` first. `client: true` cannot create environments, `gitAccountConnected: false` cannot deploy from git. Follow `next` (`{step, instruction, url}`) until its step is `ready`. `optional` lists steps that are not required, such as `add_ssh_key`: check it before SSH or database work.
-2. Every argument has a `list_*` tool behind it. Public IDs match `^[a-z]{2}-[0-9a-z]{6}$`.
+2. Every argument has a `list_*` tool behind it. Tool and argument names still say "preset" (`list_software_presets`, `softwarePresetName`); to the person it is the software template. Public IDs match `^[a-z]{2}-[0-9a-z]{6}$`.
 3. Writes create trial resources or change live ones. Show what you will send, with the monthly price after the trial for creates, and wait for a yes.
 
 ## Tools

@@ -58,7 +58,7 @@
               "description": "Estimate the price of a new app without creating it",
               "prompt": "What would a new Laravel app on fortrabbit in the EU cost per month?",
               "tools_triggered": "list_regions, list_software_presets, list_component_plans",
-              "expected_behavior": "Picks an EU region and the Laravel preset and gives the monthly price per component and in total. Creates nothing."
+              "expected_behavior": "Picks an EU region and the Laravel software template and gives the monthly price per component and in total. Creates nothing."
             },
             {
               "description": "Change one environment variable",
