@@ -32,7 +32,8 @@ The fortrabbit MCP server (`https://mcp.fortrabbit.com/mcp`) reads and provision
 |------|-----------|-------|
 | `list_apps` / `get_app` | — / `publicId` | `get_app` returns `region`, `software`, `trial`, `paymentMethod`, `people`, `domains`, `environments` |
 | `list_environments` / `get_environment` | — / `publicId` | `name`, `components`, `softwareVersion`, `domains`, `git` (branch, directory), `buildCommands`, `postDeployCommands`; `get_environment` adds `environmentVariables` and `platformVariables` (secrets such as the database password are left out) |
-| `list_deployments` / `get_deployment` | — / `publicId` | branch, commit, state |
+| `list_deployments` | optional `environmentPublicId`, `limit` (default 20, max 100), `offset` | newest first; `deployments[]` and `total`, the count of all matches. Page back with `offset` |
+| `get_deployment` | `publicId` | `environment`, `branch`, `commitHash`, `commitMessage`, `status`, `createdAt` (deploy time), `committedAt` |
 | `get_deployment_logs` | `publicId` | `logs[]` of `{log, time}` — the build and deploy output |
 | `list_domains` / `get_domain` | — / `publicId` | includes custom apex/subdomains **and** the default domain of every environment |
 | `list_teams` / `get_team` | — / `publicId` | teams and the account's role |
@@ -69,7 +70,7 @@ Every write argument has a discovery tool behind it. Resolve, never guess:
 | `components` | `list_component_plans` → `slug` + `size` |
 | `git.repository` | `list_git_repositories` → `fullName` (`"owner/repo"`) |
 | `git.branch` | `list_git_branches` → `name` |
-| why it failed | `get_deployment` → `state`, then `get_deployment_logs` |
+| why it failed | `get_deployment` → `status`, then `get_deployment_logs` |
 
 ---
 
@@ -91,7 +92,7 @@ Recommended sequence for a repo that should go live:
    price**, and get explicit confirmation.
 5. `create_app` with `startFirstDeployment: true` (requires
    `initialEnvironment.deployment.git`).
-6. `get_deployment` for state; `get_deployment_logs` if it failed.
+6. `get_deployment` for `status`; `get_deployment_logs` if it failed.
 
 > MCP books nothing billed. `create_app` creates a trial app without a payment
 > method; it is deleted at the end of the trial unless the person adds one in the

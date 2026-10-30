@@ -13,7 +13,7 @@ The default domain always has the region in it: `https://<env>.<region>.frbit.ap
 
 ## First three checks, for every error
 
-1. **Deployments**: `list_deployments` → the newest for the environment. Failed or still running? `get_deployment_logs`. A failed post deploy command means new code runs without its migration: [deploy.md](deploy.md).
+1. **Deployments**: `list_deployments` with `environmentPublicId` and `limit: 1` → the newest for the environment. Failed or still running? `get_deployment_logs`. A failed post deploy command means new code runs without its migration: [deploy.md](deploy.md).
 2. **What changed**: `git log -5 --oneline` on the connected branch, and `get_environment` for recent changes to variables and root path. The PHP version is on the dashboard PHP page, not in MCP.
 3. **Logs**: the dashboard Logs tab (`https://dash.fortrabbit.com/environments/<env>/logs`) holds the PHP, Apache access, Apache error and jobs logs. There is no API for them yet: ask the person to filter for `ERROR` and paste the lines. The software templates send Laravel, Statamic and Craft CMS logs to `stderr`, so they show up there too. Log files exist only when the app writes them, for example WordPress with `WP_DEBUG_LOG`: `ssh <env>@ssh.<region>.frbit.app 'tail -n 80 wp-content/debug.log'`.
 
