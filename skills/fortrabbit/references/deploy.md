@@ -21,7 +21,7 @@ Show the commands and ask before running them. One yes can cover commit, push an
 The deploy hook URL is a secret: anyone who has it can deploy. The person enables it in the dashboard under Deployment → Deploy hook and stores it as a CI secret, never in a committed file. The agent does not call it; it deploys with `frbit environments deploy`. For the person's CI step:
 
 ```shell
-curl -X POST "$FORTRABBIT_DEPLOY_HOOK_URL" -H "User-Agent: fortrabbit"
+curl -X POST "<deploy hook URL from the CI secret>" -H "User-Agent: fortrabbit"
 ```
 
 It answers `202` with the deployment ID, or `404` for a wrong or revoked URL.
@@ -44,4 +44,34 @@ It answers `202` with the deployment ID, or `404` for a wrong or revoked URL.
 
 ## Build and post deploy commands
 
-Read them with `get_environment` (`buildCommands`, `postDeployCommands`), change them with `update_environment` or `frbit environments update`. The software templates set defaults, such as `php artisan migrate --force` for Laravel, and `php craft migrate/all`, `php craft project-config/apply` for Craft CMS: see [software.md](software.md). A deploy file `.fortrabbit/deploy.yml` in the repo overrides the dashboard settings; then edit the file, not the environment.
+Without a deploy file, read them with `get_environment` (`buildCommands`, `postDeployCommands`) and change them with `update_environment` or `frbit environments update`. The software templates set defaults, such as `php artisan migrate --force` for Laravel, and `php craft migrate/all`, `php craft project-config/apply` for Craft CMS: see [software.md](software.md).
+
+## Deploy file
+
+A deploy file in the repo holds the deployment settings as code: `.fortrabbit/deploy.yml`, `.fortrabbit/deploy.yaml` or `.fortrabbit/deploy.json`, the first one found wins. Check for it before reading or changing any deployment setting. Docs: `https://docs.fortrabbit.com/platform/deployment/deploy-file`.
+
+```yaml
+apiVersion: 1.0
+build:
+  buildCommands:
+    - composer install --no-dev --prefer-dist --no-interaction
+  postDeployCommands:
+    - php artisan migrate --force
+  cachedDirectories:
+    - vendor
+distribution:
+  gitSourceDirectory: public      # repository root when left out
+  strategy: replace               # or merge; replace when left out
+  excludePatterns:
+    - storage
+  replacePatterns: []             # merge only
+```
+
+- When the deployed branch has a deploy file, it is the only source for these settings. `get_environment` still shows the values stored in the dashboard, which are not used.
+- A key left out falls back to the default in the comments above, not to the dashboard. Without `excludePatterns`, uploads and flat-file content (Statamic, Kirby) are replaced on every deployment: copy the template's exclude patterns into the file.
+- Changing a setting is a commit and a push. `update_environment` refuses build and post deploy commands with "Deployment settings are managed by the deploy file."
+- `apiVersion` is required; unknown keys, empty strings and `.` or `..` in paths make the file invalid. An invalid file fails the deployment before the build, the code on the environment stays as it was, and the deployment log names the file and the problem.
+- Deleting the file and pushing brings back the dashboard settings.
+- Branch, deploy trigger, deploy hook, PHP and Node.js version stay in the dashboard.
+
+Write a new deploy file only when the person asks for deployment settings in the repo. It is a new feature and its format may still change.

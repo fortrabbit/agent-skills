@@ -8,6 +8,7 @@ description: >-
   HTTP 500/503/504 diagnosis, creating apps and environments over the fortrabbit MCP server, and
   connecting an agent to fortrabbit through MCP or the frbit CLI. Use it whenever the user
   mentions fortrabbit, frbit, a frbit.app or frbit.cloud hostname, an en-xxxxxx or ap-xxxxxx ID,
+  works in a repo with a .fortrabbit/deploy.yml,
   pastes a fortrabbit deployment log or an SSH error from ssh.<region>.frbit.app, or asks to
   deploy, sync or debug a PHP site that is hosted there, even without naming fortrabbit.
 license: MIT
@@ -65,7 +66,7 @@ Do not ask for an ID before trying this. Resolve it once per session and reuse i
    - Default domain: `https://<env>.<region>.frbit.app`. The live URL is the main domain: `list_domains`, `isMain`
    - Database name and user: the environment ID
 
-No MCP tools, or a `401`: connect first ([references/access.md](references/access.md)). No account yet, or no match: the repo is not on fortrabbit yet, see [references/boarding.md](references/boarding.md). A `.fortrabbit/` folder holds the deploy file `.fortrabbit/deploy.yml` ([deploy.md](references/deploy.md)); a plain `.fortrabbit` file is a 1.x leftover, ignore it.
+No MCP tools, or a `401`: connect first ([references/access.md](references/access.md)). No account yet, or no match: the repo is not on fortrabbit yet, see [references/boarding.md](references/boarding.md). A deploy file `.fortrabbit/deploy.yml` (or `.yaml`, `.json`) means the repo deploys to fortrabbit and holds its deployment settings: read it before changing any ([deploy.md](references/deploy.md#deploy-file)). A plain `.fortrabbit` file is a 1.x leftover, ignore it.
 
 ## References
 

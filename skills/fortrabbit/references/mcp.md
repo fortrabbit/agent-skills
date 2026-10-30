@@ -43,8 +43,8 @@ Writes:
 
 | Tool | Does |
 |---|---|
-| `create_app` | Creates a trial app, its first environment and a cloud domain; optionally starts the first deployment |
-| `create_environment` | Adds an environment and its cloud domain to an app without a payment method |
+| `create_app` | Creates a trial app and its first environment, with a cloud domain when the name is free; optionally starts the first deployment |
+| `create_environment` | Adds an environment to an app without a payment method, with a cloud domain when the name is free |
 | `update_environment` | Changes only the fields sent: `name`, `git` (branch, directory), `buildCommands`, `postDeployCommands`, `environmentVariables` |
 
 ## Resolving arguments
@@ -141,6 +141,7 @@ A tool failure comes back as a normal result with `isError: true` and a plain-te
 | `Access denied.` | Signed in, but not permitted for this resource or account type | Check `get_you`: client accounts cannot create environments |
 | `Invalid arguments. <field>: <message>` | Validation failed | Fix the named field with the tool from "Resolving arguments" |
 | `components: No plan supplied for component php. …` | A required component is missing | Supply `php`, `storage`, `traffic`, `backups`, or clone with `sourceEnvironmentPublicId` |
+| `Deployment settings are managed by the deploy file.` | The branch has `.fortrabbit/deploy.yml` (or `.yaml`, `.json`) | Edit the file, commit and push: [deploy.md](deploy.md#deploy-file) |
 | `This change is billed to the app's payment method, so it cannot be made over MCP. …` | The change would be billed | Give the person the dashboard link from the message |
 | `Error while executing tool` | Unexpected server error | Do not retry blindly or invent arguments; report it and fall back to the dashboard |
 
