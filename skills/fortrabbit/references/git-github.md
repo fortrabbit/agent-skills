@@ -22,6 +22,15 @@ gh repo create <name> --private --source=. --remote=origin --push
 
 Check `.gitignore` first: `.env`, `vendor/`, `node_modules/` and upload folders stay out of git.
 
+Without `gh`, or when the person prefers the browser: they create an empty repo at `https://github.com/new` (no README, no license, so the first push does not conflict) and give you its `owner/repo`. Then:
+
+```shell
+git remote add origin git@github.com:<owner>/<repo>.git
+git push -u origin "$(git branch --show-current)"
+```
+
+Use the `https://github.com/<owner>/<repo>.git` URL instead when the person has no SSH key on GitHub.
+
 ## Install the fortrabbit GitHub App
 
 Needed once per GitHub account or organization. The person installs it at `https://github.com/apps/fortrabbit` (or during sign-up with GitHub), picks the account and grants the repos. Then call `get_you` again to confirm instead of waiting for "done". A repo of an organization appears only after the app is installed on that organization.
@@ -30,7 +39,7 @@ Needed once per GitHub account or organization. The person installs it at `https
 
 - New app: `create_app` with `initialEnvironment.deployment.git` (repository and branch): [mcp.md](mcp.md).
 - New environment for another branch, e.g. staging: `create_environment` with `git`.
-- Change the branch of an existing environment: `update_environment` with `git`, after a yes. The next push to that branch deploys.
+- Change the branch of an existing environment: `update_environment` with `git` holding the new `branch` and the current `directory` from `get_environment`, after a yes. The next push to that branch deploys. With a deploy file the change is refused: the person changes the branch in the dashboard.
 
 Then deploy: [deploy.md](deploy.md).
 

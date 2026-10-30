@@ -1,0 +1,1 @@
+{"softwarePresets": [{"slug": "laravel", "name": "Laravel", "versions": ["13", "12", "11", "10", "9"], "defaultVersion": "13"}, {"slug": "craft-cms", "name": "Craft CMS", "versions": ["5", "4"], "defaultVersion": "5"}, {"slug": "wordpress", "name": "WordPress", "versions": ["7", "6", "5"], "defaultVersion": "7"}]}

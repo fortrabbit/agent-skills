@@ -1,0 +1,1 @@
+{"environments": [{"publicId": "en-a1b2c3", "name": "production", "appPublicId": "ap-a1b2c3", "git": {"repository": "acme/shop", "branch": "main", "directory": "/"}, "softwareVersion": "12"}, {"publicId": "en-d4e5f6", "name": "staging", "appPublicId": "ap-a1b2c3", "git": {"repository": "acme/shop", "branch": "staging", "directory": "/"}, "softwareVersion": "12"}]}

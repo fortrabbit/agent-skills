@@ -14,7 +14,7 @@ First match wins:
 6. `symfony/framework-bundle` → Symfony
 7. Any other `composer.json` → plain PHP
 
-With a GitHub repo, `detect_repository_stack` gives the matching preset directly.
+With a GitHub repo, `detect_repository_stack` gives the matching software template directly (`softwarePresetSlug`).
 
 ## Per software
 
@@ -33,7 +33,7 @@ A debug switch depends on the software: Laravel and Statamic use `APP_DEBUG`, Cr
 ## Notes per software
 
 - **Craft CMS**: project config in `config/project/` deploys with git; content and assets do not. Volumes on local disk need [files.md](files.md); the database needs [database.md](database.md).
-- **Statamic, Kirby**: content is flat files. If it is edited on the live site, pull it before deploying, or commit it from the live site, or the next deployment overwrites it: [files.md](files.md).
+- **Statamic, Kirby**: content is flat files. The templates exclude the content folders from deployments (Statamic: `content/`, `users/`, `public/assets/` and the folders under `resources/` that the Control Panel writes; Kirby: `content/`, `media/`, `site/accounts/`, `site/sessions/`, `data/`, among others), so a deployment neither overwrites nor updates them, unless a deploy file without these `excludePatterns` replaces them ([deploy.md](deploy.md#deploy-file)). Content edited locally reaches the live site with rsync, and the reverse: [files.md](files.md). The exclude patterns are in the dashboard under Deployment.
 - **WordPress**: usually deployed by rsync, not git. Let `wp-config.php` read the platform variables so one file works locally and live:
 
   ```php

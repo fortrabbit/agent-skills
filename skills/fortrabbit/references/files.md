@@ -39,4 +39,4 @@ rsync -avzn \
 
 Drop `-n` after the person confirms the preview. A full pull is `rsync -avz <env>@ssh.<region>.frbit.app:./ ./` with the same excludes.
 
-An environment that also deploys from git gets the synced code overwritten by the next deployment.
+An environment that also deploys from git gets the synced code overwritten by the next deployment, except paths in its exclude patterns (the content folders of the Statamic and Kirby templates, for example; with a deploy file, only the patterns in the file count).
