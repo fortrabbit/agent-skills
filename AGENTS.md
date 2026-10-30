@@ -33,4 +33,4 @@ Two plugin manifests share `skills/` and `.mcp.json`: `.claude-plugin/` for the 
 
 ## Testing a change
 
-No test suite. Before a release, run the scenarios from the PR description against the changed skill in a dry run (the agent lists the tool calls and commands it would run, nothing is executed) and compare with the previous version.
+`evals/` holds a `claude plugin eval` suite: one folder per case (`prompt.md`, `graders/`), and `evals/mocks/fortrabbit/` answers the MCP tools with a fixed test account instead of the real server. `_tools.json` there mirrors the tool names and arguments in frapi `McpToolController`: update it when a tool changes. Run `claude plugin eval . --trust-plugin` before a release (about $2, cases with and without the plugin); `--case <name> --runs 1` for one case. Results land in `evals/results/`, which git ignores.

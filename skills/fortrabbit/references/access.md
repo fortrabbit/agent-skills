@@ -21,7 +21,7 @@ The first tool call opens the browser: the person signs in and approves. Verify 
 ## CLI
 
 ```shell
-curl -fsSL https://www.fortrabbit.com/agents.sh | sh   # installs frbit, then runs frbit setup agent
+curl -fsSL https://www.fortrabbit.com/agents.sh | sh   # installs frbit to ~/.local/bin, then runs frbit setup agent
 brew install fortrabbit/tap/frbit      # or: npm install --global @fortrabbit/cli
 frbit auth login --json                # browser sign-in
 frbit auth login --signup --json       # the person said they have no account
@@ -50,7 +50,7 @@ Groups: `apps`, `environments`, `deployments`, `domains`, `teams`, `people`, `pa
 
 Every environment command takes the environment ID; there is no default environment. In CI, set `FRBIT_TOKEN` (or pipe a token to `--token-stdin`) instead of logging in.
 
-`frbit environments variables get --json` masks the values; `--reveal` shows them. Reveal only a variable the person asked about, and never paste secrets into the chat.
+`frbit environments variables get --json` masks the values, which is enough to see which variables exist. Do not run it with `--reveal`: the person reads a value in the dashboard or runs `--reveal` in their own terminal.
 
 Remove everything fortrabbit set up on the machine (MCP server, skill, plugin, CLI sign-in, the CLI itself): `frbit uninstall`. Only the agent setup, keeping the CLI: `frbit setup agent --remove`. Both list what they remove and ask first.
 

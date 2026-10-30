@@ -1,0 +1,1 @@
+{"regions": [{"identifier": "eu-w1a", "name": "EU West", "location": "Frankfurt, Germany", "recommended": true}, {"identifier": "us-e1a", "name": "US East", "location": "Virginia, USA", "recommended": false}]}

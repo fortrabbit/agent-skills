@@ -1,0 +1,5 @@
+---
+type: tool_used
+tool: mcp__plugin_fortrabbit_fortrabbit__get_environment
+min: 1
+---
