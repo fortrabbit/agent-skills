@@ -2,7 +2,7 @@
   "name": "fortrabbit",
   "displayName": "fortrabbit",
   "description": "Deploy, operate and debug PHP apps on fortrabbit: the fortrabbit skill plus the fortrabbit MCP server.",
-  "version": "2.5.0",
+  "version": "2.6.0",
   "author": {
     "name": "fortrabbit",
     "url": "https://www.fortrabbit.com"
@@ -14,12 +14,22 @@
     "fortrabbit",
     "php",
     "hosting",
+    "php-hosting",
+    "managed-hosting",
     "deployment",
     "laravel",
     "craft-cms",
+    "statamic",
+    "kirby",
     "wordpress",
+    "symfony",
+    "mysql",
+    "ssh",
     "mcp"
   ],
   "icon": ".claude-plugin/icon.png",
-  "privacyPolicyUrl": "https://www.fortrabbit.com/legal/data-protection/privacy-statement"
+  "privacyPolicyUrl": "https://www.fortrabbit.com/legal/data-protection/privacy-statement",
+  "termsOfServiceUrl": "https://www.fortrabbit.com/legal/contract/terms",
+  "supportUrl": "https://www.fortrabbit.com/contact",
+  "documentationUrl": "https://docs.fortrabbit.com/platform/automation/agent-skills"
 }

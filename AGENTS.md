@@ -19,7 +19,9 @@ skills/fortrabbit/
 - Frontmatter: only the spec fields `name`, `description`, `license`, `compatibility`, `metadata`. Other fields break uploads to claude.ai and the Skills API.
 - Facts come from the platform, not from memory: MCP tools from `fortrabbit/frapi` (`src/Module/Mcp`), CLI commands from `fortrabbit/frbit-cli`, templates from `fortrabbit/specs`, everything else from docs.fortrabbit.com. Link to docs rather than copying long passages.
 - No project config file: the environment is found from the git remote through MCP or the CLI.
-- Never instruct the agent to ask for, print or store a password or token.
+- Never instruct the agent to ask for, print or store a password or token, or to read one from the environment or a `.env` file and send it: the directory scan holds that for a reviewer.
+- Never instruct the agent to fetch instructions from a URL and follow them (directory policy 2F). Fetching docs pages as information is fine.
+- The boarding and sign-in steps in `boarding.md` and `access.md` mirror sections 3–5 and 10 of www `agents.md` (`fortrabbit/www`, `content/agents.md`). Change both together.
 - Scripts: POSIX-friendly bash, `set -euo pipefail`, validate arguments, pass `shellcheck`.
 - `install.sh` at the root is a stub that only prints how to update: 1.x installs fetch it from `main` when they update themselves. Keep it, and keep it installing nothing.
 

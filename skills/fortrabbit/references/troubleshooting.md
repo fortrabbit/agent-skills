@@ -5,11 +5,11 @@ Most errors come from the app, its configuration or its last deployment, not fro
 ## Is it live?
 
 ```shell
-curl -s -o /dev/null -w "%{http_code} %{time_total}s\n" https://<env>.<region>.frbit.app
-curl -sI https://<env>.<region>.frbit.app | head -20
+curl -sL -o /dev/null -w "%{http_code} %{time_total}s %{url_effective}\n" https://<domain>
+curl -sI https://<domain> | head -20
 ```
 
-The default domain always has the region in it: `https://<env>.<region>.frbit.app`. Custom domains: `list_domains`.
+`<domain>` is the main domain from `list_domains` (`isMain`): a custom domain, a cloud domain `<label>.frbit.cloud`, or the default domain `<env>.<region>.frbit.app`. The default domain forwards to the main domain, so check with `-L`.
 
 ## First three checks, for every error
 
@@ -33,4 +33,4 @@ The default domain always has the region in it: `https://<env>.<region>.frbit.ap
 
 ## Platform status
 
-`https://status.fortrabbit.com` before blaming the app for an outage that hits several sites at once.
+`https://fortrabbit.betteruptime.com` before blaming the app for an outage that hits several sites at once.

@@ -6,22 +6,23 @@ description: >-
   git push and CLI deployments, deployment logs, environment variables, remote commands over SSH
   (artisan, craft, wp-cli, composer), database pull and push, file and content sync with rsync,
   HTTP 500/503/504 diagnosis, creating apps and environments over the fortrabbit MCP server, and
-  connecting an agent to fortrabbit through MCP, the frbit CLI or the REST API. Use it whenever
-  the user mentions fortrabbit, frbit, a frbit.app hostname, an en-xxxxxx or ap-xxxxxx ID, or
-  asks to deploy, sync or debug a PHP site that is hosted there, even without naming fortrabbit.
+  connecting an agent to fortrabbit through MCP or the frbit CLI. Use it whenever the user
+  mentions fortrabbit, frbit, a frbit.app or frbit.cloud hostname, an en-xxxxxx or ap-xxxxxx ID,
+  pastes a fortrabbit deployment log or an SSH error from ssh.<region>.frbit.app, or asks to
+  deploy, sync or debug a PHP site that is hosted there, even without naming fortrabbit.
 license: MIT
 compatibility: >-
   Needs git and ssh (port 22). rsync for file sync, a MySQL client for database work. Works best
   with the fortrabbit MCP server (https://mcp.fortrabbit.com/mcp) and the frbit CLI connected.
   On Windows, rsync needs WSL.
 metadata:
-  version: "2.5.0"
+  version: "2.6.0"
   author: fortrabbit
 ---
 
 # fortrabbit
 
-fortrabbit hosts PHP apps. An **app** has one or more **environments** (`en-xxxxxx`), for example production and staging. Each environment has components (PHP, MySQL, storage, jobs), a default domain `https://<env>.<region>.frbit.app`, SSH access, and usually a GitHub repository and branch it deploys from.
+fortrabbit hosts PHP apps. An **app** has one or more **environments** (`en-xxxxxx`), for example production and staging. Each environment has components (PHP, MySQL, storage, jobs), a default domain `https://<env>.<region>.frbit.app` that forwards to its main domain (usually a cloud domain `https://<label>.frbit.cloud` or a custom domain), SSH access, and usually a GitHub repository and branch it deploys from.
 
 ## Safety first
 
@@ -40,7 +41,7 @@ Use the first route the agent has. A missing MCP tool is not a missing capabilit
 | Create an app or environment | `create_app`, `create_environment` | `frbit apps create`, `frbit environments create` | |
 | Environment variables | `get_environment`, `update_environment` | `frbit environments variables get/update` | |
 | Branch, build and post-deploy commands | `update_environment` | `frbit environments update` | |
-| PHP version | – | `frbit environments update --file` | dashboard |
+| PHP version | – | `frbit environments create --php-version`, `frbit environments update --file` | dashboard |
 | Deploy | push to the connected branch | `frbit environments deploy <env>` | deploy hook URL |
 | Restart | – | `frbit environments restart <env>` | |
 | Why a deployment failed | `get_deployment`, `get_deployment_logs` | `frbit deployments logs <dp>` | |
@@ -49,6 +50,8 @@ Use the first route the agent has. A missing MCP tool is not a missing capabilit
 | Runtime logs (PHP, Apache, jobs) | – | – | dashboard Logs tab, or log files over SSH |
 
 No MCP server and no CLI yet? Connecting takes one command: [references/access.md](references/access.md).
+
+No shell, as in claude.ai chat or Cowork: only the MCP column works. Say which steps need a terminal (SSH, database, files, deploy, restart) and offer the dashboard route where there is one.
 
 ## Find the environment
 
@@ -59,10 +62,10 @@ Do not ask for an ID before trying this. Resolve it once per session and reuse i
 3. Without MCP: `frbit apps list --json`, `frbit apps get <app> --json` and `frbit environments list --json`, matched the same way.
 4. Derived from that, nothing to store:
    - SSH: `<env>@ssh.<region>.frbit.app`
-   - Default domain: `https://<env>.<region>.frbit.app`
+   - Default domain: `https://<env>.<region>.frbit.app`. The live URL is the main domain: `list_domains`, `isMain`
    - Database name and user: the environment ID
 
-No MCP tools, or a `401`: connect first ([references/access.md](references/access.md)). No account yet, or no match: the repo is not on fortrabbit yet, see [references/boarding.md](references/boarding.md). A plain `.fortrabbit` file with `app-env-id=` from older versions of this skill is not needed; ignore it and do not create one. A `.fortrabbit/` folder is different: it holds the deploy file `.fortrabbit/deploy.yml` ([deploy.md](references/deploy.md)).
+No MCP tools, or a `401`: connect first ([references/access.md](references/access.md)). No account yet, or no match: the repo is not on fortrabbit yet, see [references/boarding.md](references/boarding.md). A `.fortrabbit/` folder holds the deploy file `.fortrabbit/deploy.yml` ([deploy.md](references/deploy.md)); a plain `.fortrabbit` file is a 1.x leftover, ignore it.
 
 ## References
 

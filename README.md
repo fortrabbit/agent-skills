@@ -41,7 +41,7 @@ rm -rf ~/.claude/skills/fortrabbit-api-access ~/.agents/skills/fortrabbit-api-ac
 rm -f .github/instructions/fortrabbit.instructions.md
 ```
 
-A `.fortrabbit` file with `app-env-id=` in your project is no longer read: the skill finds the environment from the git remote. Delete it.
+A `.fortrabbit` file with `app-env-id=` in your project is no longer read: the skill finds the environment from the git remote. Delete it. A `.fortrabbit/` folder is different: it holds the deploy file `.fortrabbit/deploy.yml`.
 
 ## Connect fortrabbit
 
@@ -80,17 +80,16 @@ The skill is Markdown instructions plus two shell scripts. Nothing runs in the b
 | Destination | Purpose | When |
 | -- | -- | -- |
 | `https://mcp.fortrabbit.com/mcp` | The MCP server from `.mcp.json`. Reads apps, environments, deployments, domains, teams and payment methods. Creates apps and environments, updates environments | fortrabbit tool calls, after you sign in through the browser |
-| `https://www.fortrabbit.com/agents.md` | Setup steps for a new account | Once, when setting up an account |
 | `https://docs.fortrabbit.com` | Docs pages as Markdown | Questions the skill doesn't cover |
 | `https://api.fortrabbit.com/v1` | The public API, through the `frbit` CLI or with a token you create | CLI commands and API calls |
 | `<env>@ssh.<region>.frbit.app` | Remote commands, `rsync`, and the database scripts in `scripts/` | Remote commands, file sync, database pull and push |
-| `https://<env>.<region>.frbit.app` | Requests to your site, to read status codes and headers | Debugging an HTTP error |
-| `https://status.fortrabbit.com` | Platform status | Debugging an outage |
+| Your site's domains (`*.frbit.app`, `*.frbit.cloud`, custom domains) | Requests to your site, to read status codes and headers | Debugging an HTTP error |
+| `https://fortrabbit.betteruptime.com` | Platform status | Debugging an outage |
 | GitHub | `gh repo create`, the fortrabbit GitHub App | Creating a repository for a new app |
 
 The agent asks before it installs the `frbit` CLI (Homebrew or npm) or creates an SSH key.
 
-The MCP server and the CLI sign in through the browser, and the CLI keeps its credential in the operating system's credential store. The skill never asks for a password or token in the chat. For API calls without the CLI, the agent reads a token you stored yourself as `FORTRABBIT_API_TOKEN`, in the environment or a git-ignored `.env`, and sends it only to `api.fortrabbit.com`. The database scripts run `mysqldump` and `mysql` on the environment, so the database password never leaves it. Dumps land in the system temp folder.
+The MCP server and the CLI sign in through the browser, and the CLI keeps its credential in the operating system's credential store. The skill never asks for a password or token in the chat, and never reads one from your environment or `.env` files. The database scripts run `mysqldump` and `mysql` on the environment, so the database password never leaves it. Dumps land in the system temp folder.
 
 ## Privacy
 
