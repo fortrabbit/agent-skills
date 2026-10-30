@@ -4,7 +4,7 @@ The person may have no account, no MCP connection and no app yet. Carry the whol
 
 Connecting, signing in and checking the account:
 
-- Ask before installing anything, the `frbit` CLI included, and show the install command first.
+- Say what you are about to install and why, then wait for a yes.
 - Sign-up and sign-in happen in the browser. Never ask for an e-mail address, password or token in the chat. CLI sign-in: [access.md](access.md#sign-in-from-an-agent).
 - Call `get_you` (MCP) or run `frbit auth status --json` (CLI) and follow `next` until `ready`.
 

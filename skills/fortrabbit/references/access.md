@@ -18,6 +18,8 @@ frbit mcp install          # either of the above, picked for the installed agent
 
 The first tool call opens the browser: the person signs in and approves. Verify with `get_you`. Disconnect with `claude mcp remove fortrabbit`; revoke the grant itself in the dashboard under "AI agents" (`https://dash.fortrabbit.com/you/ai-agents`).
 
+Clients without OAuth can send a Public API token as `Authorization: Bearer` header instead. The person puts the token into the client's config, kept out of git; the agent doesn't read or send it.
+
 ## CLI
 
 ```shell

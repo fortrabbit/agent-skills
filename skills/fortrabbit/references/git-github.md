@@ -39,7 +39,7 @@ Needed once per GitHub account or organization. The person installs it at `https
 
 - New app: `create_app` with `initialEnvironment.deployment.git` (repository and branch): [mcp.md](mcp.md).
 - New environment for another branch, e.g. staging: `create_environment` with `git`.
-- Change the branch of an existing environment: `update_environment` with `git`, after a yes. The next push to that branch deploys.
+- Change the branch of an existing environment: `update_environment` with `git` holding the new `branch` and the current `directory` from `get_environment`, after a yes. The next push to that branch deploys. With a deploy file the change is refused: the person changes the branch in the dashboard.
 
 Then deploy: [deploy.md](deploy.md).
 

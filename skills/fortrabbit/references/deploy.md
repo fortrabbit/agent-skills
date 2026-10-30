@@ -48,7 +48,7 @@ Without a deploy file, read them with `get_environment` (`buildCommands`, `postD
 
 ## Deploy file
 
-A deploy file in the repo holds the deployment settings as code: `.fortrabbit/deploy.yml`, `.fortrabbit/deploy.yaml` or `.fortrabbit/deploy.json`, the first one found wins. Check for it before reading or changing any deployment setting. Docs: `https://docs.fortrabbit.com/platform/deployment/deploy-file`.
+A deploy file in the repo holds the deployment settings as code: `.fortrabbit/deploy.yml`, `.fortrabbit/deploy.yaml` or `.fortrabbit/deploy.json`, the first one found wins. Check the pushed branch before reading or changing any deployment setting: `git show origin/<branch>:.fortrabbit/deploy.yml` (then `.yaml`, `.json`). Neither `get_environment` nor the CLI shows whether a file is in use. Docs: `https://docs.fortrabbit.com/platform/deployment/deploy-file`.
 
 ```yaml
 apiVersion: 1.0
@@ -68,9 +68,10 @@ distribution:
 ```
 
 - When the deployed branch has a deploy file, it is the only source for these settings. `get_environment` still shows the values stored in the dashboard, which are not used.
-- A key left out falls back to the default in the comments above, not to the dashboard. Without `excludePatterns`, uploads and flat-file content (Statamic, Kirby) are replaced on every deployment: copy the template's exclude patterns into the file.
-- Changing a setting is a commit and a push. `update_environment` refuses build and post deploy commands with "Deployment settings are managed by the deploy file."
-- `apiVersion` is required; unknown keys, empty strings and `.` or `..` in paths make the file invalid. An invalid file fails the deployment before the build, the code on the environment stays as it was, and the deployment log names the file and the problem.
+- A key left out falls back to its default, not to the dashboard: no build commands, no post deploy commands, nothing cached, the repository root, `replace`, nothing excluded. A Laravel file without `php artisan migrate --force` stops migrating; a Statamic or Kirby file without `excludePatterns` replaces uploads and content on every deployment.
+- MCP doesn't return the exclude patterns, strategy or cached directories. Take them from the environment's Deployment page in the dashboard, or ask the person; never write a file without them.
+- Changing a setting is a commit and a push; redeploying the same commit does not pick up a change. `update_environment` refuses build and post deploy commands and any `git` change with `deployFile: Deployment settings are managed by the deploy file.` A branch change then happens in the dashboard. Build commands passed to `create_app` are stored but unused when the branch has a file.
+- `apiVersion` is required; unknown keys, empty strings and `.` or `..` in paths make the file invalid. An invalid file fails the deployment before the build, and the code on the environment stays as it was. `get_deployment` then shows `failed` with no log lines: check the file against these rules, and send the person to the deployment in the dashboard for the exact message.
 - Deleting the file and pushing brings back the dashboard settings.
 - Branch, deploy trigger, deploy hook, PHP and Node.js version stay in the dashboard.
 

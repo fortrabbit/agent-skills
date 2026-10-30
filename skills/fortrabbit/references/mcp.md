@@ -98,7 +98,7 @@ Also optional: `git` (branch, directory), `buildCommands`, `postDeployCommands`,
 
 ## Updating an environment
 
-`update_environment` takes `publicId` plus only the fields to change. Environment variables merge: a string adds or changes a variable, `null` removes it, unnamed variables stay. Platform variables (`FORTRABBIT_*`) cannot be changed. Read the current state with `get_environment` first.
+`update_environment` takes `publicId` plus only the fields to change. `git` is the exception: send `branch` and `directory` together, with `directory` from `get_environment`, because an omitted `directory` resets the source directory to the repository root. With a deploy file, `git` changes are refused: [deploy.md](deploy.md#deploy-file). Environment variables merge: a string adds or changes a variable, `null` removes it, unnamed variables stay. Platform variables (`FORTRABBIT_*`) cannot be changed. Read the current state with `get_environment` first.
 
 MCP neither reads nor sets the PHP version: `frbit environments get --json` shows `phpVersion`, and the person changes it on the PHP version page of the environment, `https://dash.fortrabbit.com/environments/<env>/php/php-version`. A PHP version set explicitly, also with `frbit environments create --php-version`, opts the environment out of automatic PHP updates: say so.
 
@@ -141,7 +141,7 @@ A tool failure comes back as a normal result with `isError: true` and a plain-te
 | `Access denied.` | Signed in, but not permitted for this resource or account type | Check `get_you`: client accounts cannot create environments |
 | `Invalid arguments. <field>: <message>` | Validation failed | Fix the named field with the tool from "Resolving arguments" |
 | `components: No plan supplied for component php. …` | A required component is missing | Supply `php`, `storage`, `traffic`, `backups`, or clone with `sourceEnvironmentPublicId` |
-| `Deployment settings are managed by the deploy file.` | The branch has `.fortrabbit/deploy.yml` (or `.yaml`, `.json`) | Edit the file, commit and push: [deploy.md](deploy.md#deploy-file) |
+| `deployFile: Deployment settings are managed by the deploy file.` | The branch has `.fortrabbit/deploy.yml` (or `.yaml`, `.json`) | Edit the file, commit and push: [deploy.md](deploy.md#deploy-file) |
 | `This change is billed to the app's payment method, so it cannot be made over MCP. …` | The change would be billed | Give the person the dashboard link from the message |
 | `Error while executing tool` | Unexpected server error | Do not retry blindly or invent arguments; report it and fall back to the dashboard |
 
