@@ -22,8 +22,8 @@ The deploy hook URL is a secret: anyone who has it can deploy. It lives in a CI 
 
 ## Follow the deployment
 
-1. `list_deployments` → the newest one for the environment, or the ID from `frbit environments deploy --json`.
-2. `get_deployment` → `state`. Check again after 20–30 seconds while it runs; do not poll faster.
+1. `list_deployments` with `environmentPublicId` and `limit: 1` → the newest deployment of the environment, or the ID from `frbit environments deploy --json`. CLI: `frbit deployments list --environment <en>`.
+2. `get_deployment` → `status`: `pending`, `started`, `preparing`, `building` and `distributing` mean it still runs; it ends as `succeeded`, `failed` or `canceled`. Check again after 20–30 seconds while it runs; do not poll faster.
 3. Failed: `get_deployment_logs` (or `frbit deployments logs <dp>`). Quote the failing lines to the person.
 4. Done: check the site, see "Is it live?" in [troubleshooting.md](troubleshooting.md).
 

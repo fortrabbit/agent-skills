@@ -21,7 +21,7 @@ Then continue here.
 1. `list_regions`, `list_software_presets`, `list_component_plans` with `regionIdentifier` (prices are `null` without it), `list_git_branches`.
 2. Show the name, region, software, components and the **monthly price** after the trial. MCP creates a trial app without a payment method. Wait for a yes.
 3. `create_app` with `initialEnvironment.deployment.git` and `startFirstDeployment: true`.
-4. `get_deployment` until the state settles, `get_deployment_logs` if it failed: [deploy.md](deploy.md).
+4. `get_deployment` until `status` is `succeeded`, `failed` or `canceled`, `get_deployment_logs` if it failed: [deploy.md](deploy.md).
 
 Arguments and the environment variant: [mcp.md](mcp.md).
 
