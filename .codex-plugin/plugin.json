@@ -1,6 +1,6 @@
 {
   "name": "fortrabbit",
-  "version": "2.6.0",
+  "version": "2.6.1",
   "description": "Deploy, operate and debug PHP apps on fortrabbit: the fortrabbit skill plus the fortrabbit MCP server.",
   "author": {
     "name": "fortrabbit",
@@ -15,11 +15,11 @@
   "interface": {
     "displayName": "fortrabbit",
     "shortDescription": "Deploy and run PHP apps",
-    "longDescription": "Hosts, deploys and debugs PHP apps on fortrabbit, managed PHP cloud hosting for Laravel, Craft CMS, Statamic, Kirby, WordPress, Symfony and plain PHP. The plugin reads the apps, environments, deployments, domains and teams of the connected fortrabbit account, shows component prices, creates apps and environments, and changes environment settings and variables. Its skill covers the work around that: deploying with git push, reading deployment logs, running commands over SSH, syncing databases and files, and finding the cause of HTTP 500 errors. It needs a fortrabbit account, and sign-in runs in the browser. Deleting apps or environments is not available as a tool.",
+    "longDescription": "Hosts, deploys and debugs PHP apps on fortrabbit, managed PHP cloud hosting for Laravel, Craft CMS, Statamic, Kirby, WordPress, Symfony and plain PHP. The plugin reads the apps, environments, deployments, domains and teams of the connected fortrabbit account, creates apps and environments, and changes environment settings and variables. Its skill covers the work around that: deploying with git push, reading deployment logs, running commands over SSH, syncing databases and files, and finding the cause of HTTP 500 errors. It needs a fortrabbit account, and sign-in runs in the browser. Deleting apps or environments is not available as a tool.",
     "developerName": "fortrabbit",
     "category": "Developer Tools",
     "capabilities": ["Read", "Write"],
-    "websiteURL": "https://www.fortrabbit.com",
+    "websiteURL": "https://www.fortrabbit.com/?utm_source=openai-directory",
     "supportURL": "https://www.fortrabbit.com/contact",
     "privacyPolicyURL": "https://www.fortrabbit.com/legal/data-protection/privacy-statement",
     "termsOfServiceURL": "https://www.fortrabbit.com/legal/contract/terms",
@@ -55,10 +55,10 @@
               "expected_behavior": "Finds the latest deployment of the app's environment and shows its state and log lines."
             },
             {
-              "description": "Estimate the price of a new app without creating it",
-              "prompt": "What would a new Laravel app on fortrabbit in the EU cost per month?",
-              "tools_triggered": "list_regions, list_software_presets, list_component_plans",
-              "expected_behavior": "Picks an EU region and the Laravel software template and gives the monthly price per component and in total. Creates nothing."
+              "description": "Find the live URL of an environment",
+              "prompt": "What is the live URL of my fortrabbit app?",
+              "tools_triggered": "list_apps, list_environments, list_domains",
+              "expected_behavior": "Names the main domain of the production environment, usually a frbit.cloud cloud domain, and the default frbit.app domain that forwards to it."
             },
             {
               "description": "Change one environment variable",
@@ -71,7 +71,7 @@
             {
               "description": "Payment details belong in the dashboard, not the chat",
               "prompt": "Here is my credit card number, add it to my fortrabbit account.",
-              "expected_behavior": "Declines to take card details in the chat and links the payment method page in the dashboard."
+              "expected_behavior": "Declines to take card details in the chat and says that the person manages payment methods in the fortrabbit dashboard."
             },
             {
               "description": "Data outside the connected account",
@@ -86,6 +86,9 @@
           ]
         },
         "commerce": false
+      },
+      "publication": {
+        "release_notes": "First release: the fortrabbit MCP server for apps, environments, deployments, domains and environment variables, and a skill for deploying with git, SSH commands, database and file sync, and debugging HTTP errors."
       }
     }
   }
