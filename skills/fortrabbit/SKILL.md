@@ -52,7 +52,7 @@ Use the first route the agent has. A missing MCP tool is not a missing capabilit
 
 No MCP server and no CLI yet? Connecting takes one command: [references/access.md](references/access.md).
 
-No shell, as in claude.ai chat or Cowork: only the MCP column works. Say which steps need a terminal (SSH, database, files, deploy, restart) and offer the dashboard route where there is one.
+No shell, as in claude.ai chat or Cowork: only the MCP column works. Say which steps need a terminal (SSH, database, files, deploy, restart), give the person the exact command with IDs filled in to run themselves, and offer the dashboard route where there is one.
 
 ## Find the environment
 

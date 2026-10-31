@@ -4,13 +4,17 @@ The MySQL database of an environment is reachable only from inside the environme
 
 ## Pull: remote → local
 
-Overwrites the local database. Say so and wait for a yes.
+Overwrites the local database. Say so and wait for a yes. The dump runs on the environment, which has the database credentials, so no password is needed and none passes through this machine.
+
+One command, with the IDs filled in. Run it when you have a shell tool; otherwise (claude.ai chat, a sandbox without network) give it to the person to run in their terminal:
 
 ```shell
-<skill-dir>/scripts/db-down.sh <env> <region>
+ssh <env>@ssh.<region>.frbit.app 'mysqldump --single-transaction --set-gtid-purged=OFF --no-tablespaces "$FORTRABBIT_DB_NAME"' | gzip > /tmp/<env>.sql.gz
 ```
 
-`<skill-dir>` is the folder of this skill (`${CLAUDE_SKILL_DIR}` in Claude Code). The script dumps on the environment over one SSH connection, so no credentials pass through this machine, and prints the path of a gzipped dump outside the repo. Exit codes: 3 the environment refused the dump, use the tunnel below; 4 SSH failed (key, network), see [ssh.md](ssh.md); 2 wrong arguments.
+The single quotes matter: `$FORTRABBIT_DB_NAME` expands on the environment, not locally. It needs an SSH key registered for the person ([ssh.md](ssh.md)).
+
+With a shell, `<skill-dir>/scripts/db-down.sh <env> <region>` does the same with checks: it writes outside the repo, rejects an empty dump and prints the path. `<skill-dir>` is the folder of this skill (`${CLAUDE_SKILL_DIR}` in Claude Code); never show it to the person as a placeholder. Exit codes: 3 the environment refused the dump, use the tunnel below; 4 SSH failed (key, network), see [ssh.md](ssh.md); 2 wrong arguments.
 
 Import locally:
 
@@ -33,7 +37,7 @@ Replaces every table that is in the dump; tables that exist only on the environm
 
 ## Through a tunnel
 
-The documented route, and the fallback when the scripts exit with 3. The person runs the commands that ask for the password, in their own terminal:
+For database clients, and the fallback when the dump above is refused. The person runs the commands that ask for the password, in their own terminal:
 
 ```shell
 # terminal 1, keep it open
