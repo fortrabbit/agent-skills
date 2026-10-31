@@ -34,7 +34,7 @@ for path in $(jq -r '.skills, .mcpServers, .interface.composerIcon, .interface.l
   [ -e "$path" ] || fail "$openai points at $path, which does not exist"
 done
 
-# Submission limits from https://developers.openai.com/plugins/deploy/submission#listing-metadata
+# Submission limits of the OpenAI plugin directory, listing metadata section.
 problems=$(jq -r '
   .interface as $i
   | ($i.defaultPrompt // [] | if type == "string" then [.] else . end) as $prompts

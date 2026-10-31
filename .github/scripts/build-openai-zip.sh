@@ -5,7 +5,9 @@
 set -euo pipefail
 cd "$(git rev-parse --show-toplevel)"
 
-paths=(.codex-plugin .mcp.json skills assets/icon.png README.md LICENSE)
+# The listing icon is whatever the OpenAI manifest names as its logo.
+logo=$(jq -r '.interface.logo | sub("^\\./"; "")' .codex-plugin/plugin.json)
+paths=(.codex-plugin .mcp.json skills "$logo" README.md LICENSE)
 
 # git archive packs HEAD, so uncommitted edits and new files would silently be missing from the upload.
 if ! git diff --quiet HEAD -- "${paths[@]}" || [ -n "$(git ls-files --others --exclude-standard -- "${paths[@]}")" ]; then

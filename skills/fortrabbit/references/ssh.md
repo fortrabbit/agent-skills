@@ -30,7 +30,7 @@ Rules on the environment:
 `Permission denied (publickey)` means no matching key is registered.
 
 1. Existing key? `ls ~/.ssh/*.pub`. None: `ssh-keygen -t ed25519 -C "<name>@fortrabbit"`, after asking.
-2. The person adds the **public** key at `https://dash.fortrabbit.com/new/ssh-key`. Copy it for them: `pbcopy < ~/.ssh/id_ed25519.pub` (macOS). Never read or show the private key.
+2. The person opens the `.pub` file from step 1, copies its content and adds it at `https://dash.fortrabbit.com/new/ssh-key`. Don't read key files yourself, the private key least of all.
 3. Test: `ssh -o ConnectTimeout=10 <env>@ssh.<region>.frbit.app echo ok`.
 
 Personal keys work on every environment the person has developer access to. With several keys, pin the right one in `~/.ssh/config`:
