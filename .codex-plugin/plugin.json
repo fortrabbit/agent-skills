@@ -1,6 +1,6 @@
 {
   "name": "fortrabbit",
-  "version": "2.6.1",
+  "version": "2.6.2",
   "description": "Deploy, operate and debug PHP apps on fortrabbit: the fortrabbit skill plus the fortrabbit MCP server.",
   "author": {
     "name": "fortrabbit",
@@ -28,8 +28,8 @@
       "Why does my fortrabbit site return a 500?",
       "Show the log of my last fortrabbit deployment."
     ],
-    "composerIcon": "./.claude-plugin/icon.png",
-    "logo": "./.claude-plugin/icon.png"
+    "composerIcon": "./assets/icon.png",
+    "logo": "./assets/icon.png"
   },
   "extensions": {
     "com.openai": {

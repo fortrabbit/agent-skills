@@ -5,7 +5,7 @@
 set -euo pipefail
 cd "$(git rev-parse --show-toplevel)"
 
-paths=(.codex-plugin .mcp.json skills .claude-plugin/icon.png README.md LICENSE)
+paths=(.codex-plugin .mcp.json skills assets/icon.png README.md LICENSE)
 
 # git archive packs HEAD, so uncommitted edits and new files would silently be missing from the upload.
 if ! git diff --quiet HEAD -- "${paths[@]}" || [ -n "$(git ls-files --others --exclude-standard -- "${paths[@]}")" ]; then
