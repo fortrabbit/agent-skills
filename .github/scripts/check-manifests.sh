@@ -3,7 +3,7 @@
 # of the OpenAI plugin directory, which an upload only reports after the fact.
 # Usage: .github/scripts/check-manifests.sh   (needs jq)
 set -euo pipefail
-cd "$(git rev-parse --show-toplevel)"
+cd "$(dirname "${BASH_SOURCE[0]}")/../.."
 
 plugin=plugins/fortrabbit
 claude=$plugin/.claude-plugin/plugin.json

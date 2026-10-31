@@ -22,12 +22,14 @@ esac
 host="${env_id}@ssh.${region}.frbit.app"
 ssh_opts=(-o ConnectTimeout=10 -o BatchMode=yes)
 staged="/data/home/fortrabbit-import-$$.sql.gz"
+# A connection that dropped during an earlier import left its staged dump behind; clear those first.
+stale='rm -f /data/home/fortrabbit-import-*.sql.gz'
 
 # Upload first, so a dropped connection cannot leave the database half imported.
 set +e
 case "$dump" in
-  *.gz) ssh "${ssh_opts[@]}" "$host" "cat > $staged" < "$dump" ;;
-  *) gzip -c "$dump" | ssh "${ssh_opts[@]}" "$host" "cat > $staged" ;;
+  *.gz) ssh "${ssh_opts[@]}" "$host" "$stale; cat > $staged" < "$dump" ;;
+  *) gzip -c "$dump" | ssh "${ssh_opts[@]}" "$host" "$stale; cat > $staged" ;;
 esac
 upload=$?
 set -e
