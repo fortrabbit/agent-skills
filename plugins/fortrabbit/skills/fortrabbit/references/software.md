@@ -37,10 +37,10 @@ A debug switch depends on the software: Laravel and Statamic use `APP_DEBUG`, Cr
 - **WordPress**: usually deployed by rsync, not git. Let `wp-config.php` read the platform variables so one file works locally and live:
 
   ```php
-  define('DB_NAME',     getenv('FORTRABBIT_DB_NAME')     ?: 'db');
-  define('DB_USER',     getenv('FORTRABBIT_DB_USER')     ?: 'db');
-  define('DB_PASSWORD', getenv('FORTRABBIT_DB_PASSWORD') ?: 'db');
-  define('DB_HOST',     getenv('FORTRABBIT_DB_HOST')     ?: 'db');
+  // Live: the platform's FORTRABBIT_DB_* variables. Locally: 'db', the DDEV default.
+  foreach (['NAME', 'USER', 'PASSWORD', 'HOST'] as $key) {
+      define('DB_' . $key, getenv('FORTRABBIT_DB_' . $key) ?: 'db');
+  }
   if ($domain = getenv('FORTRABBIT_MAIN_DOMAIN')) {
       define('WP_HOME', 'https://' . $domain);
       define('WP_SITEURL', 'https://' . $domain);
