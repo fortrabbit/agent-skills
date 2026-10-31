@@ -14,6 +14,7 @@ Then continue here.
 
 ## 1. Look at the project
 
+- The site runs on another host already: [migrate.md](migrate.md) first, it comes back here to create the app.
 - `git remote get-url origin` and the current branch. A repo already connected to an app: go back to "Find the environment" in SKILL.md, nothing to create.
 - No GitHub remote yet: offer to create one ([git-github.md](git-github.md)), or deploy by rsync instead ([files.md](files.md)).
 - `detect_repository_stack` on the repo → `softwarePresetSlug`. Without a repo, detect locally: [software.md](software.md).

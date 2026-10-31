@@ -6,8 +6,8 @@ description: >-
   troubleshooting Laravel, Craft CMS, Statamic, Kirby, WordPress, Symfony or plain PHP apps hosted
   there. Covers finding the environment of the current repo, git push and CLI deployments,
   deployment logs, remote commands over SSH (artisan, craft, wp-cli, composer), database pull and
-  push, file and content sync with rsync, HTTP 500/503/504 diagnosis, creating apps and
-  environments over the fortrabbit MCP server, and connecting an agent through MCP or the frbit
+  push, file sync with rsync, HTTP 500/503/504 diagnosis, moving a site from another host,
+  creating apps and environments over the fortrabbit MCP server, and connecting an agent through MCP or the frbit
   CLI. Use it whenever the user mentions fortrabbit or frbit, a frbit.app or frbit.cloud hostname,
   an en-xxxxxx or ap-xxxxxx ID, works in a repo with a .fortrabbit/deploy.yml, pastes a fortrabbit
   deployment log or an SSH error from ssh.[region].frbit.app, or asks to deploy, sync or debug a
@@ -18,7 +18,7 @@ compatibility: >-
   with the fortrabbit MCP server (https://mcp.fortrabbit.com/mcp) and the frbit CLI connected.
   On Windows, rsync needs WSL.
 metadata:
-  version: "2.7.4"
+  version: "2.8.0"
   author: fortrabbit
 ---
 
@@ -82,6 +82,7 @@ Load the one file that fits the request, two at most.
 | Request | File |
 |---|---|
 | New to fortrabbit, no account, no app, "host this project" | [boarding.md](references/boarding.md) |
+| Move a site from another host (Forge, Ploi, Cloudways, cPanel, a VPS …) | [migrate.md](references/migrate.md) |
 | Connect MCP, CLI or the REST API, `401`, tokens | [access.md](references/access.md) |
 | MCP tool details: arguments, creating apps and environments | [mcp.md](references/mcp.md) |
 | Deploy, deployment status, failed deployment, deploy hook, build and post-deploy commands | [deploy.md](references/deploy.md) |

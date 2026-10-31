@@ -83,6 +83,8 @@ The skill is Markdown instructions plus two shell scripts. Nothing runs in the b
 | -- | -- | -- |
 | `https://mcp.fortrabbit.com/mcp` | The MCP server from `.mcp.json`. Reads apps, environments, deployments, domains, teams and payment methods. Creates apps and environments, updates environments | fortrabbit tool calls, after you sign in through the browser |
 | `https://docs.fortrabbit.com` | Docs pages as Markdown | Questions the skill doesn't cover |
+| `https://www.fortrabbit.com/raw/migrate/` | Migration guides per host, as Markdown | Moving a site from another host |
+| The old host of a site, over SSH | Reads settings, dumps the database, copies uploads; changes nothing there | Moving a site, with the access the person already has |
 | `https://api.fortrabbit.com/v1` | The public API, through the `frbit` CLI or with a token you create | CLI commands and API calls |
 | `<env>@ssh.<region>.frbit.app` | Remote commands, `rsync`, and the database scripts in `scripts/` | Remote commands, file sync, database pull and push |
 | Your site's domains (`*.frbit.app`, `*.frbit.cloud`, custom domains) | Requests to your site, to read status codes and headers | Debugging an HTTP error |
