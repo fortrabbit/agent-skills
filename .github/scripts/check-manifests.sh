@@ -5,8 +5,9 @@
 set -euo pipefail
 cd "$(git rev-parse --show-toplevel)"
 
-claude=.claude-plugin/plugin.json
-openai=.codex-plugin/plugin.json
+plugin=plugins/fortrabbit
+claude=$plugin/.claude-plugin/plugin.json
+openai=$plugin/.codex-plugin/plugin.json
 status=0
 fail() { echo "FAIL: $*" >&2; status=1; }
 
@@ -17,7 +18,7 @@ done < <(git ls-files --cached --others --exclude-standard '*.json')
 [ "$status" -eq 0 ] || exit 1
 
 version=$(tr -d '[:space:]' < VERSION)
-skill_version=$(sed -n 's/^  version: "\(.*\)"$/\1/p' skills/fortrabbit/SKILL.md)
+skill_version=$(sed -n 's/^  version: "\(.*\)"$/\1/p' $plugin/skills/fortrabbit/SKILL.md)
 for found in "$(jq -r .version "$claude")" "$(jq -r .version "$openai")" "$skill_version"; do
   [ "$found" = "$version" ] || fail "version $found does not match VERSION $version (check $claude, $openai, SKILL.md)"
 done
@@ -26,12 +27,14 @@ for key in name description author homepage repository license keywords; do
 done
 [ "$(jq -r .privacyPolicyUrl "$claude")" = "$(jq -r .interface.privacyPolicyURL "$openai")" ] || fail "privacy URL differs between $claude and $openai"
 [ "$(jq -r .description "$claude")" = "$(jq -r '.plugins[0].description' .claude-plugin/marketplace.json)" ] || fail "description differs between $claude and .claude-plugin/marketplace.json"
+[ "$(jq -r '.plugins[0].source' .claude-plugin/marketplace.json)" = "./$plugin" ] || fail "the marketplace entry must point at ./$plugin"
+cmp -s LICENSE "$plugin/LICENSE" || fail "LICENSE and $plugin/LICENSE differ"
 
 # OpenAI connects exactly one MCP server per plugin.
-[ "$(jq '.mcpServers | length' .mcp.json)" -eq 1 ] || fail ".mcp.json must declare exactly one server"
+[ "$(jq '.mcpServers | length' "$plugin/.mcp.json")" -eq 1 ] || fail "$plugin/.mcp.json must declare exactly one server"
 
 for path in $(jq -r '.skills, .mcpServers, .interface.composerIcon, .interface.logo' "$openai"); do
-  [ -e "$path" ] || fail "$openai points at $path, which does not exist"
+  [ -e "$plugin/$path" ] || fail "$openai points at $path, which does not exist"
 done
 
 # Submission limits of the OpenAI plugin directory, listing metadata section.

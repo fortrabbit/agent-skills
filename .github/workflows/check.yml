@@ -14,4 +14,4 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - run: .github/scripts/check-manifests.sh
-      - run: shellcheck .github/scripts/*.sh skills/fortrabbit/scripts/*.sh
+      - run: shellcheck .github/scripts/*.sh plugins/fortrabbit/skills/fortrabbit/scripts/*.sh
