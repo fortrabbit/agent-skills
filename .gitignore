@@ -3,4 +3,4 @@
 .idea
 /.shiki/
 /dist/
-/evals/results/
+/plugins/fortrabbit/evals/results/
