@@ -37,7 +37,7 @@ Personal keys work on every environment the person has developer access to. With
 
 ```text
 Host ssh.*.frbit.app
-  IdentityFile ~/.ssh/id_ed25519_fortrabbit
+  IdentityFile <the private key file to use>
 ```
 
 ## Connection errors
