@@ -14,7 +14,7 @@ ssh <env>@ssh.<region>.frbit.app 'mysqldump --single-transaction --set-gtid-purg
 
 The single quotes matter: `$FORTRABBIT_DB_NAME` expands on the environment, not locally. The `&&` stops a failed SSH connection from leaving an empty dump that looks fine; still check that `/tmp/<env>.sql.gz` isn't tiny before importing it. It needs an SSH key registered for the person ([ssh.md](ssh.md)).
 
-With a shell, `<skill-dir>/scripts/db-down.sh <env> <region>` does the same with checks: it writes outside the repo, rejects an empty dump and prints the path. `<skill-dir>` is the folder of this skill (`${CLAUDE_SKILL_DIR}` in Claude Code); never show it to the person as a placeholder. Exit codes: 3 the environment refused the dump, use the tunnel below; 4 SSH failed (key, network), see [ssh.md](ssh.md); 2 wrong arguments.
+With a shell, `db-down.sh <env> <region>` does the same with checks: it writes outside the repo, rejects an empty dump and prints the path. Its full path is under Scripts in SKILL.md. Without a shell, give the person the command above, not the script. Exit codes: 3 the environment refused the dump, use the tunnel below; 4 SSH failed (key, network), see [ssh.md](ssh.md); 2 wrong arguments.
 
 Import locally:
 
@@ -30,9 +30,9 @@ Then adjust what differs locally: Craft CMS `ddev craft clear-caches/all`; WordP
 
 Replaces every table that is in the dump; tables that exist only on the environment stay. On production, say which environment, that live data is replaced, and wait for a yes in the user's next message.
 
-1. Back up the remote first: `db-down.sh <env> <region>`. Keep the printed path.
+1. Back up the remote first with the pull above (`db-down.sh <env> <region>`, or the ssh command). Keep the path of the dump.
 2. Dump locally: `ddev export-db --file=/tmp/local.sql.gz`, or `mysqldump --set-gtid-purged=OFF --no-tablespaces -u<user> -p <database> | gzip > /tmp/local.sql.gz`.
-3. Import: `<skill-dir>/scripts/db-up.sh <env> <region> /tmp/local.sql.gz`. It uploads the dump first, then imports on the environment. Exit 5 means the import broke part way: restore the backup from step 1 the same way.
+3. Import: `db-up.sh <env> <region> /tmp/local.sql.gz`, by its full path from SKILL.md. It uploads the dump first, then imports on the environment. Exit 5 means the import broke part way: restore the backup from step 1 the same way.
 4. Check the site, and tell the person where the backup from step 1 is.
 
 ## Through a tunnel

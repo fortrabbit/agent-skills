@@ -23,7 +23,6 @@ Clients without OAuth can send a Public API token as `Authorization: Bearer` hea
 ## CLI
 
 ```shell
-curl -fsSL https://www.fortrabbit.com/agents.sh | sh   # installs frbit to ~/.local/bin, then runs frbit setup agent
 brew install fortrabbit/tap/frbit      # or: npm install --global @fortrabbit/cli
 frbit auth login --json                # browser sign-in
 frbit auth login --signup --json       # the person said they have no account

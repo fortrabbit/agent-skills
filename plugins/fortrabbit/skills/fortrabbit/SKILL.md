@@ -1,23 +1,24 @@
 ---
 name: fortrabbit
 description: >-
-  Deploys, operates and troubleshoots PHP apps hosted on fortrabbit (Laravel, Craft CMS, Statamic,
-  Kirby, WordPress, Symfony, plain PHP). Covers finding the environment of the current repo,
-  git push and CLI deployments, deployment logs, environment variables, remote commands over SSH
-  (artisan, craft, wp-cli, composer), database pull and push, file and content sync with rsync,
-  HTTP 500/503/504 diagnosis, creating apps and environments over the fortrabbit MCP server, and
-  connecting an agent to fortrabbit through MCP or the frbit CLI. Use it whenever the user
-  mentions fortrabbit, frbit, a frbit.app or frbit.cloud hostname, an en-xxxxxx or ap-xxxxxx ID,
-  works in a repo with a .fortrabbit/deploy.yml,
-  pastes a fortrabbit deployment log or an SSH error from ssh.<region>.frbit.app, or asks to
-  deploy, sync or debug a PHP site that is hosted there, even without naming fortrabbit.
+  Handles any request about fortrabbit, the PHP hosting platform: the user's account, apps,
+  environments, deployments, domains and environment variables, and deploying, operating and
+  troubleshooting Laravel, Craft CMS, Statamic, Kirby, WordPress, Symfony or plain PHP apps hosted
+  there. Covers finding the environment of the current repo, git push and CLI deployments,
+  deployment logs, remote commands over SSH (artisan, craft, wp-cli, composer), database pull and
+  push, file and content sync with rsync, HTTP 500/503/504 diagnosis, creating apps and
+  environments over the fortrabbit MCP server, and connecting an agent through MCP or the frbit
+  CLI. Use it whenever the user mentions fortrabbit or frbit, a frbit.app or frbit.cloud hostname,
+  an en-xxxxxx or ap-xxxxxx ID, works in a repo with a .fortrabbit/deploy.yml, pastes a fortrabbit
+  deployment log or an SSH error from ssh.[region].frbit.app, or asks to deploy, sync or debug a
+  PHP site hosted there, even without naming fortrabbit.
 license: MIT
 compatibility: >-
   Needs git and ssh (port 22). rsync for file sync, a MySQL client for database work. Works best
   with the fortrabbit MCP server (https://mcp.fortrabbit.com/mcp) and the frbit CLI connected.
   On Windows, rsync needs WSL.
 metadata:
-  version: "2.7.3"
+  version: "2.7.4"
   author: fortrabbit
 ---
 
@@ -36,6 +37,8 @@ fortrabbit hosts PHP apps. An **app** has one or more **environments** (`en-xxxx
 
 Use the first route the agent has. A missing MCP tool is not a missing capability: check the CLI before saying something cannot be done.
 
+The MCP tools named here and in the references come from the `fortrabbit` server: `list_apps` is `fortrabbit:list_apps`, in Claude Code `mcp__plugin_fortrabbit_fortrabbit__list_apps` or `mcp__fortrabbit__list_apps`.
+
 | Need | MCP (`fortrabbit` server) | frbit CLI | Other |
 |---|---|---|---|
 | Account, apps, environments, deployments, domains | `get_you`, `list_*`, `get_*` | `frbit <group> list/get --json` | |
@@ -50,7 +53,7 @@ Use the first route the agent has. A missing MCP tool is not a missing capabilit
 | Remote commands, database, files | – | – | `ssh`, `mysql`, `rsync` |
 | Runtime logs (PHP, Apache, jobs) | – | – | dashboard Logs tab, or log files over SSH |
 
-No MCP server and no CLI yet? Connecting takes one command: [references/access.md](references/access.md).
+No MCP server and no CLI yet? Connecting takes a few commands: [references/access.md](references/access.md).
 
 No shell, as in claude.ai chat or Cowork: only the MCP column works. Say which steps need a terminal (SSH, database, files, deploy, restart), give the person the exact command with IDs filled in to run themselves, and offer the dashboard route where there is one.
 
@@ -67,6 +70,10 @@ Do not ask for an ID before trying this. Resolve it once per session and reuse i
    - Database name and user: the environment ID
 
 No MCP tools, or a `401`: connect first ([references/access.md](references/access.md)). No account yet, or no match: the repo is not on fortrabbit yet, see [references/boarding.md](references/boarding.md). A deploy file `.fortrabbit/deploy.yml` (or `.yaml`, `.json`) means the repo deploys to fortrabbit and holds its deployment settings: read it before changing any ([deploy.md](references/deploy.md#deploy-file)). A plain `.fortrabbit` file is a 1.x leftover, ignore it.
+
+## Scripts
+
+`scripts/db-down.sh` (database pull) and `scripts/db-up.sh` (database push) sit next to this file, in Claude Code at `${CLAUDE_SKILL_DIR}/scripts/db-down.sh` and `${CLAUDE_SKILL_DIR}/scripts/db-up.sh`. Run them by that full path, only with a shell tool. Without a shell, or without a resolved path, give the person the plain commands from [database.md](references/database.md) instead, and never show a path placeholder.
 
 ## References
 
