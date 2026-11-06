@@ -60,7 +60,6 @@ brew install fortrabbit/tap/frbit && frbit auth login
 .codex-plugin/         OpenAI plugin manifest (ChatGPT and Codex)
 .mcp.json              the fortrabbit MCP server, for the plugin
 assets/                listing icon
-evals/                 claude plugin eval cases with a mocked MCP server
 skills/fortrabbit/
 ├── SKILL.md            which tool for what, finding the environment, safety rules
 ├── references/         one file per task, loaded on demand

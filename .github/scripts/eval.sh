@@ -7,12 +7,18 @@ set -euo pipefail
 cd "$(dirname "${BASH_SOURCE[0]}")/../.."
 root=$PWD
 
+for arg in "$@"; do
+  case $arg in
+    --output-dir* | --report*) echo "eval.sh sets --output-dir and --report itself" >&2; exit 2 ;;
+  esac
+done
+
 tmp=$(mktemp -d)
 trap 'rm -rf "$tmp"' EXIT
 
-cp -R plugins/fortrabbit "$tmp/fortrabbit"
-rsync -a --exclude /results/ evals/ "$tmp/fortrabbit/evals/"
+cp -RL plugins/fortrabbit "$tmp/fortrabbit"
+rsync -aL --exclude /results/ evals/ "$tmp/fortrabbit/evals/"
 
-out="$root/evals/results/$(date -u +%Y-%m-%dT%H-%M-%SZ)"
+out="$root/evals/results/$(date -u +%Y-%m-%dT%H-%M-%SZ)-$$"
 mkdir -p "$out"
 claude plugin eval "$tmp/fortrabbit" --output-dir "$out" --report "$out/report.html" "$@"
