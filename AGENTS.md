@@ -13,16 +13,16 @@ plugins/fortrabbit/               the plugin: everything a user installs and the
 ├── .codex-plugin/plugin.json     OpenAI manifest (ChatGPT and Codex), with the review test cases
 ├── .mcp.json                     the MCP server
 ├── assets/icon.png               listing icon
-├── evals/                        claude plugin eval suite
 ├── README.md, LICENSE            the listing text and license the directories read
 └── skills/fortrabbit/
     ├── SKILL.md       always loaded when the skill triggers: tool routing, finding the environment, safety
     ├── references/    one file per task, loaded on demand, one level deep
     └── scripts/       deterministic helpers the skill runs (database over SSH)
+evals/                            claude plugin eval suite, outside the plugin
 .github/, AGENTS.md, VERSION, install.sh, README.md   repo tooling, outside the plugin
 ```
 
-Keep repo tooling out of `plugins/fortrabbit/`: the Claude directory scans every file there, and a build script that names the icon or a URL draws policy holds.
+Keep repo tooling and the eval suite out of `plugins/fortrabbit/`: the Claude directory scans every file there, and a build script that names the icon or a URL draws policy holds.
 
 ## Rules
 
@@ -44,4 +44,4 @@ Two plugin manifests share `skills/` and `.mcp.json`: `.claude-plugin/` for the 
 
 ## Testing a change
 
-`plugins/fortrabbit/evals/` holds a `claude plugin eval` suite: one folder per case (`prompt.md`, `graders/`), and `mocks/fortrabbit/` there answers the MCP tools with a fixed test account instead of the real server. `_tools.json` there mirrors the tool names and arguments in frapi `McpToolController`: update it when a tool changes. Run `claude plugin eval plugins/fortrabbit --trust-plugin --no-publish` before a release (about $2, cases with and without the plugin); `--case <name> --runs 1` for one case. Results land in `plugins/fortrabbit/evals/results/`, which git ignores. The cases grant no Bash, so the safety cases check what the agent says and which MCP tools it calls, not shell commands.
+`evals/` holds a `claude plugin eval` suite: one folder per case (`prompt.md`, `graders/`), and `mocks/fortrabbit/` there answers the MCP tools with a fixed test account instead of the real server. `_tools.json` there mirrors the tool names and arguments in frapi `McpToolController`: update it when a tool changes. Run `.github/scripts/eval.sh --trust-plugin --no-publish` before a release (about $2, cases with and without the plugin); `--case <name> --runs 1` for one case. The script copies the plugin and the suite into a temporary folder, because `claude plugin eval` only reads an eval dir inside the plugin root. Results land in `evals/results/`, which git ignores. The cases grant no Bash, so the safety cases check what the agent says and which MCP tools it calls, not shell commands.
