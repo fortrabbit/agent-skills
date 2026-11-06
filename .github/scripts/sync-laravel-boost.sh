@@ -8,6 +8,13 @@ src="plugins/fortrabbit/skills/fortrabbit"
 
 [[ -f "$src/SKILL.md" ]] || { echo "Run from the repo root: $src/SKILL.md not found." >&2; exit 1; }
 
+# Copy only the commit the release tag points at, so a reverted VERSION never tags newer content with an old version.
+git rev-parse --quiet --verify "refs/tags/$tag" >/dev/null || git fetch --quiet origin "refs/tags/$tag:refs/tags/$tag" 2>/dev/null || true
+if [[ "$(git rev-parse --quiet --verify "$tag^{commit}" || true)" != "$(git rev-parse HEAD)" ]]; then
+  echo "Tag $tag does not point at HEAD, skipping." >&2
+  exit 0
+fi
+
 dir="$(mktemp -d)"
 trap 'rm -rf "$dir"' EXIT
 

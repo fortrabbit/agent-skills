@@ -36,6 +36,7 @@ jobs:
       - name: Sync the skill to fortrabbit/laravel-boost
         run: |
           key="$RUNNER_TEMP/laravel-boost-key"
+          trap 'rm -f "$key"' EXIT
           install -m 600 /dev/null "$key"
           printf '%s\n' "$LARAVEL_BOOST_DEPLOY_KEY" > "$key"
           GIT_SSH_COMMAND="ssh -i $key -o IdentitiesOnly=yes -o StrictHostKeyChecking=accept-new" \
