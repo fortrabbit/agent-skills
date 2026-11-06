@@ -31,3 +31,14 @@ jobs:
           gh release create "$TAG" --title "$TAG" --generate-notes "$zip"
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # Runs on every VERSION push, also when the tag above exists, so a re-run retries a failed sync.
+      - name: Sync the skill to fortrabbit/laravel-boost
+        run: |
+          key="$RUNNER_TEMP/laravel-boost-key"
+          install -m 600 /dev/null "$key"
+          printf '%s\n' "$LARAVEL_BOOST_DEPLOY_KEY" > "$key"
+          GIT_SSH_COMMAND="ssh -i $key -o IdentitiesOnly=yes -o StrictHostKeyChecking=accept-new" \
+            .github/scripts/sync-laravel-boost.sh "${{ steps.ver.outputs.tag }}"
+        env:
+          LARAVEL_BOOST_DEPLOY_KEY: ${{ secrets.LARAVEL_BOOST_DEPLOY_KEY }}
