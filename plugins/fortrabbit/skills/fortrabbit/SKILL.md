@@ -42,7 +42,7 @@ The MCP tools named here and in the references come from the `fortrabbit` server
 | Need | MCP (`fortrabbit` server) | frbit CLI | Other |
 |---|---|---|---|
 | Account, apps, environments, deployments, domains | `get_you`, `list_*`, `get_*` | `frbit <group> list/get --json` | |
-| Create an app or environment | `create_app`, `create_environment` | `frbit apps create`, `frbit environments create` (first `frbit regions list`, `frbit plans list --region R --currency EUR --json` for the prices, `frbit presets list`; create only after the user agreed) | |
+| Create an app or environment | `create_app`, `create_environment` | `frbit apps create`, `frbit environments create` (first `frbit regions list`, `frbit plans list --region R --currency EUR --json`, `frbit presets list`; `--dry-run` shows the price; create only after the user agreed) | |
 | Environment variables | `get_environment`, `update_environment` | `frbit environments variables get/update` | |
 | Branch, build and post-deploy commands | `update_environment` | `frbit environments update` | |
 | PHP version | – | `frbit environments create --php-version`, `frbit environments update <env> --php-version` | dashboard |

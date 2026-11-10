@@ -23,7 +23,7 @@ Then continue here.
 
 1. `list_regions`, `list_software_presets`, `list_component_plans` with `regionIdentifier` (prices are `null` without it), `list_git_branches`.
    CLI: `frbit regions list`, `frbit plans list --region <id> --currency EUR --json` (`--component <slug>` narrows it; prices are `priceInCents`), `frbit presets list`, `frbit git branches <owner/repo>`. Run them before `frbit apps create`, never guess a region, plan size or preset.
-   Read the price with `frbit plans list --json`, not from `frbit apps create`: on an account without a payment method `apps create` creates the trial app at once, without a price and without a question. With a payment method it prints the monthly price and asks; without a terminal it stops with `billed change needs --yes`. Run `apps create` only after the person agreed to the price, and pass `--yes` only after their yes.
+   Check the price with `frbit apps create … --dry-run`: it prints the monthly price, or that the app is a trial at no cost, and creates nothing. Without `--dry-run`, an account without a payment method gets the trial app at once, without a question. With a payment method `apps create` prints the price and asks; without a terminal it stops with `billed change needs --yes`. Run it only after the person agreed to the price, and pass `--yes` only after their yes.
 2. Show the name, region, software, components and the **monthly price** after the trial. MCP creates a trial app without a payment method. Wait for a yes.
 3. `create_app` with `initialEnvironment.deployment.git` and `startFirstDeployment: true`.
 4. `get_deployment` until `status` is `succeeded`, `failed`, `canceled` or `unknown`, `get_deployment_logs` if it failed: [deploy.md](deploy.md).

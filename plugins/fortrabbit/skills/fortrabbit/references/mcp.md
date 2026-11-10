@@ -116,7 +116,7 @@ A changed variable reaches PHP after a restart or the next deployment: `restart_
 
 ## Billed changes
 
-MCP refuses every billed change, such as `create_environment` on an app with a payment method. The error message ends with a dashboard link: give the person that link, the change is theirs to make there. With the CLI, read the prices first with `frbit plans list --region <id> --currency EUR --json` and show them. `frbit apps create` and `frbit environments create` are no price check: an account without a payment method gets a trial app at once, with no price and no question. With a payment method they print the monthly price and ask before they book anything; without a terminal they stop with `billed change needs --yes`. Run them only after the person agreed, and add `--yes` only after their yes.
+MCP refuses every billed change, such as `create_environment` on an app with a payment method. The error message ends with a dashboard link: give the person that link, the change is theirs to make there. With the CLI, run `frbit apps create` or `frbit environments create` with `--dry-run` first: it prints the monthly price, or that it is a trial at no cost, and creates nothing. Show that to the person. Without `--dry-run`, an account without a payment method gets a trial app at once, with no question. With a payment method they print the monthly price and ask before they book anything; without a terminal they stop with `billed change needs --yes`. Run them only after the person agreed, and add `--yes` only after their yes.
 
 ## Resources
 
