@@ -27,6 +27,7 @@ Then continue here.
 2. Show the name, region, software, components and the **monthly price** after the trial. MCP creates a trial app without a payment method. Wait for a yes.
 3. `create_app` with `initialEnvironment.deployment.git` and `startFirstDeployment: true`.
 4. `get_deployment` until `status` is `succeeded`, `failed`, `canceled` or `unknown`, `get_deployment_logs` if it failed: [deploy.md](deploy.md).
+5. In the project folder, `frbit link`: it confirms the connected repo. Without one (rsync deploys), `frbit link <env>` writes `.fortrabbit/environments.yml`; commit it.
 
 Arguments and the environment variant: [mcp.md](mcp.md).
 
