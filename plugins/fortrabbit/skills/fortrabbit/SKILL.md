@@ -55,7 +55,7 @@ The MCP tools named here and in the references come from the `fortrabbit` server
 | Push a database | – | `frbit db push <file> <env>`, `--confirm <env>` only after a yes | `db-up.sh` ([database.md](references/database.md)) |
 | Sync files | – | `frbit files pull <folder> -e <env>`, `frbit files push <folder>`, always with a content folder; `--confirm <env>` (push, `--delete`) only after a yes | `rsync` ([files.md](references/files.md)) |
 | Remote commands | – | – | `ssh`, `mysql` |
-| Runtime logs (PHP, Apache, access, jobs) | `get_environment_logs` | `frbit environments logs <env> --source php --since 1h`, never `--follow` (it never ends) | dashboard Logs tab, or log files over SSH |
+| Runtime logs (PHP, Apache, access, jobs) | `get_environment_logs` | `frbit environments logs <env> --source php --since 1h` | dashboard Logs tab, or log files over SSH |
 
 `frbit link`, `frbit db pull|push` and `frbit files` need a recent frbit, the release that ships with skill 2.9.0. An unknown command means an older one: the person upgrades it ([access.md](references/access.md)), or use the Other column.
 
@@ -69,13 +69,13 @@ Do not ask for an ID before trying this. Resolve it once per session and reuse i
 
 1. `git remote get-url origin` → `owner/repo`, and `git branch --show-current`.
 2. MCP: `list_git_repositories` → the entry with that `fullName` has `connectedAppPublicId`. `get_app` on it → `region` (e.g. `eu-w1a`) and its `environments`. `list_environments` → of those, the one whose `git.branch` is the current branch. If several match or none does, list the environments by name and ask which one.
-3. Without MCP: `frbit link --json` → `environment`, `region` and `sshHost`, from a connected repo, `FORTRABBIT_ENVIRONMENT` or `.fortrabbit/environments.yml` at the repo root (label, usually the branch → environment ID). It fails when nothing resolves: `frbit environments list --json`, ask which one, then `frbit link <env>` writes that file; commit it. Every `frbit` command takes the environment as ID or label; read-only ones find it without it, commands that change something need it named. Name it anyway, and check the `→ en-…` line on stderr.
+3. Without MCP: `frbit link --json` → `environment`, `region` and `sshHost`, from a connected repo, `FORTRABBIT_ENVIRONMENT` or `.fortrabbit/environments.yml` at the repo root (label, usually the branch → environment ID). It fails when nothing resolves: `frbit environments list --json --all`, ask which one, then `frbit link <env>` writes that file; commit it. Every `frbit` command takes the environment as ID or label; read-only ones find it without it, commands that change something need it named. Name it anyway, and check the `→ en-…` line on stderr. `--confirm` always takes the `en-` ID, never the label.
 4. Derived from that, nothing to store:
    - SSH: `<env>@ssh.<region>.frbit.app` (the CLI prints it as `sshHost`)
    - Default domain: `https://<env>.<region>.frbit.app`. The live URL is the main domain: `list_domains`, `isMain`
    - Database name and user: the environment ID
 
-No MCP tools, or a `401`: connect first ([references/access.md](references/access.md)). No account yet, or no match: the repo is not on fortrabbit yet, see [references/boarding.md](references/boarding.md). A deploy file `.fortrabbit/deploy.yml` (or `.yaml`, `.json`) means the repo deploys to fortrabbit and holds its deployment settings: read it before changing any ([deploy.md](references/deploy.md#deploy-file)). A plain `.fortrabbit` file with `app-env-id=` is a 1.x leftover: the person runs `frbit link` in a terminal to move the ID into `.fortrabbit/environments.yml`.
+No MCP tools, or a `401`: connect first ([references/access.md](references/access.md)). No account yet, or no match: the repo is not on fortrabbit yet, see [references/boarding.md](references/boarding.md). A deploy file `.fortrabbit/deploy.yml` (or `.yaml`, `.json`) means the repo deploys to fortrabbit and holds its deployment settings: read it before changing any ([deploy.md](references/deploy.md#deploy-file)). A plain `.fortrabbit` file with `app-env-id=` is a leftover of an older skill and blocks `frbit`: the person deletes it and runs `frbit link <env-id>`.
 
 ## Scripts
 
