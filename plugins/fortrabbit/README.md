@@ -62,8 +62,7 @@ brew install fortrabbit/tap/frbit && frbit auth login
 assets/                listing icon
 skills/fortrabbit/
 ├── SKILL.md            which tool for what, finding the environment, safety rules
-├── references/         one file per task, loaded on demand
-└── scripts/            database pull and push over SSH
+└── references/         one file per task, loaded on demand
 ```
 
 ## Requirements
@@ -77,7 +76,7 @@ skills/fortrabbit/
 
 ## What the plugin connects to
 
-The skill is Markdown instructions plus two shell scripts. Nothing runs in the background: every connection below is a tool call or command the agent runs in the session, visible in the transcript. The agent asks before anything that changes state.
+The skill is Markdown instructions only. Nothing runs in the background: every connection below is a tool call or command the agent runs in the session, visible in the transcript. The agent asks before anything that changes state.
 
 | Destination | Purpose | When |
 | -- | -- | -- |
@@ -86,14 +85,14 @@ The skill is Markdown instructions plus two shell scripts. Nothing runs in the b
 | `https://www.fortrabbit.com/raw/migrate/from-<host>.md` | Migration guides per host, as Markdown | Moving a site from another host |
 | The old host of a site, over SSH | Reads settings, dumps the database, copies uploads; changes nothing there | Moving a site, with the access the person already has |
 | `https://api.fortrabbit.com/v1` | The public API, through the `frbit` CLI or with a token you create | CLI commands and API calls |
-| `<env>@ssh.<region>.frbit.app` | Remote commands, `rsync`, and the database scripts in `scripts/` | Remote commands, file sync, database pull and push |
+| `<env>@ssh.<region>.frbit.app` | Remote commands, `rsync`, `mysqldump` and `mysql` | Remote commands, file sync, database pull and push |
 | Your site's domains (`*.frbit.app`, `*.frbit.cloud`, custom domains) | Requests to your site, to read status codes and headers | Debugging an HTTP error |
 | `https://fortrabbit.betteruptime.com` | Platform status | Debugging an outage |
 | GitHub | `gh repo create`, the fortrabbit GitHub App | Creating a repository for a new app |
 
 The agent asks before it installs the `frbit` CLI (Homebrew or npm) or creates an SSH key.
 
-The MCP server and the CLI sign in through the browser, and the CLI keeps its credential in the operating system's credential store. The skill never asks for a password or token in the chat, and never reads one from your environment or `.env` files. The database scripts run `mysqldump` and `mysql` on the environment, so the database password never leaves it. Dumps land in the system temp folder.
+The MCP server and the CLI sign in through the browser, and the CLI keeps its credential in the operating system's credential store. The skill never asks for a password or token in the chat, and never reads one from your environment or `.env` files. The database commands run `mysqldump` and `mysql` on the environment, so the database password never leaves it. Dumps land in the system temp folder.
 
 ## Privacy
 

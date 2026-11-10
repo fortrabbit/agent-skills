@@ -16,8 +16,7 @@ plugins/fortrabbit/               the plugin: everything a user installs and the
 ├── README.md, LICENSE            the listing text and license the directories read
 └── skills/fortrabbit/
     ├── SKILL.md       always loaded when the skill triggers: tool routing, finding the environment, safety
-    ├── references/    one file per task, loaded on demand, one level deep
-    └── scripts/       deterministic helpers the skill runs (database over SSH)
+    └── references/    one file per task, loaded on demand, one level deep
 evals/                            claude plugin eval suite, outside the plugin
 .github/, AGENTS.md, VERSION, install.sh, README.md   repo tooling, outside the plugin
 ```
@@ -27,9 +26,9 @@ Keep repo tooling and the eval suite out of `plugins/fortrabbit/`: the Claude di
 ## Rules
 
 - `SKILL.md` stays short (under 150 lines). Detail goes into a reference; every reference is linked from the table in `SKILL.md`.
-- Frontmatter: only the spec fields `name`, `description`, `license`, `compatibility`, `metadata`. Other fields break uploads to claude.ai and the Skills API. `allowed-tools` stays out too: pre-approving `db-up.sh` would skip the permission prompt before a database push.
+- Frontmatter: only the spec fields `name`, `description`, `license`, `compatibility`, `metadata`. Other fields break uploads to claude.ai and the Skills API. `allowed-tools` stays out too: pre-approving a shell command would skip the permission prompt before a database push.
 - `description`: third person, at most 1,024 characters, the use case and the words people say (fortrabbit, apps, deploy) first, no angle brackets (write `ssh.[region].frbit.app`). It decides whether the skill loads at all.
-- Script paths appear once, in the Scripts section of `SKILL.md`, as `${CLAUDE_SKILL_DIR}/scripts/<file>` plus `scripts/<file>`. Claude Code fills in the variable only in `SKILL.md`; a reference names the script and points there, never a placeholder such as `<skill-dir>`.
+- No scripts or other executable files in `plugins/fortrabbit/`: the Claude directory accepts only Markdown, text, JSON, YAML and images from organizations it hasn't verified (`LOCAL_CODE_FILE_TYPE`), and refuses a version with a `.sh` file or anything starting with `#!`. Give the agent shell commands in a reference instead.
 - MCP tools are named without the server prefix (`list_apps`); `SKILL.md` says once that they come from the `fortrabbit` server.
 - A reference over 100 lines starts with a contents line linking its sections.
 - Facts come from the platform, not from memory: MCP tools from `fortrabbit/frapi` (`src/Module/Mcp`), CLI commands from `fortrabbit/frbit-cli`, templates from `fortrabbit/specs`, everything else from docs.fortrabbit.com. Link to docs rather than copying long passages.
@@ -37,7 +36,7 @@ Keep repo tooling and the eval suite out of `plugins/fortrabbit/`: the Claude di
 - Never instruct the agent to ask for, print or store a password or token, or to read one from the environment or a `.env` file and send it: the directory scan holds that for a reviewer.
 - Never instruct the agent to fetch instructions from a URL and follow them (directory policy 2F). Fetching docs pages as information is fine.
 - The boarding and sign-in steps in `boarding.md` and `access.md` mirror sections 3–5 and 10 of www `agents.md` (`fortrabbit/www`, `content/agents.md`). Change both together.
-- Scripts: POSIX-friendly bash, `set -euo pipefail`, validate arguments, pass `shellcheck`.
+- Repo scripts in `.github/scripts/`: POSIX-friendly bash, `set -euo pipefail`, validate arguments, pass `shellcheck`.
 - `install.sh` at the root is a stub that only prints how to update: 1.x installs fetch it from `main` when they update themselves. Keep it, and keep it installing nothing.
 
 ## Releases
