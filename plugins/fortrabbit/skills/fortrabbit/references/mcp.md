@@ -35,7 +35,7 @@ Reads:
 | `get_deployment_logs` | `publicId` | `logs[]` of `{log, time}`: the build and deploy output |
 | `list_domains`, `get_domain` | –, `publicId` | custom apex and subdomains, cloud domains (`<label>.frbit.cloud`) and the default domain of every environment. `isMain` marks the live URL |
 | `list_jobs` | `environmentPublicId` | `jobs[]` (`publicId`, `name`, `type`, `command`, `isActive`, `exitTimeout`, `exitSignal`, `interval`, `expression`, `maxRuntime`), `limit` (jobs the booked plan allows, 0 when the jobs component is not booked), `count` |
-| `get_environment_logs` | `environmentPublicId`, `source` (`php` default, `apache`, `access`, `jobs`), `limit` (1–200, default 50), `since` (ISO 8601 with time zone, or `15m`, `1h`, `7d`), `before`, `status` and `method` (access log only; `status` takes `500`, `5xx` or `500,503`) | `entries[]` newest first (`time`, `level`, `message`, `meta`) and `olderCursor`: pass it as `before` for the next older page, `null` at the end. Kept 14 days. Live tailing is for the person's terminal |
+| `get_environment_logs` | `environmentPublicId`, `source` (`php` default, `apache`, `access`, `jobs`), `limit` (1–200, default 50), `since` (ISO 8601 with time zone, or `15m`, `1h`, `7d`), `before`, `status` and `method` (access log only; `status` takes `500`, `5xx` or `500,503`) | `entries[]` newest first (`time`, `level`, `message`, `meta`) and `olderCursor`: pass it as `before` for the next older page, `null` at the end. Kept 14 days. No live tail: ask again with `since` |
 | `get_environment_metrics` | `environmentPublicId`, `metric` (a slug such as `php-response-time`, `php-memory`, `error-503`, `traffic`; omit for the summary, whose `metrics` lists the slugs booked for this environment) | Summary: `usage[]` of storage, database and traffic (`current`, `limit`, `percent`, plus readable sizes) and `last24Hours` (requests, 500/503/504 errors, response times, PHP memory peak, out-of-memory kills). With `metric`: that metric over 24 hours, one point per hour. Start here for a slow or failing site, then `get_environment_logs` |
 | `list_backups` | `environmentPublicId` | `backups[]` newest first: `status`, `trigger` (scheduled or manual), `createdAt`, `completedAt`, `filesSizeBytes`, `databaseSizeBytes`, `retentionSlot`, `availableUntil`. Needs the backups component |
 | `list_teams`, `get_team` | –, `publicId` | teams and the account's role |
@@ -132,7 +132,7 @@ In Claude Code the person writes `@fortrabbit:frbit://env/en-a1b2c3`. Use the `p
 | Operation | Route |
 |---|---|
 | Restore or download a backup | restore in the dashboard, download with `frbit backups download` |
-| Scale components, change plans | `frbit environments components update <env> --component SLUG=SIZE` (billed: shows the price and asks first), or the dashboard |
+| Scale components, change plans | `frbit environments components update <env> --component SLUG=SIZE` (billed: shows the price and asks first; `--yes` only after the person's yes), or the dashboard |
 | Remote commands, database, files | [ssh.md](ssh.md), [database.md](database.md), [files.md](files.md) |
 | Delete a job | `frbit jobs delete <job>` after a yes, or the dashboard |
 | Delete an app, environment, domain or team | `frbit <group> delete` after a yes, or the dashboard |
