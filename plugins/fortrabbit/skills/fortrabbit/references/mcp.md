@@ -106,7 +106,7 @@ A changed variable reaches PHP after a restart or the next deployment: `frbit en
 
 ## Billed changes
 
-MCP refuses every billed change, such as `create_environment` on an app with a payment method. The error message ends with a dashboard link: give the person that link, the change is theirs to make there. With the CLI, `frbit environments create` works too, after the person confirmed the monthly price.
+MCP refuses every billed change, such as `create_environment` on an app with a payment method. The error message ends with a dashboard link: give the person that link, the change is theirs to make there. With the CLI, `frbit apps create` and `frbit environments create` print the monthly price and ask before they book anything. Without a terminal they stop with `billed change needs --yes`: show the printed price to the person and add `--yes` only after their yes.
 
 ## Resources
 
