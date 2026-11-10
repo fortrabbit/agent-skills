@@ -24,8 +24,8 @@ curl -sI https://<domain> | head -20
 | 404 on every page | Wrong root path, or nothing deployed yet | Root path setting (`web` for Craft CMS 4 and 5, `public` for Craft CMS 6, Laravel, Statamic and Symfony, the code root for Kirby and WordPress); `ssh … 'ls -la'` |
 | 404 on some pages | Missing `.htaccess` or rewrite rules | Apache error log; `.htaccess` in the root path |
 | 500 | PHP error: exception, missing env var (`APP_KEY`, `CRAFT_SECURITY_KEY`, database), failed migration, wrong PHP version | PHP log, last deployment log, `get_environment` variables, the dashboard PHP version against `composer.json` |
-| 503 | PHP busy or crashing: memory exhausted, a plugin killing the process, slow requests piling up | PHP log, metrics tab for memory and swap; a restart only buys time |
-| 504 | Requests too slow: heavy queries, external API calls, image transforms, bots on uncached URLs | Access log for the slow URLs and clients, metrics for response times |
+| 503 | PHP busy or crashing: memory exhausted, a plugin killing the process, slow requests piling up | PHP log, `get_environment_metrics` (`frbit environments metrics <env>`) for memory and out-of-memory kills; a restart only buys time |
+| 504 | Requests too slow: heavy queries, external API calls, image transforms, bots on uncached URLs | Access log for the slow URLs and clients, `get_environment_metrics` (`--metric php-response-time`) for response times |
 
 ## Restart
 

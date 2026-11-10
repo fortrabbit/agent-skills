@@ -56,12 +56,13 @@ The MCP tools named here and in the references come from the `fortrabbit` server
 | Sync files | – | `frbit files pull <folder> -e <env>`, `frbit files push <folder>`, always with a content folder; `--confirm <env>` (push, `--delete`) only after a yes | `rsync` ([files.md](references/files.md)) |
 | Remote commands | – | – | `ssh`, `mysql` |
 | Runtime logs (PHP, Apache, access, jobs) | `get_environment_logs` | `frbit environments logs <env> --source php --since 1h` | dashboard Logs tab, or log files over SSH |
+| Metrics (usage, errors, response times, memory) | `get_environment_metrics` | `frbit environments metrics <env>`, `--metric <slug> --range 7d` | dashboard metrics tab |
 
 `frbit link`, `frbit db pull|push` and `frbit files` need a recent frbit, the release that ships with skill 2.9.0. An unknown command means an older one: the person upgrades it ([access.md](references/access.md)), or use the Other column.
 
 No MCP server and no CLI yet? Connecting takes a few commands: [references/access.md](references/access.md).
 
-No shell, as in claude.ai chat or Cowork: only the MCP column works. Say which steps need a terminal (SSH, database, files, deploy, restart), give the person the exact command with IDs filled in to run themselves, and offer the dashboard route where there is one.
+No shell, as in claude.ai chat or Cowork: only the MCP column works. Say which steps need a terminal (SSH, database, files), give the person the exact command with IDs filled in to run themselves, and offer the dashboard route where there is one.
 
 ## Find the environment
 
