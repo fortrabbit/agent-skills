@@ -13,12 +13,12 @@ A deployment builds the latest commit of the connected branch, copies it into th
 | Situation | How |
 |---|---|
 | Push to deploy (default) | `git push origin <branch>`. The fortrabbit GitHub App starts the deployment. |
-| Manual trigger, or redeploy the same commit with changed settings | `frbit environments deploy <env>` |
+| Manual trigger, or redeploy the same commit with changed settings | `create_deployment`, or `frbit environments deploy <env>` |
 | From CI or a CMS publish event | Deploy hook, set up by the person (below) |
 
 Show the commands and ask before running them. One yes can cover commit, push and deploy when all three were shown together. An older commit cannot be redeployed: revert it in git and push.
 
-The deploy hook URL is a secret: anyone who has it can deploy. The person enables it in the dashboard under Deployment → Deploy hook and stores it as a CI secret, never in a committed file. The agent does not call it; it deploys with `frbit environments deploy`. For the person's CI step:
+The deploy hook URL is a secret: anyone who has it can deploy. The person enables it in the dashboard under Deployment → Deploy hook and stores it as a CI secret, never in a committed file. The agent does not call it; it deploys with `create_deployment` or `frbit environments deploy <env>`. For the person's CI step:
 
 ```shell
 curl -X POST "<deploy hook URL from the CI secret>" -H "User-Agent: fortrabbit"
@@ -40,7 +40,7 @@ It answers `202` with the deployment ID, or `404` for a wrong or revoked URL.
 | Composer error | `composer.lock` out of sync, a private package, a PHP version mismatch | `composer install` locally, commit the lock file; compare the PHP version in the dashboard with `composer.json` |
 | Build command error (`npm run build` …) | Missing dependency or script | Reproduce locally with the same command |
 | Post deploy command failed | Migration or cache command broke | The new code is **already live**. Fix and push again, or run the command over SSH: [ssh.md](ssh.md) |
-| Nothing happens after a push | Pushed to a branch that is not connected, or the trigger is manual | Compare the branch with `git.branch`; use `frbit environments deploy` |
+| Nothing happens after a push | Pushed to a branch that is not connected, or the trigger is manual | Compare the branch with `git.branch`; use `create_deployment` or `frbit environments deploy <env>` |
 
 ## Build and post deploy commands
 
@@ -69,10 +69,10 @@ distribution:
 
 - When the deployed branch has a deploy file, it is the only source for these settings. `get_environment` still shows the values stored in the dashboard, which are not used.
 - A key left out falls back to its default, not to the dashboard: no build commands, no post deploy commands, nothing cached, the repository root, `replace`, nothing excluded. A Laravel file without `php artisan migrate --force` stops migrating; a Statamic or Kirby file without `excludePatterns` replaces uploads and content on every deployment.
-- MCP doesn't return the exclude patterns, strategy or cached directories. Take them from the environment's Deployment page in the dashboard, or ask the person; never write a file without them.
+- MCP doesn't return the exclude patterns, strategy or cached directories. Take them from `frbit environments get <env> --json`, the environment's Deployment page in the dashboard, or ask the person; never write a file without them.
 - Changing a setting is a commit and a push; redeploying the same commit does not pick up a change. `update_environment` refuses build and post deploy commands and any `git` change with `deployFile: Deployment settings are managed by the deploy file.` A branch change then happens in the dashboard. Build commands passed to `create_app` are stored but unused when the branch has a file.
 - `apiVersion` is required; unknown keys, empty strings and `.` or `..` in paths make the file invalid. An invalid file fails the deployment before the build, and the code on the environment stays as it was. `get_deployment_logs` then returns a single line that names the file and the problem: the line for a syntax error, the key for a wrong value.
 - Deleting the file and pushing brings back the dashboard settings.
-- Branch, deploy trigger, deploy hook, PHP and Node.js version stay in the dashboard.
+- Branch, deploy trigger, deploy hook, PHP and Node.js version are not in the deploy file: read them with `frbit environments get <env>`, set them with `frbit environments update <env>` (`--branch`, `--trigger`, `--deploy-hook`, `--php-version`, `--node-version`), or in the dashboard.
 
 Write a new deploy file only when the person asks for deployment settings in the repo. It is a new feature and its format may still change.
