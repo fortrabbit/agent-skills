@@ -57,6 +57,8 @@ The MCP tools named here and in the references come from the `fortrabbit` server
 | Remote commands | – | – | `ssh`, `mysql` |
 | Runtime logs (PHP, Apache, access, jobs) | `get_environment_logs` | `frbit environments logs <env> --source php` (`--follow`) | dashboard Logs tab, or log files over SSH |
 
+`frbit link`, `frbit db pull|push` and `frbit files` need a recent frbit, the release that ships with skill 2.9.0. An unknown command means an older one: the person upgrades it ([access.md](references/access.md)), or use the Other column.
+
 No MCP server and no CLI yet? Connecting takes a few commands: [references/access.md](references/access.md).
 
 No shell, as in claude.ai chat or Cowork: only the MCP column works. Say which steps need a terminal (SSH, database, files, deploy, restart), give the person the exact command with IDs filled in to run themselves, and offer the dashboard route where there is one.
@@ -67,7 +69,7 @@ Do not ask for an ID before trying this. Resolve it once per session and reuse i
 
 1. `git remote get-url origin` → `owner/repo`, and `git branch --show-current`.
 2. MCP: `list_git_repositories` → the entry with that `fullName` has `connectedAppPublicId`. `get_app` on it → `region` (e.g. `eu-w1a`) and its `environments`. `list_environments` → of those, the one whose `git.branch` is the current branch. If several match or none does, list the environments by name and ask which one.
-3. Without MCP: `frbit link` confirms the environment of a connected repo, or reads `.fortrabbit/environments.yml` (label, usually the branch → environment ID). No match: `frbit link <env>` writes that file; commit it.
+3. Without MCP: `frbit link` confirms the environment of a connected repo, or reads `.fortrabbit/environments.yml` (label, usually the branch → environment ID). No match: `frbit environments list --json`, ask which one, then `frbit link <env>` writes that file; commit it.
 4. Derived from that, nothing to store:
    - SSH: `<env>@ssh.<region>.frbit.app`
    - Default domain: `https://<env>.<region>.frbit.app`. The live URL is the main domain: `list_domains`, `isMain`

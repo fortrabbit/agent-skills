@@ -21,7 +21,7 @@ Git deploys code. Uploads, images and flat-file content live only on the environ
 
 ## With the frbit CLI
 
-Run it when you have a shell tool; otherwise give the person the command to run in their terminal. Always name a content folder from the table above; never run `frbit files` without a path, which syncs all of `/data/www` with the current folder. The path is relative to `/data/www` and to the current folder (no trailing slash needed): `web/uploads` syncs `/data/www/web/uploads` with `./web/uploads`. `.git/` and `.fortrabbit/` are never synced. `--env <env>` picks the environment; without it, the environment of the checkout (`frbit link`). It needs the local `rsync`, `ssh` and an SSH key registered for the person ([ssh.md](ssh.md)); an error naming `dash.fortrabbit.com/new/ssh-key` means the key was rejected or the connection failed.
+Run it when you have a shell tool; otherwise give the person the command to run in their terminal. Always name a content folder from the table above; never run `frbit files` without a path, which syncs all of `/data/www` with the current folder. The path is relative to `/data/www` and to the current folder (no trailing slash needed): `web/uploads` syncs `/data/www/web/uploads` with `./web/uploads`. Only a sync without a path skips `.git/`, `.fortrabbit/`, `.env` and `.env.*`; a folder path has no excludes. `--env <env>` picks the environment; without it, the environment of the checkout (`frbit link`). It needs the local `rsync`, `ssh` and an SSH key registered for the person ([ssh.md](ssh.md)); an error naming `dash.fortrabbit.com/new/ssh-key` means the key was rejected or the connection failed.
 
 ```shell
 # pull
