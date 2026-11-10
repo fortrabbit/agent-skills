@@ -4,8 +4,8 @@ Three ways in, each with its own sign-in. None of them needs a credential in the
 
 | Route | For | Sign-in |
 |---|---|---|
-| MCP server `https://mcp.fortrabbit.com/mcp` | Agents: read, provision, env vars, jobs, deployment and runtime logs | OAuth in the browser, the client stores it |
-| `frbit` CLI | Deploy, restart, deletes, CI, everything MCP lacks | `frbit auth login` (`--signup` when the person has no account), token in the system keychain |
+| MCP server `https://mcp.fortrabbit.com/mcp` | Agents: read, provision, env vars, deploy, restart, domains, jobs, backups, logs and metrics | OAuth in the browser, the client stores it |
+| `frbit` CLI | Deletes, database, files, PHP version, CI, everything MCP lacks | `frbit auth login` (`--signup` when the person has no account), token in the system keychain |
 | REST API `https://api.fortrabbit.com/v1` | Own scripts and integrations | `Authorization: Bearer frbit-at-…` |
 
 ## MCP
@@ -78,4 +78,4 @@ A token carries scopes: `read` (GET), `write` (also POST, PUT, PATCH), `delete` 
 | `403` / `Access denied.` | Signed in, but the object is not this account's | Check `get_you`; client accounts cannot create environments |
 | `403` on `/v1` or from `frbit` with `FRBIT_TOKEN` | The token lacks the scope for this method | The person creates a token with `write` or `delete` |
 | `Account blocked.`, unverified, not onboarded | The account itself is not usable yet | The person fixes it in the dashboard |
-| `429` | Rate limit | Wait for `Retry-After`; never retry a failed sign-in in a loop |
+| `429` | Rate limit | Wait for `Retry-After`; `frbit` waits once by itself, do not cancel and retry. Never retry a failed sign-in in a loop |
