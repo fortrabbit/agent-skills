@@ -154,4 +154,4 @@ A tool failure comes back as a normal result with `isError: true` and a plain-te
 | `This change is billed to the app's payment method, so it cannot be made over MCP. …` | The change would be billed | Give the person the dashboard link from the message |
 | `Error while executing tool` | Unexpected server error | Do not retry blindly or invent arguments; report it and fall back to the dashboard |
 
-Rate limit: about 20 requests per minute per token, shared with the REST API. Batch discovery calls and do not poll `list_*` in a loop. A `429` carries `Retry-After`.
+Rate limit: about 120 requests per minute per token, shared with the REST API. Batch discovery calls and do not poll `list_*` in a loop. A `429` carries `Retry-After`.
