@@ -21,14 +21,14 @@ Git deploys code. Uploads, images and flat-file content live only on the environ
 
 ## With the frbit CLI
 
-Run it when you have a shell tool; otherwise give the person the command to run in their terminal. Always name a content folder from the table above; never run `frbit files` without a path, which syncs all of `/data/www` with the current folder. The path is relative to `/data/www` and to the current folder (no trailing slash needed): `web/uploads` syncs `/data/www/web/uploads` with `./web/uploads`. Only a sync without a path skips `.git/`, `.fortrabbit/`, `.env` and `.env.*`; a folder path has no excludes. `--env <env>` picks the environment; without it, the environment of the checkout (`frbit link`). It needs the local `rsync`, `ssh` and an SSH key registered for the person ([ssh.md](ssh.md)); an error naming `dash.fortrabbit.com/new/ssh-key` has three causes: the key was rejected, the connection failed, or, on the first connection from this machine, the host key is unknown. An agent shell has no terminal, so ssh runs with `BatchMode=yes` and cannot accept a host key: the person runs `ssh <env>@ssh.<region>.frbit.app exit` once in a terminal and types yes, or `ssh-keyscan ssh.<region>.frbit.app >> ~/.ssh/known_hosts`. Then run the command again.
+Run it when you have a shell tool; otherwise give the person the command to run in their terminal. Always name a content folder from the table above; never run `frbit files` without a path, which syncs all of `/data/www` with the current folder. The path is relative to `/data/www` and to the current folder (no trailing slash needed): `web/uploads` syncs `/data/www/web/uploads` with `./web/uploads`. Only a sync without a path skips `.git/`, `.fortrabbit/`, `.env` and `.env.*`; database dumps, downloaded backups and frbit temp files are skipped at any depth. `-e <env>` (`--environment`, ID or label) picks the environment; without it, the environment of the checkout (`frbit link`). It needs the local `rsync`, `ssh` and an SSH key registered for the person ([ssh.md](ssh.md)); an error naming `dash.fortrabbit.com/new/ssh-key` has three causes: the key was rejected, the connection failed, or, on the first connection from this machine, the host key is unknown. An agent shell has no terminal, so ssh runs with `BatchMode=yes` and cannot accept a host key: the person runs `ssh <env>@ssh.<region>.frbit.app exit` once in a terminal and types yes, or `ssh-keyscan ssh.<region>.frbit.app >> ~/.ssh/known_hosts`. Then run the command again.
 
 ```shell
 # pull
-frbit files pull web/uploads --env <env>
+frbit files pull web/uploads -e <env>
 # push: dry run first, show what would change, wait for a yes
-frbit files push web/uploads --env <env> --dry-run
-frbit files push web/uploads --env <env> --confirm <env>
+frbit files push web/uploads -e <env> --dry-run
+frbit files push web/uploads -e <env> --confirm <env>
 ```
 
 `--delete` also removes files on the receiving side that the sending side lacks, local ones on a pull: dry run first, show what would be deleted and wait for a yes. Confirm with the person before every push and every `--delete`; both need `--confirm <env>`. Pass `--confirm` only after the yes, since a shell tool has no terminal to type the ID in. Without a shell tool, the person runs the command without `--confirm` and types the ID. On an environment that deploys from git, the push warns that the next deployment overwrites code changes.

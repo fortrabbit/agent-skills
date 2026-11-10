@@ -53,7 +53,7 @@ The MCP tools named here and in the references come from the `fortrabbit` server
 | Delete | – | `frbit <group> delete`, after a yes | dashboard |
 | Pull a database | – | `frbit db pull <env> --output /tmp/` | `ssh` + `mysqldump` ([database.md](references/database.md)) |
 | Push a database | – | `frbit db push <file> <env>`, `--confirm <env>` only after a yes | `db-up.sh` ([database.md](references/database.md)) |
-| Sync files | – | `frbit files pull <folder> --env <env>`, `frbit files push <folder>`, always with a content folder; `--confirm <env>` (push, `--delete`) only after a yes | `rsync` ([files.md](references/files.md)) |
+| Sync files | – | `frbit files pull <folder> -e <env>`, `frbit files push <folder>`, always with a content folder; `--confirm <env>` (push, `--delete`) only after a yes | `rsync` ([files.md](references/files.md)) |
 | Remote commands | – | – | `ssh`, `mysql` |
 | Runtime logs (PHP, Apache, access, jobs) | `get_environment_logs` | `frbit environments logs <env> --source php --since 1h`, never `--follow` (it never ends) | dashboard Logs tab, or log files over SSH |
 
@@ -69,7 +69,7 @@ Do not ask for an ID before trying this. Resolve it once per session and reuse i
 
 1. `git remote get-url origin` → `owner/repo`, and `git branch --show-current`.
 2. MCP: `list_git_repositories` → the entry with that `fullName` has `connectedAppPublicId`. `get_app` on it → `region` (e.g. `eu-w1a`) and its `environments`. `list_environments` → of those, the one whose `git.branch` is the current branch. If several match or none does, list the environments by name and ask which one.
-3. Without MCP: `frbit link --json` → `environment`, `region` and `sshHost`, from a connected repo, `FORTRABBIT_ENVIRONMENT` or `.fortrabbit/environments.yml` at the repo root (label, usually the branch → environment ID). It fails when nothing resolves: `frbit environments list --json`, ask which one, then `frbit link <env>` writes that file; commit it.
+3. Without MCP: `frbit link --json` → `environment`, `region` and `sshHost`, from a connected repo, `FORTRABBIT_ENVIRONMENT` or `.fortrabbit/environments.yml` at the repo root (label, usually the branch → environment ID). It fails when nothing resolves: `frbit environments list --json`, ask which one, then `frbit link <env>` writes that file; commit it. Every `frbit` command takes the environment as ID or label; read-only ones find it without it, commands that change something need it named. Name it anyway, and check the `→ en-…` line on stderr.
 4. Derived from that, nothing to store:
    - SSH: `<env>@ssh.<region>.frbit.app` (the CLI prints it as `sshHost`)
    - Default domain: `https://<env>.<region>.frbit.app`. The live URL is the main domain: `list_domains`, `isMain`
