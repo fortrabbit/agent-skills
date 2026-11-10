@@ -45,6 +45,7 @@ Host ssh.*.frbit.app
 | Error | Likely cause |
 |---|---|
 | `Permission denied (publickey)` | Key not registered, wrong key offered (`ssh -v` shows which), or no developer access to that environment |
+| `Host key verification failed`, or exit 255 from `frbit db`/`frbit files` with no terminal | First connection from this machine: the host key is unknown and `BatchMode=yes` cannot ask. The person runs `ssh <env>@ssh.<region>.frbit.app exit` once in a terminal, or `ssh-keyscan ssh.<region>.frbit.app >> ~/.ssh/known_hosts` |
 | `Connection timed out`, `Network is unreachable` | Port 22 blocked by a firewall or VPN, or a wrong region in the hostname |
 | `Could not resolve hostname` | Typo in `<env>` or `<region>`; re-resolve both |
 | A banner instead of a greeting, or refused after working before | SSH rate limit per IP: more than 20 new connections a minute, or repeated wrong-key logins. Stop the loop, wait a few minutes |

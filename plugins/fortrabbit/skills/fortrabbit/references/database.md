@@ -12,7 +12,7 @@ With the frbit CLI, run it when you have a shell tool; otherwise (claude.ai chat
 frbit db pull <env> --output /tmp/
 ```
 
-It writes `/tmp/<env>.sql.gz` (default `./<env>.sql.gz`, so keep `--output` outside the repo), rejects an empty dump, never touches a local database and refuses to overwrite a file without `--force`. Without the argument it uses the environment of the checkout (`frbit link`). `--stdout` writes plain SQL instead. It needs the local `ssh` and an SSH key registered for the person ([ssh.md](ssh.md)); an error naming `dash.fortrabbit.com/new/ssh-key` means the key was rejected or the connection failed.
+It writes `/tmp/<env>.sql.gz` (default `./<env>.sql.gz`, so keep `--output` outside the repo), rejects an empty dump, never touches a local database and refuses to overwrite a file without `--force`. Without the argument it uses the environment of the checkout (`frbit link`). `--stdout` writes plain SQL instead. It needs the local `ssh` and an SSH key registered for the person ([ssh.md](ssh.md)); an error naming `dash.fortrabbit.com/new/ssh-key` has three causes: the key was rejected, the connection failed, or, on the first connection from this machine, the host key is unknown. An agent shell has no terminal, so ssh runs with `BatchMode=yes` and cannot accept a host key: the person runs `ssh <env>@ssh.<region>.frbit.app exit` once in a terminal and types yes, or `ssh-keyscan ssh.<region>.frbit.app >> ~/.ssh/known_hosts`. Then run the command again.
 
 No frbit, or a CLI without `db pull` (`unknown command "db"`): the plain SSH command, with the IDs filled in:
 
