@@ -34,7 +34,7 @@ A debug switch depends on the software: Laravel and Statamic use `APP_DEBUG`, Cr
 
 - **Queue workers and scheduler** (Laravel, Statamic, Craft CMS): need the `jobs` component and a job per process; `frbit jobs list <env>` shows `Jobs: <count> of <limit>` (limit 0 means not booked, create answers 403). Commands must start with `php ` or `bash `. MCP: `create_job`. CLI:
   - Laravel queue worker: `frbit jobs create <env> --name queue --type worker --command "php artisan queue:work"`
-  - Craft CMS 4, 5 queue runner: `frbit jobs create <env> --name queue --type worker --command "php craft queue/listen"`
+  - Craft CMS queue runner: `frbit jobs create <env> --name queue --type worker --command "php craft queue/listen"`
   - Scheduler: `frbit jobs create <env> --name scheduler --type cron --interval minute --max-runtime 300 --command "php artisan schedule:run"`
   - Custom schedule: `--interval custom --expression "0 */2 * * *"`; a worker takes no `--interval`, `--expression` or `--max-runtime`. Stop one with `frbit jobs update <job> --inactive`.
 - **Craft CMS**: project config in `config/project/` deploys with git; content and assets do not. Volumes on local disk need [files.md](files.md); the database needs [database.md](database.md).
