@@ -1,0 +1,1 @@
+{"jobs": [{"publicId": "jo-a1b2c3", "environment": "en-a1b2c3", "name": "queue worker", "type": "worker", "command": "php artisan queue:work", "isActive": true, "exitTimeout": 30, "exitSignal": "TERM", "interval": null, "expression": null, "maxRuntime": null}], "limit": 2, "count": 1}

@@ -1,0 +1,1 @@
+{"publicId": "jo-d4e5f6", "environment": "en-a1b2c3", "name": "scheduler", "type": "cron", "command": "php artisan schedule:run", "isActive": true, "exitTimeout": 30, "exitSignal": "TERM", "interval": "minute", "expression": "* * * * *", "maxRuntime": 300}

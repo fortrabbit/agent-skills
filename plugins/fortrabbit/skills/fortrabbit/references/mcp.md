@@ -34,10 +34,12 @@ Reads:
 | `get_deployment` | `publicId` | `environment`, `branch`, `commitHash`, `commitMessage`, `status`, `createdAt`, `committedAt` |
 | `get_deployment_logs` | `publicId` | `logs[]` of `{log, time}`: the build and deploy output |
 | `list_domains`, `get_domain` | –, `publicId` | custom apex and subdomains, cloud domains (`<label>.frbit.cloud`) and the default domain of every environment. `isMain` marks the live URL |
+| `list_jobs` | `environmentPublicId` | `jobs[]` (`publicId`, `name`, `type`, `command`, `isActive`, `exitTimeout`, `exitSignal`, `interval`, `expression`, `maxRuntime`), `limit` (jobs the booked plan allows, 0 when the jobs component is not booked), `count` |
+| `get_environment_logs` | `environmentPublicId`, `source` (`php` default, `apache`, `access`, `jobs`), `limit` (1–200, default 50), `since` (ISO 8601 with time zone, or `15m`, `1h`, `7d`), `before`, `status` and `method` (access log only; `status` takes `500`, `5xx` or `500,503`) | `entries[]` newest first (`time`, `level`, `message`, `meta`) and `olderCursor`: pass it as `before` for the next older page, `null` at the end. Kept 14 days. Live tailing is for the person's terminal |
 | `list_teams`, `get_team` | –, `publicId` | teams and the account's role |
 | `list_payment_methods`, `get_payment_method` | –, `publicId` | the account's payment methods |
 
-A `list_*` result is an object with one list (`{apps: […]}`). Only `list_deployments` filters and pages; the others return the whole set.
+A `list_*` result is an object with one list (`{apps: […]}`; `list_jobs` adds `limit` and `count`). Only `list_deployments` filters and pages; the others return the whole set. `get_environment_logs` pages by cursor.
 
 Writes:
 
@@ -46,6 +48,8 @@ Writes:
 | `create_app` | Creates a trial app and its first environment, with a cloud domain when the name is free; optionally starts the first deployment |
 | `create_environment` | Adds an environment to an app without a payment method, with a cloud domain when the name is free |
 | `update_environment` | Changes only the fields sent: `name`, `git` (branch, directory), `buildCommands`, `postDeployCommands`, `environmentVariables` |
+| `create_job` | Adds a worker or cron job to an environment. Required: `environmentPublicId`, `name`, `command` (starts with `php ` or `bash `), `type` (`worker` runs all the time, `cron` runs on a schedule). A cron job also needs `interval` (`minute`, `hour`, `day`, `custom`) and `maxRuntime` (seconds: 300, 1800, 3600, 10800, 21600), and `expression` (crontab) for `custom`. Optional: `isActive` (default true), `exitTimeout` (1, 5, 10, 30; default 30), `exitSignal` (`TERM`, `INT`; default `TERM`). Needs the jobs component and a free slot (`list_jobs`); not for client accounts |
+| `update_job` | Changes only the fields sent on a job: `publicId` (from `list_jobs`), then the optional fields of `create_job`. `type` turns a worker into a cron job or back, and a cron job then needs `interval` and `maxRuntime`. `isActive: false` stops a job without deleting it. Not for client accounts |
 
 ## Resolving arguments
 
@@ -125,6 +129,7 @@ In Claude Code the person writes `@fortrabbit:frbit://env/en-a1b2c3`. Use the `p
 | Restart an environment | `frbit environments restart <env>` |
 | Scale components, change plans | `frbit environments components update <env> --component SLUG=SIZE` (billed: shows the price and asks first), or the dashboard |
 | Remote commands, database, files | [ssh.md](ssh.md), [database.md](database.md), [files.md](files.md) |
+| Delete a job | `frbit jobs delete <job>` after a yes, or the dashboard |
 | Delete an app, environment, domain or team | `frbit <group> delete` after a yes, or the dashboard |
 | Read or change the PHP version | CLI or dashboard, see "Updating an environment" |
 | Anything billed | the dashboard link from the error, see "Billed changes" |
