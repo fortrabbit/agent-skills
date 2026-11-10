@@ -15,7 +15,7 @@
   "interface": {
     "displayName": "fortrabbit",
     "shortDescription": "Deploy and run PHP apps",
-    "longDescription": "Hosts, deploys and debugs PHP apps on fortrabbit, managed PHP cloud hosting for Laravel, Craft CMS, Statamic, Kirby, WordPress, Symfony and plain PHP. The plugin reads the apps, environments, deployments, domains and teams of the connected fortrabbit account, creates apps and environments, and changes environment settings and variables. Its skill covers the work around that: deploying with git push, reading deployment logs, running commands over SSH, syncing databases and files, and finding the cause of HTTP 500 errors. It needs a fortrabbit account, and sign-in runs in the browser. Deleting apps or environments is not available as a tool.",
+    "longDescription": "Hosts, deploys and debugs PHP apps on fortrabbit, managed PHP cloud hosting for Laravel, Craft CMS, Statamic, Kirby, WordPress, Symfony and plain PHP. The plugin reads the apps, environments, deployments, domains and teams of the connected fortrabbit account, creates apps, environments, domains, jobs and backups, changes environment settings and variables, deploys and restarts, and reads logs and metrics. Its skill covers the work around that: deploying with git push, reading deployment logs, running commands over SSH, syncing databases and files, and finding the cause of HTTP 500 errors. It needs a fortrabbit account, and sign-in runs in the browser. Deleting apps or environments is not available as a tool.",
     "developerName": "fortrabbit",
     "category": "Developer Tools",
     "capabilities": ["Read", "Write"],
