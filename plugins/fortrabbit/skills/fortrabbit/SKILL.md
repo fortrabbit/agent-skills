@@ -53,7 +53,7 @@ The MCP tools named here and in the references come from the `fortrabbit` server
 | Delete | – | `frbit <group> delete`, after a yes | dashboard |
 | Pull a database | – | `frbit db pull <env> --output /tmp/` | `ssh` + `mysqldump` ([database.md](references/database.md)) |
 | Push a database | – | `frbit db push <file> <env>`, `--confirm <env>` only after a yes | `db-up.sh` ([database.md](references/database.md)) |
-| Sync files | – | `frbit files pull <path> --env <env>`, `frbit files push`, `--confirm <env>` only after a yes | `rsync` ([files.md](references/files.md)) |
+| Sync files | – | `frbit files pull <folder> --env <env>`, `frbit files push <folder>`, always with a content folder; `--confirm <env>` (push, `--delete`) only after a yes | `rsync` ([files.md](references/files.md)) |
 | Remote commands | – | – | `ssh`, `mysql` |
 | Runtime logs (PHP, Apache, access, jobs) | `get_environment_logs` | `frbit environments logs <env> --source php` (`--follow`) | dashboard Logs tab, or log files over SSH |
 

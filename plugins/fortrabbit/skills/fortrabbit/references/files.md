@@ -21,7 +21,7 @@ Git deploys code. Uploads, images and flat-file content live only on the environ
 
 ## With the frbit CLI
 
-Run it when you have a shell tool; otherwise give the person the command to run in their terminal. The path is relative to `/data/www` and to the current folder (no trailing slash needed): `web/uploads` syncs `/data/www/web/uploads` with `./web/uploads`. Without a path it syncs all of `/data/www` with the current folder. `--env <env>` picks the environment; without it, the environment of the checkout (`frbit link`). It needs the local `rsync`, `ssh` and an SSH key registered for the person ([ssh.md](ssh.md)); an error naming `dash.fortrabbit.com/new/ssh-key` means the key was rejected or the connection failed.
+Run it when you have a shell tool; otherwise give the person the command to run in their terminal. Always name a content folder from the table above; never run `frbit files` without a path, which syncs all of `/data/www` with the current folder. The path is relative to `/data/www` and to the current folder (no trailing slash needed): `web/uploads` syncs `/data/www/web/uploads` with `./web/uploads`. `.git/` and `.fortrabbit/` are never synced. `--env <env>` picks the environment; without it, the environment of the checkout (`frbit link`). It needs the local `rsync`, `ssh` and an SSH key registered for the person ([ssh.md](ssh.md)); an error naming `dash.fortrabbit.com/new/ssh-key` means the key was rejected or the connection failed.
 
 ```shell
 # pull
@@ -31,7 +31,7 @@ frbit files push web/uploads --env <env> --dry-run
 frbit files push web/uploads --env <env> --confirm <env>
 ```
 
-`--delete` also removes files on the receiving side that the sending side lacks: dry run first. Pass `--confirm` only after the yes, since a shell tool has no terminal to type the ID in. Without a shell tool, the person runs `push` without `--confirm` and types the ID. On an environment that deploys from git, the push warns that the next deployment overwrites code changes.
+`--delete` also removes files on the receiving side that the sending side lacks, local ones on a pull: dry run first, show what would be deleted and wait for a yes. Confirm with the person before every push and every `--delete`; both need `--confirm <env>`. Pass `--confirm` only after the yes, since a shell tool has no terminal to type the ID in. Without a shell tool, the person runs the command without `--confirm` and types the ID. On an environment that deploys from git, the push warns that the next deployment overwrites code changes.
 
 No frbit, or a CLI without `files` (`unknown command "files"`): plain rsync, with the IDs filled in:
 
