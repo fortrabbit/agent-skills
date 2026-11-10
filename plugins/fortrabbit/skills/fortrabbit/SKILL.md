@@ -69,9 +69,9 @@ Do not ask for an ID before trying this. Resolve it once per session and reuse i
 
 1. `git remote get-url origin` → `owner/repo`, and `git branch --show-current`.
 2. MCP: `list_git_repositories` → the entry with that `fullName` has `connectedAppPublicId`. `get_app` on it → `region` (e.g. `eu-w1a`) and its `environments`. `list_environments` → of those, the one whose `git.branch` is the current branch. If several match or none does, list the environments by name and ask which one.
-3. Without MCP: `frbit link` confirms the environment of a connected repo, or reads `.fortrabbit/environments.yml` (label, usually the branch → environment ID). No match: `frbit environments list --json`, ask which one, then `frbit link <env>` writes that file; commit it.
+3. Without MCP: `frbit link --json` → `environment`, `region` and `sshHost`, from a connected repo, `FORTRABBIT_ENVIRONMENT` or `.fortrabbit/environments.yml` at the repo root (label, usually the branch → environment ID). It fails when nothing resolves: `frbit environments list --json`, ask which one, then `frbit link <env>` writes that file; commit it.
 4. Derived from that, nothing to store:
-   - SSH: `<env>@ssh.<region>.frbit.app`
+   - SSH: `<env>@ssh.<region>.frbit.app` (the CLI prints it as `sshHost`)
    - Default domain: `https://<env>.<region>.frbit.app`. The live URL is the main domain: `list_domains`, `isMain`
    - Database name and user: the environment ID
 
