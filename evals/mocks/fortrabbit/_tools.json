@@ -603,7 +603,7 @@
   },
   {
    "name": "get_environment_logs",
-   "description": "Read one page of log entries of an accessible environment, newest first. Logs are kept for 14 days. Use source \"php\" for application errors and stack traces, source \"access\" with status \"5xx\" to find failing requests, \"apache\" for web server errors and \"jobs\" for the output of cron jobs and workers. Returns entries (time, level, message, meta) and olderCursor: pass it as before to get the next older page; null when there are no older entries. Live tailing stays with the frbit CLI. If the log backend does not answer, the error says when to retry.",
+   "description": "Read one page of log entries of an accessible environment, newest first. Logs are kept for 14 days. Use source \"php\" for application errors and stack traces, source \"access\" with status \"5xx\" to find failing requests, \"apache\" for web server errors and \"jobs\" for the output of cron jobs and workers. Returns entries (time, level, message, meta) and olderCursor: pass it as before to get the next older page; null when there are no older entries. There is no live tail: call again with since to get newer entries. If the log backend does not answer, the error says when to retry.",
    "inputSchema": {
     "type": "object",
     "properties": {

@@ -61,7 +61,7 @@ For scripts and integrations the person builds. The agent works through MCP or t
 
 - `GET https://api.fortrabbit.com/v1/docs` is public and the source of truth for endpoints and payloads.
 - `/apps`, `/environments`, `/domains` and `/deployments` are paginated, 30 per page. `/deployments` is newest first and takes `?environment=en-…`.
-- Rate limit about 20 requests per minute per token, shared with MCP. A `429` carries `Retry-After`.
+- Rate limit about 120 requests per minute per token, shared with MCP. A `429` carries `Retry-After`.
 
 ## Public API tokens
 
