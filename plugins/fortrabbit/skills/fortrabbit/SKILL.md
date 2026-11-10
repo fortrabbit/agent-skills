@@ -45,7 +45,7 @@ The MCP tools named here and in the references come from the `fortrabbit` server
 | Create an app or environment | `create_app`, `create_environment` | `frbit apps create`, `frbit environments create` (first `frbit regions list`, `frbit plans list --region R --currency EUR --json` for the prices, `frbit presets list`; create only after the user agreed) | |
 | Environment variables | `get_environment`, `update_environment` | `frbit environments variables get/update` | |
 | Branch, build and post-deploy commands | `update_environment` | `frbit environments update` | |
-| PHP version | – | `frbit environments create --php-version`, `frbit environments update --file` | dashboard |
+| PHP version | – | `frbit environments create --php-version`, `frbit environments update <env> --php-version` | dashboard |
 | Deploy | push to the connected branch | `frbit environments deploy <env>` | deploy hook URL |
 | Restart | – | `frbit environments restart <env>` | |
 | Why a deployment failed | `get_deployment`, `get_deployment_logs` | `frbit deployments logs <dp>` (`--follow` while it runs) | |
@@ -55,7 +55,7 @@ The MCP tools named here and in the references come from the `fortrabbit` server
 | Push a database | – | `frbit db push <file> <env>`, `--confirm <env>` only after a yes | `db-up.sh` ([database.md](references/database.md)) |
 | Sync files | – | `frbit files pull <folder> --env <env>`, `frbit files push <folder>`, always with a content folder; `--confirm <env>` (push, `--delete`) only after a yes | `rsync` ([files.md](references/files.md)) |
 | Remote commands | – | – | `ssh`, `mysql` |
-| Runtime logs (PHP, Apache, access, jobs) | `get_environment_logs` | `frbit environments logs <env> --source php` (`--follow`) | dashboard Logs tab, or log files over SSH |
+| Runtime logs (PHP, Apache, access, jobs) | `get_environment_logs` | `frbit environments logs <env> --source php --since 1h`, never `--follow` (it never ends) | dashboard Logs tab, or log files over SSH |
 
 `frbit link`, `frbit db pull|push` and `frbit files` need a recent frbit, the release that ships with skill 2.9.0. An unknown command means an older one: the person upgrades it ([access.md](references/access.md)), or use the Other column.
 

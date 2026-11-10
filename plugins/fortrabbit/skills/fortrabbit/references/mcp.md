@@ -100,7 +100,7 @@ Also optional: `git` (branch, directory), `buildCommands`, `postDeployCommands`,
 
 `update_environment` takes `publicId` plus only the fields to change. `git` is the exception: send `branch` and `directory` together, with `directory` from `get_environment`, because an omitted `directory` resets the source directory to the repository root. With a deploy file, `git` changes are refused: [deploy.md](deploy.md#deploy-file). Environment variables merge: a string adds or changes a variable, `null` removes it, unnamed variables stay. Platform variables (`FORTRABBIT_*`) cannot be changed. Read the current state with `get_environment` first.
 
-MCP neither reads nor sets the PHP version: `frbit environments get --json` shows `phpVersion`, and the person changes it on the PHP version page of the environment, `https://dash.fortrabbit.com/environments/<env>/php/php-version`. A PHP version set explicitly, also with `frbit environments create --php-version`, opts the environment out of automatic PHP updates: say so.
+MCP neither reads nor sets the PHP version: `frbit environments get --json` shows `phpVersion`, `frbit environments update <env> --php-version <version>` sets it (`frbit php-versions list` has the versions), or the person changes it on the PHP version page of the environment, `https://dash.fortrabbit.com/environments/<env>/php/php-version`. A PHP version set explicitly, also with `frbit environments create --php-version`, opts the environment out of automatic PHP updates: say so.
 
 A changed variable reaches PHP after a restart or the next deployment: `frbit environments restart <env>`, or push. Ask before either on production.
 
@@ -123,9 +123,8 @@ In Claude Code the person writes `@fortrabbit:frbit://env/en-a1b2c3`. Use the `p
 |---|---|
 | Deploy an existing environment | push to the connected branch, or `frbit environments deploy <env>`: [deploy.md](deploy.md) |
 | Restart an environment | `frbit environments restart <env>` |
-| Scale components, change plans | dashboard |
+| Scale components, change plans | `frbit environments components update <env> --component SLUG=SIZE` (billed: shows the price and asks first), or the dashboard |
 | Remote commands, database, files | [ssh.md](ssh.md), [database.md](database.md), [files.md](files.md) |
-| Runtime logs | dashboard Logs tab: [troubleshooting.md](troubleshooting.md) |
 | Delete an app, environment, domain or team | `frbit <group> delete` after a yes, or the dashboard |
 | Read or change the PHP version | CLI or dashboard, see "Updating an environment" |
 | Anything billed | the dashboard link from the error, see "Billed changes" |
