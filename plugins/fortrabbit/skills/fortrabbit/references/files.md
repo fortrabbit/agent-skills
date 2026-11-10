@@ -6,7 +6,7 @@ Git deploys code. Uploads, images and flat-file content live only on the environ
 
 - Show the full command. Run a dry run (`-n`) first for any first sync to a path and for anything with `--delete`, show what would change, then ask.
 - Pulling overwrites local files, pushing overwrites remote ones. Say which and wait for a yes.
-- Trailing slashes matter: `./dir/ host:./dir/` syncs the contents of `dir`. Keep both sides the same shape.
+- With plain rsync, trailing slashes matter: `./dir/ host:./dir/` syncs the contents of `dir`. Keep both sides the same shape.
 - Never sync `.env`, `.git/`, `node_modules/` or local caches.
 
 ## Content folders per software
@@ -19,6 +19,22 @@ Git deploys code. Uploads, images and flat-file content live only on the environ
 | Kirby | `content/`, `site/accounts/` only when asked, `media/` can be regenerated |
 | WordPress | `wp-content/uploads/` |
 
+## With the frbit CLI
+
+Run it when you have a shell tool; otherwise give the person the command to run in their terminal. The path is relative to `/data/www` and to the current folder (no trailing slash needed): `web/uploads` syncs `/data/www/web/uploads` with `./web/uploads`. Without a path it syncs all of `/data/www` with the current folder. `--env <env>` picks the environment; without it, the environment of the checkout (`frbit link`). It needs the local `rsync`, `ssh` and an SSH key registered for the person ([ssh.md](ssh.md)); an error naming `dash.fortrabbit.com/new/ssh-key` means the key was rejected or the connection failed.
+
+```shell
+# pull
+frbit files pull web/uploads --env <env>
+# push: dry run first, show what would change, wait for a yes
+frbit files push web/uploads --env <env> --dry-run
+frbit files push web/uploads --env <env> --confirm <env>
+```
+
+`--delete` also removes files on the receiving side that the sending side lacks: dry run first. Pass `--confirm` only after the yes, since a shell tool has no terminal to type the ID in. Without a shell tool, the person runs `push` without `--confirm` and types the ID. On an environment that deploys from git, the push warns that the next deployment overwrites code changes.
+
+No frbit, or a CLI without `files` (`unknown command "files"`): plain rsync, with the IDs filled in:
+
 ```shell
 # pull
 rsync -avz <env>@ssh.<region>.frbit.app:./web/uploads/ ./web/uploads/
@@ -28,7 +44,7 @@ rsync -avzn ./web/uploads/ <env>@ssh.<region>.frbit.app:./web/uploads/
 
 ## Full sync without git
 
-For projects that do not deploy from git, typically WordPress or a quick demo. Pushes the whole project including `vendor/`.
+For projects that do not deploy from git, typically WordPress or a quick demo. Pushes the whole project including `vendor/`. Use rsync here: `frbit files` has no excludes.
 
 ```shell
 rsync -avzn \

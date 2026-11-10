@@ -18,7 +18,7 @@ compatibility: >-
   with the fortrabbit MCP server (https://mcp.fortrabbit.com/mcp) and the frbit CLI connected.
   On Windows, rsync needs WSL.
 metadata:
-  version: "2.8.0"
+  version: "2.9.0"
   author: fortrabbit
 ---
 
@@ -53,7 +53,8 @@ The MCP tools named here and in the references come from the `fortrabbit` server
 | Delete | – | `frbit <group> delete`, after a yes | dashboard |
 | Pull a database | – | `frbit db pull <env> --output /tmp/` | `ssh` + `mysqldump` ([database.md](references/database.md)) |
 | Push a database | – | `frbit db push <file> <env>`, `--confirm <env>` only after a yes | `db-up.sh` ([database.md](references/database.md)) |
-| Remote commands, files | – | – | `ssh`, `mysql`, `rsync` |
+| Sync files | – | `frbit files pull <path> --env <env>`, `frbit files push`, `--confirm <env>` only after a yes | `rsync` ([files.md](references/files.md)) |
+| Remote commands | – | – | `ssh`, `mysql` |
 | Runtime logs (PHP, Apache, access, jobs) | `get_environment_logs` | `frbit environments logs <env> --source php` (`--follow`) | dashboard Logs tab, or log files over SSH |
 
 No MCP server and no CLI yet? Connecting takes a few commands: [references/access.md](references/access.md).
