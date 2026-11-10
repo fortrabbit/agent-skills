@@ -1,0 +1,1 @@
+{"backups": [{"publicId": "bk-a1b2c3", "environment": "en-a1b2c3", "status": "Completed", "trigger": "scheduled", "createdAt": "2026-11-10T03:00:00Z", "completedAt": "2026-11-10T03:04:12Z", "filesSizeBytes": 183500800, "databaseSizeBytes": 20971520, "retentionSlot": "daily", "availableUntil": "2026-11-17T03:04:12Z"}]}

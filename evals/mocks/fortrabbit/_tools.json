@@ -406,6 +406,14 @@
      "environmentVariables": {
       "type": "object",
       "description": "String adds or changes a variable, null removes it."
+     },
+     "rootPath": {
+      "type": "string",
+      "description": "Folder of the repository the web server serves, e.g. \"public\". Lowercase letters, digits, \".\", \"-\", \"_\" and inner \"/\", up to 48 characters. An empty string resets it to the root of the deploy directory. Omit to leave unchanged."
+     },
+     "softwareVersion": {
+      "type": "string",
+      "description": "Major software version only, e.g. \"11\". Must be one of the versions the software preset of the app supports; call list_software_presets. Omit to leave unchanged."
      }
     },
     "required": [
@@ -635,6 +643,142 @@
      "method": {
       "type": "string",
       "description": "Access log only. The HTTP method of the request, e.g. \"GET\" or \"POST\"."
+     }
+    },
+    "required": [
+     "environmentPublicId"
+    ]
+   }
+  },
+  {
+   "name": "create_deployment",
+   "description": "Deploy the latest commit of the configured git branch to an accessible environment, replacing the running release and running its post-deploy commands. A deployment of this environment that is still pending or running is cancelled. Use it to ship changes made with update_environment. Requires git to be configured on the environment. Not available to client accounts. The returned deployment may already be failed: call get_deployment for its status and get_deployment_logs for the reason.",
+   "inputSchema": {
+    "type": "object",
+    "properties": {
+     "publicId": {
+      "type": "string",
+      "description": "Public ID of the environment to deploy, e.g. \"en-a1b2c3\". Call list_environments to discover accessible IDs.",
+      "pattern": "^([a-z]{2})-[0-9a-z]{6}$"
+     }
+    },
+    "required": [
+     "publicId"
+    ]
+   }
+  },
+  {
+   "name": "restart_environment",
+   "description": "Restart the PHP-FPM and worker containers of an accessible environment without deploying. The restart is queued: accepted: true means it was requested, not that it finished. Not available to client accounts. To ship code changes, use create_deployment instead.",
+   "inputSchema": {
+    "type": "object",
+    "properties": {
+     "publicId": {
+      "type": "string",
+      "description": "Public ID of the environment to restart, e.g. \"en-a1b2c3\". Call list_environments to discover accessible IDs.",
+      "pattern": "^([a-z]{2})-[0-9a-z]{6}$"
+     }
+    },
+    "required": [
+     "publicId"
+    ]
+   }
+  },
+  {
+   "name": "create_domain",
+   "description": "Add a domain you own to an accessible environment. A bare domain such as example.com becomes www.example.com plus an apex domain (example.com) that forwards to it; a subdomain such as app.example.com gets no apex domain. The result holds the created domain and every domain in forwardedFrom, each with the DNS record to set (dns.expected: type, host, value), the record found now (dns.actual) and dns.status (correct, incorrect or cloudflare). Show the person each expected record and tell them to set it at their DNS provider; the domain only works once the records are in place. Not available to client accounts. Domains are not deleted over MCP.",
+   "inputSchema": {
+    "type": "object",
+    "properties": {
+     "environmentPublicId": {
+      "type": "string",
+      "description": "Public ID of the environment the domain points to, e.g. \"en-a1b2c3\". Call list_environments to discover accessible IDs.",
+      "pattern": "^([a-z]{2})-[0-9a-z]{6}$"
+     },
+     "name": {
+      "type": "string",
+      "description": "The domain name you own, e.g. \"example.com\" or \"www.example.com\" or \"app.example.com\". A bare apex gets a www domain plus an apex domain forwarding to it; a subdomain gets no apex domain.",
+      "maxLength": 255
+     },
+     "isMain": {
+      "type": "boolean",
+      "description": "Make the new domain the main domain of the environment. Defaults to false."
+     }
+    },
+    "required": [
+     "environmentPublicId",
+     "name"
+    ]
+   }
+  },
+  {
+   "name": "get_environment_metrics",
+   "description": "Get how an accessible environment is doing. Without metric: current usage of storage, database and traffic against the booked plan (current, limit, percent), the last 24 hours (requests, 500/503/504 errors, response times, PHP memory peak, out-of-memory kills) and metrics, the slugs you can pass as metric. With metric: that metric over the last 24 hours, one point per hour, as series of {time, value} points plus totals and coverage. Values in bytes come with a readable string such as \"128 MB\". Start here when a site is slow or failing, then read get_environment_logs for the cause.",
+   "inputSchema": {
+    "type": "object",
+    "properties": {
+     "environmentPublicId": {
+      "type": "string",
+      "description": "Public ID of the environment, e.g. \"en-a1b2c3\". Call list_environments to discover accessible IDs.",
+      "pattern": "^([a-z]{2})-[0-9a-z]{6}$"
+     },
+     "metric": {
+      "type": "string",
+      "description": "A metric slug to read the last 24 hours of. Omit for the summary, whose metrics list names the slugs available for this environment; metrics of components the environment has not booked are refused as not found.",
+      "enum": [
+       "php-response-time",
+       "php-requests",
+       "web-storage",
+       "mysql-storage",
+       "mysql-queries",
+       "mysql-index",
+       "traffic",
+       "php-memory",
+       "php-opcache",
+       "frontend-oom",
+       "jobs-memory",
+       "jobs-oom",
+       "error-404",
+       "error-500",
+       "error-503",
+       "error-504",
+       "static-requests",
+       "jobs-processes"
+      ]
+     }
+    },
+    "required": [
+     "environmentPublicId"
+    ]
+   }
+  },
+  {
+   "name": "list_backups",
+   "description": "List the stored backups of an accessible environment, newest first: time, trigger (scheduled or manual), file and database sizes in bytes and the retention slot each holds. Needs the backups component. Restoring a backup overwrites live data and stays in the dashboard; downloading a backup stays with the frbit CLI and the REST API, because the files are large. Neither is available over MCP.",
+   "inputSchema": {
+    "type": "object",
+    "properties": {
+     "environmentPublicId": {
+      "type": "string",
+      "description": "Public ID of the environment, e.g. \"en-a1b2c3\". Call list_environments to discover accessible IDs.",
+      "pattern": "^([a-z]{2})-[0-9a-z]{6}$"
+     }
+    },
+    "required": [
+     "environmentPublicId"
+    ]
+   }
+  },
+  {
+   "name": "create_backup",
+   "description": "Request a manual backup of the files and the database of an accessible environment. The backup is made asynchronously: the result only reports the state of the request (Pending), and the backup shows up in list_backups once it is finished. A backup beyond the number the plan keeps replaces the oldest one. Refused without the backups component, and while the environment is offline or a backup or restore is already running. Restoring a backup overwrites live data and stays in the dashboard; downloading a backup stays with the frbit CLI and the REST API. Neither is available over MCP.",
+   "inputSchema": {
+    "type": "object",
+    "properties": {
+     "environmentPublicId": {
+      "type": "string",
+      "description": "Public ID of the environment to back up, e.g. \"en-a1b2c3\". Call list_environments to discover accessible IDs.",
+      "pattern": "^([a-z]{2})-[0-9a-z]{6}$"
      }
     },
     "required": [

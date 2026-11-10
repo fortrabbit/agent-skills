@@ -46,8 +46,8 @@ The MCP tools named here and in the references come from the `fortrabbit` server
 | Environment variables | `get_environment`, `update_environment` | `frbit environments variables get/update` | |
 | Branch, build and post-deploy commands | `update_environment` | `frbit environments update` | |
 | PHP version | – | `frbit environments create --php-version`, `frbit environments update <env> --php-version` | dashboard |
-| Deploy | push to the connected branch | `frbit environments deploy <env>` | deploy hook URL |
-| Restart | – | `frbit environments restart <env>` | |
+| Deploy | `create_deployment`, or push to the connected branch | `frbit environments deploy <env>` | deploy hook URL |
+| Restart | `restart_environment` | `frbit environments restart <env>` | |
 | Why a deployment failed | `get_deployment`, `get_deployment_logs` | `frbit deployments logs <dp>` (`--follow` while it runs) | |
 | Workers and cron jobs (queue worker, scheduler) | `create_job`, `list_jobs`, `update_job` | `frbit jobs list/create/update <env or job>`, `frbit jobs delete` after a yes | dashboard |
 | Delete | – | `frbit <group> delete`, after a yes | dashboard |
