@@ -29,7 +29,7 @@ curl -sI https://<domain> | head -20
 
 ## Restart
 
-`frbit environments restart <env>` clears a stuck PHP pool and applies changed variables. Ask first on production, and say it does not fix the cause.
+`restart_environment` (CLI `frbit environments restart <env>`) clears a stuck PHP pool and applies changed variables. Ask first on production, and say it does not fix the cause.
 
 ## Platform status
 
