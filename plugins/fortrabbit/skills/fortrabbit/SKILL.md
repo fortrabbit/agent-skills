@@ -52,7 +52,8 @@ The MCP tools named here and in the references come from the `fortrabbit` server
 | Workers and cron jobs (queue worker, scheduler) | `create_job`, `list_jobs`, `update_job` | `frbit jobs list/create/update <env or job>`, `frbit jobs delete` after a yes | dashboard |
 | Delete | – | `frbit <group> delete`, after a yes | dashboard |
 | Pull a database | – | `frbit db pull <env> --output /tmp/` | `ssh` + `mysqldump` ([database.md](references/database.md)) |
-| Remote commands, database push, files | – | – | `ssh`, `mysql`, `rsync` |
+| Push a database | – | `frbit db push <file> <env>`, `--confirm <env>` only after a yes | `db-up.sh` ([database.md](references/database.md)) |
+| Remote commands, files | – | – | `ssh`, `mysql`, `rsync` |
 | Runtime logs (PHP, Apache, access, jobs) | `get_environment_logs` | `frbit environments logs <env> --source php` (`--follow`) | dashboard Logs tab, or log files over SSH |
 
 No MCP server and no CLI yet? Connecting takes a few commands: [references/access.md](references/access.md).
@@ -75,7 +76,7 @@ No MCP tools, or a `401`: connect first ([references/access.md](references/acces
 
 ## Scripts
 
-`scripts/db-down.sh` (database pull, for a CLI without `frbit db pull`) and `scripts/db-up.sh` (database push) sit next to this file, in Claude Code at `${CLAUDE_SKILL_DIR}/scripts/db-down.sh` and `${CLAUDE_SKILL_DIR}/scripts/db-up.sh`. Run them by that full path, only with a shell tool. Without a shell, or without a resolved path, give the person the plain commands from [database.md](references/database.md) instead, and never show a path placeholder.
+`scripts/db-down.sh` (database pull, for a CLI without `frbit db pull`) and `scripts/db-up.sh` (database push, for a CLI without `frbit db push`) sit next to this file, in Claude Code at `${CLAUDE_SKILL_DIR}/scripts/db-down.sh` and `${CLAUDE_SKILL_DIR}/scripts/db-up.sh`. Run them by that full path, only with a shell tool. Without a shell, or without a resolved path, give the person the plain commands from [database.md](references/database.md) instead, and never show a path placeholder.
 
 ## References
 

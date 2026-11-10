@@ -38,10 +38,18 @@ Then adjust what differs locally: Craft CMS `ddev craft clear-caches/all`; WordP
 
 Replaces every table that is in the dump; tables that exist only on the environment stay. On production, say which environment, that live data is replaced, and wait for a yes in the user's next message.
 
-1. Back up the remote first with the pull above (`frbit db pull <env> --output /tmp/`, else `db-down.sh <env> <region>` or the ssh command). Keep the path of the dump.
-2. Dump locally: `ddev export-db --file=/tmp/local.sql.gz`, or `mysqldump --set-gtid-purged=OFF --no-tablespaces -u<user> -p <database> | gzip > /tmp/local.sql.gz`.
-3. Import: `db-up.sh <env> <region> /tmp/local.sql.gz`, by its full path from SKILL.md. It uploads the dump first, then imports on the environment. Exit 5 means the import broke part way: restore the backup from step 1 the same way.
-4. Check the site, and tell the person where the backup from step 1 is.
+1. Dump locally: `ddev export-db --file=/tmp/local.sql.gz`, or `mysqldump --set-gtid-purged=OFF --no-tablespaces -u<user> -p <database> | gzip > /tmp/local.sql.gz`.
+2. Show the command and wait for the yes. Only then run it, with `--confirm`, since a shell tool has no terminal to type the ID in:
+
+   ```shell
+   frbit db push /tmp/local.sql.gz <env> --confirm <env>
+   ```
+
+   It takes a backup dump on the environment first (`/data/home/frbit-backup-<time>.sql.gz`), then uploads, checks and imports the file. It accepts `.sql` or `.sql.gz`. Never pass `--confirm` before the yes. Without a shell tool, the person runs it without `--confirm` and types the ID.
+3. A failure after the backup prints whether the database changed, the backup path and the restore command: pass all three on. A failed backup leaves the database untouched.
+4. Check the site, and tell the person where the backup is.
+
+No frbit, or a CLI without `db push` (`unknown command "push"` or `"db"`): back up first with the pull above and keep the path of the dump, then, after the yes, `db-up.sh <env> <region> /tmp/local.sql.gz`, by its full path from SKILL.md. It uploads the dump first, then imports on the environment. Exit 5 means the import broke part way: restore the backup the same way.
 
 ## Through a tunnel
 
