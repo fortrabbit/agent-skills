@@ -45,6 +45,8 @@ Host ssh.*.frbit.app
 | Error | Likely cause |
 |---|---|
 | `Permission denied (publickey)` | Key not registered, wrong key offered (`ssh -v` shows which), or no developer access to that environment |
+| `Host key verification failed` from plain `ssh` or `rsync` | First connection from this machine: the host key is unknown. The person runs `ssh <env>@ssh.<region>.frbit.app exit` once in a terminal and accepts only the fingerprint `SHA256:UB3p/YgtQSuK3WESB/0ra5dTDWkggrCOz0WkWe4Tvvg`. `ssh-keyscan` does not work against fortrabbit |
+| frbit: the server's host key does not match | Stop. Never accept the key by hand; the person updates frbit and contacts support |
 | `Connection timed out`, `Network is unreachable` | Port 22 blocked by a firewall or VPN, or a wrong region in the hostname |
 | `Could not resolve hostname` | Typo in `<env>` or `<region>`; re-resolve both |
 | A banner instead of a greeting, or refused after working before | SSH rate limit per IP: more than 20 new connections a minute, or repeated wrong-key logins. Stop the loop, wait a few minutes |

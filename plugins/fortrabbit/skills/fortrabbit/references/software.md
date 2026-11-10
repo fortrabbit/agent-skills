@@ -32,8 +32,13 @@ A debug switch depends on the software: Laravel and Statamic use `APP_DEBUG`, Cr
 
 ## Notes per software
 
+- **Queue workers and scheduler** (Laravel, Statamic, Craft CMS): need the `jobs` component and a job per process; `frbit jobs list <env>` shows `Jobs: <count> of <limit>` (limit 0 means not booked, create answers 403). Commands must start with `php ` or `bash `. MCP: `create_job`. CLI:
+  - Laravel queue worker: `frbit jobs create <env> --name queue --type worker --command "php artisan queue:work"`
+  - Craft CMS queue runner: `frbit jobs create <env> --name queue --type worker --command "php craft queue/listen"`
+  - Scheduler: `frbit jobs create <env> --name scheduler --type cron --interval minute --max-runtime 300 --command "php artisan schedule:run"`
+  - Custom schedule: `--interval custom --expression "0 */2 * * *"`; a worker takes no `--interval`, `--expression` or `--max-runtime`. Stop one with `frbit jobs update <job> --inactive`.
 - **Craft CMS**: project config in `config/project/` deploys with git; content and assets do not. Volumes on local disk need [files.md](files.md); the database needs [database.md](database.md).
-- **Statamic, Kirby**: content is flat files. The templates exclude the content folders from deployments (Statamic: `content/`, `users/`, `public/assets/` and the folders under `resources/` that the Control Panel writes; Kirby: `content/`, `media/`, `site/accounts/`, `site/sessions/`, `data/`, among others), so a deployment neither overwrites nor updates them, unless a deploy file without these `excludePatterns` replaces them ([deploy.md](deploy.md#deploy-file)). Content edited locally reaches the live site with rsync, and the reverse: [files.md](files.md). The exclude patterns are in the dashboard under Deployment.
+- **Statamic, Kirby**: content is flat files. The templates exclude the content folders from deployments (Statamic: `content/`, `users/`, `public/assets/` and the folders under `resources/` that the Control Panel writes; Kirby: `content/`, `media/`, `site/accounts/`, `site/sessions/`, `data/`, among others), so a deployment neither overwrites nor updates them, unless a deploy file without these `excludePatterns` replaces them ([deploy.md](deploy.md#deploy-file)). Content edited locally reaches the live site with rsync, and the reverse: [files.md](files.md). The exclude patterns are not in the deploy file: `frbit environments get <env>`, or the dashboard under Deployment.
 - **WordPress**: usually deployed by rsync, not git. One `wp-config.php` can work locally and live: on fortrabbit, set `DB_NAME`, `DB_USER`, `DB_PASSWORD` and `DB_HOST` from the platform's `FORTRABBIT_DB_*` environment variables, with the local values as fallback, and `WP_HOME` and `WP_SITEURL` from `FORTRABBIT_MAIN_DOMAIN`. The variables exist only on the environment, so the file reads nothing from the person's machine.
 
   Show the diff and ask before editing an existing `wp-config.php`.

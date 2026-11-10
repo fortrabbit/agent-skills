@@ -406,10 +406,383 @@
      "environmentVariables": {
       "type": "object",
       "description": "String adds or changes a variable, null removes it."
+     },
+     "rootPath": {
+      "type": "string",
+      "description": "Folder of the repository the web server serves, e.g. \"public\". Lowercase letters, digits, \".\", \"-\", \"_\" and inner \"/\", up to 48 characters. An empty string resets it to the root of the deploy directory. Omit to leave unchanged."
+     },
+     "softwareVersion": {
+      "type": "string",
+      "description": "Major software version only, e.g. \"11\". Must be one of the versions the software preset of the app supports; call list_software_presets. Omit to leave unchanged."
      }
     },
     "required": [
      "publicId"
+    ]
+   }
+  },
+  {
+   "name": "list_jobs",
+   "description": "List the jobs of an accessible environment: workers (long-running processes such as a Laravel queue worker or a Craft queue listener) and cron jobs. Also returns limit, how many jobs the booked jobs plan allows (0 when the jobs component is not booked), and count, how many exist. Use the publicId of a job as the argument of update_job.",
+   "inputSchema": {
+    "type": "object",
+    "properties": {
+     "environmentPublicId": {
+      "type": "string",
+      "description": "Public ID of the environment, e.g. \"en-a1b2c3\". Call list_environments to discover accessible IDs.",
+      "pattern": "^([a-z]{2})-[0-9a-z]{6}$"
+     }
+    },
+    "required": [
+     "environmentPublicId"
+    ]
+   }
+  },
+  {
+   "name": "create_job",
+   "description": "Add a worker or a cron job to an accessible environment and update the environment. Use type \"worker\" for a process that runs all the time and is restarted when it ends, such as \"php artisan queue:work\" for a Laravel queue or a Craft queue worker. Use type \"cron\" for a scheduled command such as \"php artisan schedule:run\": it also needs interval and maxRuntime, and expression when interval is \"custom\". The command must start with \"php \" or \"bash \". The environment needs the jobs component booked and its plan limit not reached (see list_jobs). Not available to client accounts. Jobs are not deleted over MCP.",
+   "inputSchema": {
+    "type": "object",
+    "properties": {
+     "environmentPublicId": {
+      "type": "string",
+      "description": "Public ID of the environment, e.g. \"en-a1b2c3\". Call list_environments to discover accessible IDs.",
+      "pattern": "^([a-z]{2})-[0-9a-z]{6}$"
+     },
+     "name": {
+      "type": "string",
+      "description": "A name to recognise the job by, e.g. \"queue worker\"."
+     },
+     "command": {
+      "type": "string",
+      "description": "The command to run. It must start with \"php \" or \"bash \", e.g. \"php artisan queue:work --queue=high,default\"."
+     },
+     "type": {
+      "type": "string",
+      "description": "\"worker\" runs all the time and is restarted when it ends; \"cron\" runs on a schedule.",
+      "enum": [
+       "worker",
+       "cron"
+      ]
+     },
+     "isActive": {
+      "type": "boolean",
+      "description": "An inactive job is kept but does not run. Defaults to true."
+     },
+     "exitTimeout": {
+      "type": "integer",
+      "description": "Seconds the job gets to finish after the exit signal before it is killed. Defaults to 30.",
+      "enum": [
+       1,
+       5,
+       10,
+       30
+      ]
+     },
+     "exitSignal": {
+      "type": "string",
+      "description": "The signal sent to the job when it is stopped. Defaults to TERM.",
+      "enum": [
+       "TERM",
+       "INT"
+      ]
+     },
+     "expression": {
+      "type": "string",
+      "description": "Crontab expression such as \"0 6 * * *\". Required for a cron job with interval \"custom\", ignored for the other intervals."
+     },
+     "maxRuntime": {
+      "type": "integer",
+      "description": "Seconds a cron run may take before it is stopped: 300 (5 minutes), 1800, 3600, 10800 or 21600. Required for a cron job.",
+      "enum": [
+       300,
+       1800,
+       3600,
+       10800,
+       21600
+      ]
+     },
+     "interval": {
+      "type": "string",
+      "description": "How often a cron job runs. Required for a cron job; \"custom\" takes the expression.",
+      "enum": [
+       "minute",
+       "hour",
+       "day",
+       "custom"
+      ]
+     }
+    },
+    "required": [
+     "environmentPublicId",
+     "name",
+     "command",
+     "type"
+    ]
+   }
+  },
+  {
+   "name": "update_job",
+   "description": "Change a job of an accessible environment. Only the fields you send change; omitted fields keep their value. Changing type turns a worker into a cron job or the other way round and keeps the public ID; a cron job then needs interval and maxRuntime. Set isActive to false to stop a job without deleting it. Call list_jobs to find the job. Not available to client accounts. Jobs are not deleted over MCP.",
+   "inputSchema": {
+    "type": "object",
+    "properties": {
+     "publicId": {
+      "type": "string",
+      "description": "Public ID of the job, e.g. \"jo-a1b2c3\". Call list_jobs to discover the jobs of an environment.",
+      "pattern": "^([a-z]{2})-[0-9a-z]{6}$"
+     },
+     "name": {
+      "type": "string",
+      "description": "A name to recognise the job by. Omit to leave unchanged."
+     },
+     "command": {
+      "type": "string",
+      "description": "The command to run. It must start with \"php \" or \"bash \". Omit to leave unchanged."
+     },
+     "type": {
+      "type": "string",
+      "description": "\"worker\" or \"cron\". Omit to leave unchanged.",
+      "enum": [
+       "worker",
+       "cron"
+      ]
+     },
+     "isActive": {
+      "type": "boolean",
+      "description": "An inactive job is kept but does not run. Omit to leave unchanged."
+     },
+     "exitTimeout": {
+      "type": "integer",
+      "description": "Seconds the job gets to finish after the exit signal before it is killed. Omit to leave unchanged.",
+      "enum": [
+       1,
+       5,
+       10,
+       30
+      ]
+     },
+     "exitSignal": {
+      "type": "string",
+      "description": "The signal sent to the job when it is stopped. Omit to leave unchanged.",
+      "enum": [
+       "TERM",
+       "INT"
+      ]
+     },
+     "expression": {
+      "type": "string",
+      "description": "Crontab expression, used with interval \"custom\". Omit to leave unchanged."
+     },
+     "maxRuntime": {
+      "type": "integer",
+      "description": "Seconds a cron run may take before it is stopped: 300, 1800, 3600, 10800 or 21600. Omit to leave unchanged.",
+      "enum": [
+       300,
+       1800,
+       3600,
+       10800,
+       21600
+      ]
+     },
+     "interval": {
+      "type": "string",
+      "description": "How often a cron job runs; \"custom\" takes the expression. Omit to leave unchanged.",
+      "enum": [
+       "minute",
+       "hour",
+       "day",
+       "custom"
+      ]
+     }
+    },
+    "required": [
+     "publicId"
+    ]
+   }
+  },
+  {
+   "name": "get_environment_logs",
+   "description": "Read one page of log entries of an accessible environment, newest first. Logs are kept for 14 days. Use source \"php\" for application errors and stack traces, source \"access\" with status \"5xx\" to find failing requests, \"apache\" for web server errors and \"jobs\" for the output of cron jobs and workers. Returns entries (time, level, message, meta) and olderCursor: pass it as before to get the next older page; null when there are no older entries. Live tailing stays with the frbit CLI. If the log backend does not answer, the error says when to retry.",
+   "inputSchema": {
+    "type": "object",
+    "properties": {
+     "environmentPublicId": {
+      "type": "string",
+      "description": "Public ID of the environment, e.g. \"en-a1b2c3\". Call list_environments to discover accessible IDs.",
+      "pattern": "^([a-z]{2})-[0-9a-z]{6}$"
+     },
+     "source": {
+      "type": "string",
+      "description": "The log to read: \"php\" (application errors and output, default), \"apache\" (web server errors), \"access\" (one entry per HTTP request) or \"jobs\" (output of cron jobs and workers).",
+      "enum": [
+       "php",
+       "apache",
+       "access",
+       "jobs"
+      ]
+     },
+     "limit": {
+      "type": "integer",
+      "description": "Maximum number of entries, 1 to 200. Defaults to 50. Related lines such as a stack trace count as one entry.",
+      "minimum": 1,
+      "maximum": 200
+     },
+     "since": {
+      "type": "string",
+      "description": "The oldest entry to return: an ISO 8601 time with a time zone such as \"2026-11-08T10:00:00Z\", or a duration back from now such as \"15m\", \"1h\", \"24h\" or \"7d\"."
+     },
+     "before": {
+      "type": "string",
+      "description": "The olderCursor of the previous page, to get the next older page. Opaque: use it as returned."
+     },
+     "status": {
+      "type": "string",
+      "description": "Access log only. The HTTP status of the request: one code (\"500\"), a class (\"5xx\", \"4xx\") or a comma-separated list of both (\"500,503\"), at most 20 entries."
+     },
+     "method": {
+      "type": "string",
+      "description": "Access log only. The HTTP method of the request, e.g. \"GET\" or \"POST\"."
+     }
+    },
+    "required": [
+     "environmentPublicId"
+    ]
+   }
+  },
+  {
+   "name": "create_deployment",
+   "description": "Deploy the latest commit of the configured git branch to an accessible environment, replacing the running release and running its post-deploy commands. A deployment of this environment that is still pending or running is cancelled. Use it to ship changes made with update_environment. Requires git to be configured on the environment. Not available to client accounts. The returned deployment may already be failed: call get_deployment for its status and get_deployment_logs for the reason.",
+   "inputSchema": {
+    "type": "object",
+    "properties": {
+     "publicId": {
+      "type": "string",
+      "description": "Public ID of the environment to deploy, e.g. \"en-a1b2c3\". Call list_environments to discover accessible IDs.",
+      "pattern": "^([a-z]{2})-[0-9a-z]{6}$"
+     }
+    },
+    "required": [
+     "publicId"
+    ]
+   }
+  },
+  {
+   "name": "restart_environment",
+   "description": "Restart the PHP-FPM and worker containers of an accessible environment without deploying. The restart is queued: accepted: true means it was requested, not that it finished. Not available to client accounts. To ship code changes, use create_deployment instead.",
+   "inputSchema": {
+    "type": "object",
+    "properties": {
+     "publicId": {
+      "type": "string",
+      "description": "Public ID of the environment to restart, e.g. \"en-a1b2c3\". Call list_environments to discover accessible IDs.",
+      "pattern": "^([a-z]{2})-[0-9a-z]{6}$"
+     }
+    },
+    "required": [
+     "publicId"
+    ]
+   }
+  },
+  {
+   "name": "create_domain",
+   "description": "Add a domain you own to an accessible environment. A bare domain such as example.com becomes www.example.com plus an apex domain (example.com) that forwards to it; a subdomain such as app.example.com gets no apex domain. The result holds the created domain and every domain in forwardedFrom, each with the DNS record to set (dns.expected: type, host, value), the record found now (dns.actual) and dns.status (correct, incorrect or cloudflare). Show the person each expected record and tell them to set it at their DNS provider; the domain only works once the records are in place. Not available to client accounts. Domains are not deleted over MCP.",
+   "inputSchema": {
+    "type": "object",
+    "properties": {
+     "environmentPublicId": {
+      "type": "string",
+      "description": "Public ID of the environment the domain points to, e.g. \"en-a1b2c3\". Call list_environments to discover accessible IDs.",
+      "pattern": "^([a-z]{2})-[0-9a-z]{6}$"
+     },
+     "name": {
+      "type": "string",
+      "description": "The domain name you own, e.g. \"example.com\" or \"www.example.com\" or \"app.example.com\". A bare apex gets a www domain plus an apex domain forwarding to it; a subdomain gets no apex domain.",
+      "maxLength": 255
+     },
+     "isMain": {
+      "type": "boolean",
+      "description": "Make the new domain the main domain of the environment. Defaults to false."
+     }
+    },
+    "required": [
+     "environmentPublicId",
+     "name"
+    ]
+   }
+  },
+  {
+   "name": "get_environment_metrics",
+   "description": "Get how an accessible environment is doing. Without metric: current usage of storage, database and traffic against the booked plan (current, limit, percent), the last 24 hours (requests, 500/503/504 errors, response times, PHP memory peak, out-of-memory kills) and metrics, the slugs you can pass as metric. With metric: that metric over the last 24 hours, one point per hour, as series of {time, value} points plus totals and coverage. Values in bytes come with a readable string such as \"128 MB\". Start here when a site is slow or failing, then read get_environment_logs for the cause.",
+   "inputSchema": {
+    "type": "object",
+    "properties": {
+     "environmentPublicId": {
+      "type": "string",
+      "description": "Public ID of the environment, e.g. \"en-a1b2c3\". Call list_environments to discover accessible IDs.",
+      "pattern": "^([a-z]{2})-[0-9a-z]{6}$"
+     },
+     "metric": {
+      "type": "string",
+      "description": "A metric slug to read the last 24 hours of. Omit for the summary, whose metrics list names the slugs available for this environment; metrics of components the environment has not booked are refused as not found.",
+      "enum": [
+       "php-response-time",
+       "php-requests",
+       "web-storage",
+       "mysql-storage",
+       "mysql-queries",
+       "mysql-index",
+       "traffic",
+       "php-memory",
+       "php-opcache",
+       "frontend-oom",
+       "jobs-memory",
+       "jobs-oom",
+       "error-404",
+       "error-500",
+       "error-503",
+       "error-504",
+       "static-requests",
+       "jobs-processes"
+      ]
+     }
+    },
+    "required": [
+     "environmentPublicId"
+    ]
+   }
+  },
+  {
+   "name": "list_backups",
+   "description": "List the stored backups of an accessible environment, newest first: time, trigger (scheduled or manual), file and database sizes in bytes and the retention slot each holds. Needs the backups component. Restoring a backup overwrites live data and stays in the dashboard; downloading a backup stays with the frbit CLI and the REST API, because the files are large. Neither is available over MCP.",
+   "inputSchema": {
+    "type": "object",
+    "properties": {
+     "environmentPublicId": {
+      "type": "string",
+      "description": "Public ID of the environment, e.g. \"en-a1b2c3\". Call list_environments to discover accessible IDs.",
+      "pattern": "^([a-z]{2})-[0-9a-z]{6}$"
+     }
+    },
+    "required": [
+     "environmentPublicId"
+    ]
+   }
+  },
+  {
+   "name": "create_backup",
+   "description": "Request a manual backup of the files and the database of an accessible environment. The backup is made asynchronously: the result only reports the state of the request (Pending), and the backup shows up in list_backups once it is finished. A backup beyond the number the plan keeps replaces the oldest one. Refused without the backups component, and while the environment is offline or a backup or restore is already running. Restoring a backup overwrites live data and stays in the dashboard; downloading a backup stays with the frbit CLI and the REST API. Neither is available over MCP.",
+   "inputSchema": {
+    "type": "object",
+    "properties": {
+     "environmentPublicId": {
+      "type": "string",
+      "description": "Public ID of the environment to back up, e.g. \"en-a1b2c3\". Call list_environments to discover accessible IDs.",
+      "pattern": "^([a-z]{2})-[0-9a-z]{6}$"
+     }
+    },
+    "required": [
+     "environmentPublicId"
     ]
    }
   }

@@ -18,7 +18,7 @@ compatibility: >-
   with the fortrabbit MCP server (https://mcp.fortrabbit.com/mcp) and the frbit CLI connected.
   On Windows, rsync needs WSL.
 metadata:
-  version: "2.8.0"
+  version: "2.9.0"
   author: fortrabbit
 ---
 
@@ -42,20 +42,27 @@ The MCP tools named here and in the references come from the `fortrabbit` server
 | Need | MCP (`fortrabbit` server) | frbit CLI | Other |
 |---|---|---|---|
 | Account, apps, environments, deployments, domains | `get_you`, `list_*`, `get_*` | `frbit <group> list/get --json` | |
-| Create an app or environment | `create_app`, `create_environment` | `frbit apps create`, `frbit environments create` | |
+| Create an app or environment | `create_app`, `create_environment` | `frbit apps create`, `frbit environments create` (first `frbit regions list`, `frbit plans list --region R --currency EUR --json`, `frbit presets list`; `--dry-run` shows the price; create only after the user agreed) | |
 | Environment variables | `get_environment`, `update_environment` | `frbit environments variables get/update` | |
 | Branch, build and post-deploy commands | `update_environment` | `frbit environments update` | |
-| PHP version | – | `frbit environments create --php-version`, `frbit environments update --file` | dashboard |
-| Deploy | push to the connected branch | `frbit environments deploy <env>` | deploy hook URL |
-| Restart | – | `frbit environments restart <env>` | |
-| Why a deployment failed | `get_deployment`, `get_deployment_logs` | `frbit deployments logs <dp>` | |
+| PHP version | – | `frbit environments create --php-version`, `frbit environments update <env> --php-version` | dashboard |
+| Deploy | `create_deployment`, or push to the connected branch | `frbit environments deploy <env>` | deploy hook URL |
+| Restart | `restart_environment` | `frbit environments restart <env>` | |
+| Why a deployment failed | `get_deployment`, `get_deployment_logs` | `frbit deployments logs <dp>` (`--follow` while it runs) | |
+| Workers and cron jobs (queue worker, scheduler) | `create_job`, `list_jobs`, `update_job` | `frbit jobs list/create/update <env or job>`, `frbit jobs delete` after a yes | dashboard |
 | Delete | – | `frbit <group> delete`, after a yes | dashboard |
-| Remote commands, database, files | – | – | `ssh`, `mysql`, `rsync` |
-| Runtime logs (PHP, Apache, jobs) | – | – | dashboard Logs tab, or log files over SSH |
+| Pull a database | – | `frbit db pull <env> --output /tmp/` | `ssh` + `mysqldump` ([database.md](references/database.md)) |
+| Push a database | – | `frbit db push <file> <env>`, `--confirm <env>` only after a yes | `db-up.sh` ([database.md](references/database.md)) |
+| Sync files | – | `frbit files pull <folder> -e <env>`, `frbit files push <folder> -e <env>`, always with a content folder; `--confirm <env>` (push, `--delete`) only after a yes | `rsync` ([files.md](references/files.md)) |
+| Remote commands | – | – | `ssh`, `mysql` |
+| Runtime logs (PHP, Apache, access, jobs) | `get_environment_logs` | `frbit environments logs <env> --source php --since 1h` | dashboard Logs tab, or log files over SSH |
+| Metrics (usage, errors, response times, memory) | `get_environment_metrics` | `frbit environments metrics <env>`, `--metric <slug> --range 7d` | dashboard metrics tab |
+
+Most commands in this table need frbit 1.15.0 or later. An unknown command or flag means an older one: the person upgrades it ([access.md](references/access.md)), or use the Other column.
 
 No MCP server and no CLI yet? Connecting takes a few commands: [references/access.md](references/access.md).
 
-No shell, as in claude.ai chat or Cowork: only the MCP column works. Say which steps need a terminal (SSH, database, files, deploy, restart), give the person the exact command with IDs filled in to run themselves, and offer the dashboard route where there is one.
+No shell, as in claude.ai chat or Cowork: only the MCP column works. Say which steps need a terminal (SSH, database, files), give the person the exact command with IDs filled in to run themselves, and offer the dashboard route where there is one.
 
 ## Find the environment
 
@@ -63,17 +70,17 @@ Do not ask for an ID before trying this. Resolve it once per session and reuse i
 
 1. `git remote get-url origin` → `owner/repo`, and `git branch --show-current`.
 2. MCP: `list_git_repositories` → the entry with that `fullName` has `connectedAppPublicId`. `get_app` on it → `region` (e.g. `eu-w1a`) and its `environments`. `list_environments` → of those, the one whose `git.branch` is the current branch. If several match or none does, list the environments by name and ask which one.
-3. Without MCP: `frbit apps list --json`, `frbit apps get <app> --json` and `frbit environments list --json`, matched the same way.
+3. Without MCP: `frbit link --json` → `environment`, `region` and `sshHost`, from a connected repo, `FORTRABBIT_ENVIRONMENT` or `.fortrabbit/environments.yml` at the repo root (label, usually the branch → environment ID). It fails when nothing resolves: `frbit environments list --json --all`, ask which one, then `frbit link <env>` writes that file; commit it. Every `frbit` command except delete takes the environment as ID or label; read-only ones find it without it, commands that change something need it named, except `db push` and `files`, which `--confirm` guards. Name it anyway; with a label, check the `→ en-…` line on stderr. `--confirm` always takes the `en-` ID, never the label.
 4. Derived from that, nothing to store:
-   - SSH: `<env>@ssh.<region>.frbit.app`
+   - SSH: `<env>@ssh.<region>.frbit.app` (the CLI prints it as `sshHost`)
    - Default domain: `https://<env>.<region>.frbit.app`. The live URL is the main domain: `list_domains`, `isMain`
    - Database name and user: the environment ID
 
-No MCP tools, or a `401`: connect first ([references/access.md](references/access.md)). No account yet, or no match: the repo is not on fortrabbit yet, see [references/boarding.md](references/boarding.md). A deploy file `.fortrabbit/deploy.yml` (or `.yaml`, `.json`) means the repo deploys to fortrabbit and holds its deployment settings: read it before changing any ([deploy.md](references/deploy.md#deploy-file)). A plain `.fortrabbit` file is a 1.x leftover, ignore it.
+No MCP tools, or a `401`: connect first ([references/access.md](references/access.md)). No account yet, or no match: the repo is not on fortrabbit yet, see [references/boarding.md](references/boarding.md). A deploy file `.fortrabbit/deploy.yml` (or `.yaml`, `.json`) means the repo deploys to fortrabbit and holds its deployment settings: read it before changing any ([deploy.md](references/deploy.md#deploy-file)). A plain `.fortrabbit` file with `app-env-id=` is a leftover of an older skill and blocks `frbit`: the person deletes it and runs `frbit link <env-id>`.
 
 ## Scripts
 
-`scripts/db-down.sh` (database pull) and `scripts/db-up.sh` (database push) sit next to this file, in Claude Code at `${CLAUDE_SKILL_DIR}/scripts/db-down.sh` and `${CLAUDE_SKILL_DIR}/scripts/db-up.sh`. Run them by that full path, only with a shell tool. Without a shell, or without a resolved path, give the person the plain commands from [database.md](references/database.md) instead, and never show a path placeholder.
+`scripts/db-down.sh` (database pull, for a CLI without `frbit db pull`) and `scripts/db-up.sh` (database push, for a CLI without `frbit db push`) sit next to this file, in Claude Code at `${CLAUDE_SKILL_DIR}/scripts/db-down.sh` and `${CLAUDE_SKILL_DIR}/scripts/db-up.sh`. Run them by that full path, only with a shell tool. Without a shell, or without a resolved path, give the person the plain commands from [database.md](references/database.md) instead, and never show a path placeholder.
 
 ## References
 

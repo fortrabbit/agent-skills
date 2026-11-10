@@ -28,7 +28,7 @@ Unsure which host it is: ask. `dig +short NS <domain>` and the repo (`forge-depl
    ssh <user>@<old-host> "mysqldump --single-transaction --no-tablespaces -h <db-host> -u <db-user> -p <database>" | gzip > /tmp/old.sql.gz
    ```
 
-   Then push it with `db-up.sh <env> <region> /tmp/old.sql.gz`, by its full path from SKILL.md: [database.md](database.md).
+   Then push it as in [database.md](database.md#push-local--remote).
 3. Uploads: pull them from the old host, dry run first, path from the guide. Then push them as in [files.md](files.md):
 
    ```shell

@@ -41,7 +41,7 @@ rm -rf ~/.claude/skills/fortrabbit-api-access ~/.agents/skills/fortrabbit-api-ac
 rm -f .github/instructions/fortrabbit.instructions.md
 ```
 
-A `.fortrabbit` file with `app-env-id=` in your project is no longer read: the skill finds the environment from the git remote. Delete it. A `.fortrabbit/` folder is different: it holds the deploy file `.fortrabbit/deploy.yml`.
+A `.fortrabbit` file with `app-env-id=` in your project is no longer read: the skill finds the environment from the git remote. Delete it: `frbit` stops with an error until it is gone. Then run `frbit link <env-id>`. A `.fortrabbit/` folder is different: it holds the deploy file `.fortrabbit/deploy.yml`.
 
 ## Connect fortrabbit
 
@@ -81,7 +81,7 @@ The skill is Markdown instructions plus two shell scripts. Nothing runs in the b
 
 | Destination | Purpose | When |
 | -- | -- | -- |
-| `https://mcp.fortrabbit.com/mcp` | The MCP server from `.mcp.json`. Reads apps, environments, deployments, domains, teams and payment methods. Creates apps and environments, updates environments | fortrabbit tool calls, after you sign in through the browser |
+| `https://mcp.fortrabbit.com/mcp` | The MCP server from `.mcp.json`. Reads apps, environments, deployments, domains, teams and payment methods. Creates apps, environments, domains, jobs and backups, updates environments, deploys and restarts, reads logs and metrics | fortrabbit tool calls, after you sign in through the browser |
 | `https://docs.fortrabbit.com` | Docs pages as Markdown | Questions the skill doesn't cover |
 | `https://www.fortrabbit.com/raw/migrate/from-<host>.md` | Migration guides per host, as Markdown | Moving a site from another host |
 | The old host of a site, over SSH | Reads settings, dumps the database, copies uploads; changes nothing there | Moving a site, with the access the person already has |

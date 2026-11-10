@@ -4,15 +4,23 @@ The MySQL database of an environment is reachable only from inside the environme
 
 ## Pull: remote → local
 
-Overwrites the local database. Say so and wait for a yes. The dump runs on the environment, which has the database credentials, so no password is needed and none passes through this machine.
+The dump runs on the environment, which has the database credentials, so no password is needed and none passes through this machine. Importing it overwrites the local database: say so and wait for a yes.
 
-One command, with the IDs filled in. Run it when you have a shell tool; otherwise (claude.ai chat, a sandbox without network) give it to the person to run in their terminal:
+With the frbit CLI, run it when you have a shell tool; otherwise (claude.ai chat, a sandbox without network) give it to the person to run in their terminal:
+
+```shell
+frbit db pull <env> --output /tmp/
+```
+
+It writes `/tmp/<env>.sql.gz` (default `./<env>.sql.gz`, so keep `--output` outside the repo), never touches a local database and refuses to overwrite a file without `--force`. Without the argument it uses the environment of the checkout (`frbit link`). It needs the local `ssh` and an SSH key registered for the person ([ssh.md](ssh.md)); an error naming `dash.fortrabbit.com/new/ssh-key` means the key was rejected or the connection failed. frbit knows the fortrabbit host key and checks it itself, so the first connection needs no confirmation. A host key mismatch error means stop: never accept a key by hand, tell the person to update frbit and contact support.
+
+No frbit, or a CLI without `db pull` (`unknown command "db"`): the plain SSH command, with the IDs filled in:
 
 ```shell
 ssh <env>@ssh.<region>.frbit.app 'mysqldump --single-transaction --set-gtid-purged=OFF --no-tablespaces "$FORTRABBIT_DB_NAME"' > /tmp/<env>.sql && gzip -f /tmp/<env>.sql
 ```
 
-The single quotes matter: `$FORTRABBIT_DB_NAME` expands on the environment, not locally. The `&&` stops a failed SSH connection from leaving an empty dump that looks fine; still check that `/tmp/<env>.sql.gz` isn't tiny before importing it. It needs an SSH key registered for the person ([ssh.md](ssh.md)).
+The single quotes matter: `$FORTRABBIT_DB_NAME` expands on the environment, not locally. The `&&` stops a failed SSH connection from leaving an empty dump that looks fine; still check that `/tmp/<env>.sql.gz` isn't tiny before importing it.
 
 With a shell, `db-down.sh <env> <region>` does the same with checks: it writes outside the repo, rejects an empty dump and prints the path. Its full path is under Scripts in SKILL.md. Without a shell, give the person the command above, not the script. Exit codes: 3 the environment refused the dump, use the tunnel below; 4 SSH failed (key, network), see [ssh.md](ssh.md); 2 wrong arguments.
 
@@ -30,10 +38,18 @@ Then adjust what differs locally: Craft CMS `ddev craft clear-caches/all`; WordP
 
 Replaces every table that is in the dump; tables that exist only on the environment stay. On production, say which environment, that live data is replaced, and wait for a yes in the user's next message.
 
-1. Back up the remote first with the pull above (`db-down.sh <env> <region>`, or the ssh command). Keep the path of the dump.
-2. Dump locally: `ddev export-db --file=/tmp/local.sql.gz`, or `mysqldump --set-gtid-purged=OFF --no-tablespaces -u<user> -p <database> | gzip > /tmp/local.sql.gz`.
-3. Import: `db-up.sh <env> <region> /tmp/local.sql.gz`, by its full path from SKILL.md. It uploads the dump first, then imports on the environment. Exit 5 means the import broke part way: restore the backup from step 1 the same way.
-4. Check the site, and tell the person where the backup from step 1 is.
+1. Dump locally: `ddev export-db --file=/tmp/local.sql.gz`, or `mysqldump --set-gtid-purged=OFF --no-tablespaces -u<user> -p <database> | gzip > /tmp/local.sql.gz`.
+2. Show the command and wait for the yes. Only then run it, with `--confirm`, since a shell tool has no terminal to type the ID in:
+
+   ```shell
+   frbit db push /tmp/local.sql.gz <env> --confirm <env>
+   ```
+
+   It takes a backup dump on the environment first (`/data/home/frbit-backup-<time>.sql.gz`), then uploads, checks and imports the file. It accepts `.sql` or `.sql.gz`. Never pass `--confirm` before the yes. Without a shell tool, the person runs it without `--confirm` and types the ID.
+3. A failure after the backup prints whether the database changed, the backup path and the restore command: pass all three on. A failed backup leaves the database untouched.
+4. Check the site, and tell the person where the backup is.
+
+No frbit, or a CLI without `db push` (`unknown command "push"` or `"db"`): back up first with the pull above and keep the path of the dump, then, after the yes, `db-up.sh <env> <region> /tmp/local.sql.gz`, by its full path from SKILL.md. It uploads the dump first, then imports on the environment. Exit 5 means the import broke part way: restore the backup the same way.
 
 ## Through a tunnel
 

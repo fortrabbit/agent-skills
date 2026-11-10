@@ -4,8 +4,8 @@ Three ways in, each with its own sign-in. None of them needs a credential in the
 
 | Route | For | Sign-in |
 |---|---|---|
-| MCP server `https://mcp.fortrabbit.com/mcp` | Agents: read, provision, env vars, deployment logs | OAuth in the browser, the client stores it |
-| `frbit` CLI | Deploy, restart, deletes, CI, everything MCP lacks | `frbit auth login` (`--signup` when the person has no account), token in the system keychain |
+| MCP server `https://mcp.fortrabbit.com/mcp` | Agents: read, provision, env vars, deploy, restart, domains, jobs, backups, logs and metrics | OAuth in the browser, the client stores it |
+| `frbit` CLI | Deletes, database, files, PHP version, CI, everything MCP lacks | `frbit auth login` (`--signup` when the person has no account), token in the system keychain |
 | REST API `https://api.fortrabbit.com/v1` | Own scripts and integrations | `Authorization: Bearer frbit-at-…` |
 
 ## MCP
@@ -47,9 +47,9 @@ If `frbit` fails with "unknown flag", the installed CLI is too old (`frbit deplo
 
 Never ask for a password or token in the chat. Pasting a token (`--token-stdin`) is for CI.
 
-Groups: `apps`, `environments`, `deployments`, `domains`, `teams`, `people`, `payment-methods`, `auth`, `mcp`, `skills`, `setup`. Run `frbit <group> --help` rather than guessing a subcommand. `--json` on list, get, create, update, deploy and logs prints the API response.
+Groups: `apps`, `environments`, `deployments`, `domains`, `jobs`, `backups`, `mysql`, `db`, `files`, `link`, `git`, `teams`, `people`, `payment-methods`, `auth`, `mcp`, `skills`, `setup`, and the catalogs `regions`, `plans`, `presets`, `software`, `php-versions`, `php-extensions`, `php-settings`, `node-versions`. Run `frbit <group> --help` rather than guessing a subcommand. `--json` on list, get, create, update, deploy and logs prints JSON: the API response where one request answers it.
 
-Every environment command takes the environment ID; there is no default environment. In CI, set `FRBIT_TOKEN` (or pipe a token to `--token-stdin`) instead of logging in.
+Environment commands take the environment ID or a label from `.fortrabbit/environments.yml`; the rule for leaving it out is in SKILL.md, "Find the environment". In CI, set `FRBIT_TOKEN` (or pipe a token to `--token-stdin`) instead of logging in.
 
 `frbit environments variables get --json` masks the values, which is enough to see which variables exist. Do not run it with `--reveal`: the person reads a value in the dashboard or runs `--reveal` in their own terminal.
 
@@ -78,4 +78,4 @@ A token carries scopes: `read` (GET), `write` (also POST, PUT, PATCH), `delete` 
 | `403` / `Access denied.` | Signed in, but the object is not this account's | Check `get_you`; client accounts cannot create environments |
 | `403` on `/v1` or from `frbit` with `FRBIT_TOKEN` | The token lacks the scope for this method | The person creates a token with `write` or `delete` |
 | `Account blocked.`, unverified, not onboarded | The account itself is not usable yet | The person fixes it in the dashboard |
-| `429` | Rate limit | Wait for `Retry-After`; never retry a failed sign-in in a loop |
+| `429` | Rate limit | Wait for `Retry-After`; `frbit` waits once by itself, do not cancel and retry. Never retry a failed sign-in in a loop |
