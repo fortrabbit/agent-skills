@@ -18,7 +18,7 @@ compatibility: >-
   with the fortrabbit MCP server (https://mcp.fortrabbit.com/mcp) and the frbit CLI connected.
   On Windows, rsync needs WSL.
 metadata:
-  version: "2.9.1"
+  version: "2.9.2"
   author: fortrabbit
 ---
 
@@ -52,7 +52,7 @@ The MCP tools named here and in the references come from the `fortrabbit` server
 | Workers and cron jobs (queue worker, scheduler) | `create_job`, `list_jobs`, `update_job` | `frbit jobs list/create/update <env or job>`, `frbit jobs delete` after a yes | dashboard |
 | Delete | – | `frbit <group> delete`, after a yes | dashboard |
 | Pull a database | – | `frbit db pull <env> --output /tmp/` | `ssh` + `mysqldump` ([database.md](references/database.md)) |
-| Push a database | – | `frbit db push <file> <env>`, `--confirm <env>` only after a yes | `db-up.sh` ([database.md](references/database.md)) |
+| Push a database | – | `frbit db push <file> <env>`, `--confirm <env>` only after a yes | `ssh` + `mysql` ([database.md](references/database.md)) |
 | Sync files | – | `frbit files pull <folder> -e <env>`, `frbit files push <folder> -e <env>`, always with a content folder; `--confirm <env>` (push, `--delete`) only after a yes | `rsync` ([files.md](references/files.md)) |
 | Remote commands | – | – | `ssh`, `mysql` |
 | Runtime logs (PHP, Apache, access, jobs) | `get_environment_logs` | `frbit environments logs <env> --source php --since 1h` | dashboard Logs tab, or log files over SSH |
@@ -77,10 +77,6 @@ Do not ask for an ID before trying this. Resolve it once per session and reuse i
    - Database name and user: the environment ID
 
 No MCP tools, or a `401`: connect first ([references/access.md](references/access.md)). No account yet, or no match: the repo is not on fortrabbit yet, see [references/boarding.md](references/boarding.md). A deploy file `.fortrabbit/deploy.yml` (or `.yaml`, `.json`) means the repo deploys to fortrabbit and holds its deployment settings: read it before changing any ([deploy.md](references/deploy.md#deploy-file)). A plain `.fortrabbit` file with `app-env-id=` is a leftover of an older skill and blocks `frbit`: the person deletes it and runs `frbit link <env-id>`.
-
-## Scripts
-
-`scripts/db-down.sh` (database pull, for a CLI without `frbit db pull`) and `scripts/db-up.sh` (database push, for a CLI without `frbit db push`) sit next to this file, in Claude Code at `${CLAUDE_SKILL_DIR}/scripts/db-down.sh` and `${CLAUDE_SKILL_DIR}/scripts/db-up.sh`. Run them by that full path, only with a shell tool. Without a shell, or without a resolved path, give the person the plain commands from [database.md](references/database.md) instead, and never show a path placeholder.
 
 ## References
 

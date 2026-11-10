@@ -22,8 +22,6 @@ ssh <env>@ssh.<region>.frbit.app 'mysqldump --single-transaction --set-gtid-purg
 
 The single quotes matter: `$FORTRABBIT_DB_NAME` expands on the environment, not locally. The `&&` stops a failed SSH connection from leaving an empty dump that looks fine; still check that `/tmp/<env>.sql.gz` isn't tiny before importing it.
 
-With a shell, `db-down.sh <env> <region>` does the same with checks: it writes outside the repo, rejects an empty dump and prints the path. Its full path is under Scripts in SKILL.md. Without a shell, give the person the command above, not the script. Exit codes: 3 the environment refused the dump, use the tunnel below; 4 SSH failed (key, network), see [ssh.md](ssh.md); 2 wrong arguments.
-
 Import locally:
 
 | Local setup | Command |
@@ -49,7 +47,14 @@ Replaces every table that is in the dump; tables that exist only on the environm
 3. A failure after the backup prints whether the database changed, the backup path and the restore command: pass all three on. A failed backup leaves the database untouched.
 4. Check the site, and tell the person where the backup is.
 
-No frbit, or a CLI without `db push` (`unknown command "push"` or `"db"`): back up first with the pull above and keep the path of the dump, then, after the yes, `db-up.sh <env> <region> /tmp/local.sql.gz`, by its full path from SKILL.md. It uploads the dump first, then imports on the environment. Exit 5 means the import broke part way: restore the backup the same way.
+No frbit, or a CLI without `db push` (`unknown command "push"` or `"db"`): back up first with the pull above and keep the path of the dump. After the yes, upload the dump, then import it on the environment, with the IDs filled in:
+
+```shell
+ssh <env>@ssh.<region>.frbit.app 'cat > /data/home/import.sql.gz' < /tmp/local.sql.gz
+ssh <env>@ssh.<region>.frbit.app 'gzip -dc /data/home/import.sql.gz | mysql "$FORTRABBIT_DB_NAME" && rm /data/home/import.sql.gz'
+```
+
+Uploading first means a dropped connection can't leave the database half imported. A failed import may have replaced some tables: restore the backup the same way.
 
 ## Through a tunnel
 
