@@ -22,8 +22,8 @@ Then continue here.
 ## 2. Create the app
 
 1. `list_regions`, `list_software_presets`, `list_component_plans` with `regionIdentifier` (prices are `null` without it), `list_git_branches`.
-   CLI: `frbit regions list`, `frbit plans list --region <id> --currency EUR` (`--component <slug>` narrows it), `frbit presets list`, `frbit git branches <owner/repo>`. Run them before `frbit apps create`, never guess a region, plan size or preset.
-   `frbit apps create` prints the monthly price and asks; without a terminal it stops with `billed change needs --yes`. Show the person that price and pass `--yes` only after their yes.
+   CLI: `frbit regions list`, `frbit plans list --region <id> --currency EUR --json` (`--component <slug>` narrows it; prices are `priceInCents`), `frbit presets list`, `frbit git branches <owner/repo>`. Run them before `frbit apps create`, never guess a region, plan size or preset.
+   Read the price with `frbit plans list --json`, not from `frbit apps create`: on an account without a payment method `apps create` creates the trial app at once, without a price and without a question. With a payment method it prints the monthly price and asks; without a terminal it stops with `billed change needs --yes`. Run `apps create` only after the person agreed to the price, and pass `--yes` only after their yes.
 2. Show the name, region, software, components and the **monthly price** after the trial. MCP creates a trial app without a payment method. Wait for a yes.
 3. `create_app` with `initialEnvironment.deployment.git` and `startFirstDeployment: true`.
 4. `get_deployment` until `status` is `succeeded`, `failed`, `canceled` or `unknown`, `get_deployment_logs` if it failed: [deploy.md](deploy.md).
