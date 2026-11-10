@@ -48,11 +48,11 @@ The MCP tools named here and in the references come from the `fortrabbit` server
 | PHP version | – | `frbit environments create --php-version`, `frbit environments update --file` | dashboard |
 | Deploy | push to the connected branch | `frbit environments deploy <env>` | deploy hook URL |
 | Restart | – | `frbit environments restart <env>` | |
-| Why a deployment failed | `get_deployment`, `get_deployment_logs` | `frbit deployments logs <dp>` | |
+| Why a deployment failed | `get_deployment`, `get_deployment_logs` | `frbit deployments logs <dp>` (`--follow` while it runs) | |
 | Workers and cron jobs (queue worker, scheduler) | `create_job`, `list_jobs`, `update_job` | `frbit jobs list/create/update <env or job>`, `frbit jobs delete` after a yes | dashboard |
 | Delete | – | `frbit <group> delete`, after a yes | dashboard |
 | Remote commands, database, files | – | – | `ssh`, `mysql`, `rsync` |
-| Runtime logs (PHP, Apache, jobs) | – | – | dashboard Logs tab, or log files over SSH |
+| Runtime logs (PHP, Apache, access, jobs) | `get_environment_logs` | `frbit environments logs <env> --source php` (`--follow`) | dashboard Logs tab, or log files over SSH |
 
 No MCP server and no CLI yet? Connecting takes a few commands: [references/access.md](references/access.md).
 
