@@ -45,10 +45,12 @@ A debug switch depends on the software: Laravel and Statamic use `APP_DEBUG`, Cr
 
 ## Local development
 
-Detect what exists before suggesting anything: `.ddev/config.yaml` (DDEV), `.lando.yml` (Lando), `docker-compose.yml`, `.devcontainer/`, Laravel Herd or Valet. DDEV is the common choice for Craft CMS, WordPress and Laravel:
+Detect what exists before suggesting anything: `.ddev/config.yaml` (DDEV), `.lando.yml` (Lando), `docker-compose.yml`, `.devcontainer/`, Laravel Herd or Valet. Keep an existing setup.
+
+Without one, propose DDEV and ask before setting it up; another local setup the person prefers is fine too. Match the environment: `frbit environments get <env> --json` shows `phpVersion` and `rootPath`, the folder the web server serves.
 
 ```shell
-ddev config --project-type=craftcms --docroot=web    # laravel, wordpress, php …
+ddev config --project-type=craftcms --docroot=web --php-version=8.4    # laravel, wordpress, php …
 ddev start
 ```
 
