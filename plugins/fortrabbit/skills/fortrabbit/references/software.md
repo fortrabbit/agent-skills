@@ -50,9 +50,13 @@ Detect what exists before suggesting anything: `.ddev/config.yaml` (DDEV), `.lan
 Without one, propose DDEV and ask before setting it up; another local setup the person prefers is fine too. Match the environment: `frbit environments get <env> --json` shows `phpVersion` and `rootPath`, the folder the web server serves.
 
 ```shell
-ddev config --project-type=craftcms --docroot=web --php-version=8.4    # laravel, wordpress, php …
+ddev config --project-type=<type> --php-version=<phpVersion> --docroot=<rootPath>
 ddev start
 ```
+
+- `<type>`: `craftcms`, `laravel` (also for Statamic), `wordpress`, else `php`.
+- `rootPath` empty or missing: leave out `--docroot`; DDEV then serves the project root, like the environment.
+- `phpVersion` missing: leave out `--php-version` and tell the person which version DDEV picked.
 
 Kirby and Statamic without a database also run on `php -S localhost:8000 -t public` (Kirby: without `-t`).
 
