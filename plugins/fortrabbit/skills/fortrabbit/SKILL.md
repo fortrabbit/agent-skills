@@ -60,6 +60,8 @@ The MCP tools named here and in the references come from the `fortrabbit` server
 
 Most commands in this table need frbit 1.15.0 or later. An unknown command or flag means an older one: the person upgrades it ([access.md](references/access.md)), or use the Other column.
 
+A `frbit` command fails and the message does not say why: run `frbit doctor --json` before anything else. It checks the CLI version against the latest release, the sign-in, `ssh`, `rsync` and `git`, the linked environment and an SSH connection to it, and gives the fix for each failed check. An unknown command means a release without it: upgrade first.
+
 No MCP server and no CLI yet? Connecting takes a few commands: [references/access.md](references/access.md).
 
 No shell, as in claude.ai chat or Cowork: only the MCP column works. Say which steps need a terminal (SSH, database, files), give the person the exact command with IDs filled in to run themselves, and offer the dashboard route where there is one.
