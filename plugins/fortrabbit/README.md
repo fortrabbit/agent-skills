@@ -96,7 +96,7 @@ The MCP server and the CLI sign in through the browser, and the CLI keeps its cr
 
 ## Privacy
 
-The plugin collects no usage data and sends no telemetry. Requests to fortrabbit fall under the [privacy statement](https://www.fortrabbit.com/legal/data-protection/privacy-statement). Disconnect an agent under "AI agents" in the dashboard: `https://dash.fortrabbit.com/you/ai-agents`.
+The plugin collects no usage data and sends no telemetry. Requests to fortrabbit fall under the [privacy statement](https://www.fortrabbit.com/legal/data-protection/privacy-statement). Disconnect an agent under "Connected apps" in the dashboard: `https://dash.fortrabbit.com/you/connected-apps`.
 
 ## License
 
