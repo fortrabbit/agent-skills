@@ -47,9 +47,9 @@ If `frbit` fails with "unknown flag", the installed CLI is too old (`frbit deplo
 
 Never ask for a password or token in the chat. Pasting a token (`--token-stdin`) is for CI.
 
-Groups: `apps`, `environments`, `deployments`, `domains`, `jobs`, `backups`, `mysql`, `db`, `files`, `link`, `git`, `teams`, `people`, `payment-methods`, `auth`, `mcp`, `skills`, `setup`, and the catalogs `regions`, `plans`, `presets`, `software`, `php-versions`, `php-extensions`, `php-settings`, `node-versions`. Run `frbit <group> --help` rather than guessing a subcommand. `--json` on list, get, create, update, deploy and logs prints JSON: the API response where one request answers it.
+Groups: `apps`, `environments`, `deployments`, `domains`, `jobs`, `backups`, `mysql`, `db`, `files`, `link`, `git`, `teams`, `people`, `payment-methods`, `auth`, `mcp`, `skills`, `setup`, and the catalogs `regions`, `plans`, `templates` (`presets` before frbit 1.18.0), `software`, `php-versions`, `php-extensions`, `php-settings`, `node-versions`. Run `frbit <group> --help` rather than guessing a subcommand. `--json` on list, get, create, update, deploy and logs prints JSON: the API response where one request answers it.
 
-Environment commands take the environment ID or a label from `.fortrabbit/environments.yml`; the rule for leaving it out is in SKILL.md, "Find the environment". In CI, set `FRBIT_TOKEN` (or pipe a token to `--token-stdin`) instead of logging in.
+Environment commands take the environment ID, a label from `.fortrabbit/environments.yml`, or from frbit 1.19.0 `app/environment` by name; the rule for leaving it out is in SKILL.md, "Find the environment". In CI, set `FRBIT_TOKEN` (or pipe a token to `--token-stdin`) instead of logging in.
 
 `frbit environments variables get --json` masks the values, which is enough to see which variables exist. Do not run it with `--reveal`: the person reads a value in the dashboard or runs `--reveal` in their own terminal.
 
