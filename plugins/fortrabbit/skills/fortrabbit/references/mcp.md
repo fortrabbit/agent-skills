@@ -18,8 +18,8 @@ Discovery, to resolve values before a write:
 |---|---|---|
 | `get_you` | – | `publicId`, `email`, `name`, `type`, `client`, `gitAccountConnected`, `gitUsername`, `gitInstallationAccounts`, `next`, `optional` |
 | `list_regions` | – | `identifier` (e.g. `eu-w1a`), `name`, `location`, `recommended` |
-| `list_software_templates` | – | `slug`, `name`, `versions`, `defaultVersion` |
-| `list_component_plans` | `regionIdentifier`, `currency` (`EUR`, `USD`) | per component `slug`, `optional`, `autoscales`, and `sizes[]` with `size`, `name`, `description`, `specs`, `priceInCents`. Without `regionIdentifier` the prices are `null` |
+| `list_software_templates` | – | `slug`, `name`, `versions`, `defaultVersion`, `presetGroup` |
+| `list_component_plans` | `regionIdentifier`, `currency` (`EUR`, `USD`) | `components[]`: per component `slug`, `optional`, `autoscales`, and `sizes[]` with `size`, `name`, `description`, `specs`, `priceInCents`. `presets[]`: per preset group `slug`, `softwareTemplates`, and `presets[]` from small to large with `slug`, `name`, `components` (size per slug), `priceInCents`. Without `regionIdentifier` the prices are `null` |
 | `list_git_repositories` | – | `owner`, `name`, `fullName`, `defaultBranch`, `private`, `connectedAppPublicId` |
 | `list_git_branches` | `repository` (`owner/repo`) | `name`, `protected` |
 | `detect_repository_stack` | `repository`, `branch` | `hasComposerJson`, `hasPackageJson`, `nodePackageManager`, `stack`, `softwareTemplateSlug` |
@@ -67,20 +67,23 @@ Writes:
 | `sourceEnvironmentPublicId` | `list_environments` |
 | `softwareTemplateName` | `detect_repository_stack`, or `list_software_templates` → `slug` |
 | `softwareVersion` | `list_software_templates` → `versions` (major only, e.g. `"11"`) |
+| `componentPreset` | `list_component_plans` → `presets[].presets[].slug`, e.g. `web-app-2` |
 | `components` | `list_component_plans` → `slug` and `size` |
 | `git.repository` | `list_git_repositories` → `fullName` |
 | `git.branch` | `list_git_branches` → `name` |
 
 ## Creating an app
 
-`create_app` provisions the app and its first environment in one call. Required: `name`, `region`. Optional: `teamPublicId`, `startFirstDeployment`, and `initialEnvironment` with `softwareTemplateName`, `softwareVersion`, `cloudDomain`, `components`, `autoscaling`, `deployment` (`git`, `buildCommands`, `postDeployCommands`).
+`create_app` provisions the app and its first environment in one call. Required: `name`, `region`. Optional: `teamPublicId`, `startFirstDeployment`, and `initialEnvironment` with `softwareTemplateName`, `softwareVersion`, `cloudDomain`, `componentPreset`, `components`, `autoscaling`, `deployment` (`git`, `buildCommands`, `postDeployCommands`).
+
+Without `componentPreset` and `components`, the environment gets the first, smallest preset of the software template's preset group (`presetGroup`). Without `softwareTemplateName`, the template is `general-php`. Pick a larger preset when the person asks for more power, and add `components` to change single components on top of it. `components` without `componentPreset` books only the named components.
 
 For a repo that should go live:
 
 1. `get_you`: the account can create, and git is connected.
 2. `detect_repository_stack` on the repo → `softwareTemplateSlug`.
 3. `list_regions`, `list_software_templates`, `list_component_plans` with the region.
-4. Show the name, region, software, components, cloud domain and the monthly price after the trial. Wait for a yes.
+4. Show the name, region, software, preset and its components, cloud domain, and the monthly price after the trial (the preset's `priceInCents`). Wait for a yes.
 5. `create_app` with `startFirstDeployment: true`, which needs `initialEnvironment.deployment.git`.
 6. `get_deployment` for `status`, `get_deployment_logs` if it failed: [deploy.md](deploy.md).
 
@@ -90,7 +93,7 @@ MCP books nothing billed. The app is a trial without a payment method and is del
 
 ## Creating an environment
 
-`create_environment` requires `appPublicId` and `name` (3–32 characters, `^[a-z0-9]([a-z0-9-]*[a-z0-9])?$`), then one of two paths.
+`create_environment` requires `appPublicId` and `name` (3–32 characters, `^[a-z0-9]([a-z0-9-]*[a-z0-9])?$`). The components come from, in this order: `componentPreset`, then `components` alone, then a clone of `sourceEnvironmentPublicId`, else the first preset of the app's software template.
 
 Clone an existing environment, the common case ("add a staging environment like production"):
 
@@ -98,11 +101,13 @@ Clone an existing environment, the common case ("add a staging environment like 
 create_environment(appPublicId: "ap-a1b2c3", name: "staging", sourceEnvironmentPublicId: "en-wjl0ai")
 ```
 
-Or set `components` explicitly. Required slugs: `php`, `storage`, `traffic`, `backups`. Optional slugs, `off` by default: `database`, `jobs`, `key-value-store`. Values are size keys from `list_component_plans`, or `"off"`:
+Or name a preset, with `components` on top to change single components:
 
 ```text
-components: {"php": "xs", "storage": "xs", "traffic": "xs", "backups": "xs", "database": "sm"}
+create_environment(appPublicId: "ap-a1b2c3", name: "production", componentPreset: "web-app-2", components: {"php": "lg"})
 ```
+
+`components` alone books only the named components: then name every required slug (`php`, `storage`, `traffic`, `backups`); the optional ones (`database`, `jobs`, `key-value-store`) are `off` unless named. Values are size keys from `list_component_plans`, or `"off"`.
 
 Also optional: `git` (branch, directory), `buildCommands`, `postDeployCommands`, `environmentVariables`, `softwareVersion` (defaults to the app's), `autoscaling`, `cloudDomain` (derived from the app's cloud domain and the environment name, e.g. `acme-shop-staging`), and `startFirstDeployment`, which needs `git`.
 

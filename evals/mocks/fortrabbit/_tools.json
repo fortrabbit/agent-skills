@@ -20,7 +20,7 @@
   },
   {
    "name": "list_software_templates",
-   "description": "List software templates an app can be created with, including the major versions each template supports. Use the slug value as initialEnvironment.softwareTemplateName and a versions entry as initialEnvironment.softwareVersion in create_app.",
+   "description": "List software templates an app can be created with, including the major versions each template supports. Use the slug value as initialEnvironment.softwareTemplateName and a versions entry as initialEnvironment.softwareVersion in create_app. presetGroup names the component presets of the template in list_component_plans.",
    "inputSchema": {
     "type": "object",
     "properties": {},
@@ -83,7 +83,7 @@
   },
   {
    "name": "list_component_plans",
-   "description": "List every component, whether it is optional, and the plan sizes available for it with their specs and monthly price. Use the returned slug and size values as the components argument of create_app and create_environment; \"off\" disables an optional component.",
+   "description": "List every component, whether it is optional, and the plan sizes available for it with their specs and monthly price, plus the component presets: ready-made sets of sizes from small to large, grouped by preset group, with their total monthly price. Each software template belongs to one preset group (presetGroup in list_software_templates). Pass a preset slug as componentPreset to create_app and create_environment, and a slug and size as components to change single components; \"off\" disables an optional component.",
    "inputSchema": {
     "type": "object",
     "properties": {
@@ -293,7 +293,7 @@
      },
      "initialEnvironment": {
       "type": "object",
-      "description": "softwareTemplateName, softwareVersion, cloudDomain, components, autoscaling, deployment {git, buildCommands, postDeployCommands}."
+      "description": "softwareTemplateName, softwareVersion, cloudDomain, componentPreset, components, autoscaling, deployment {git, buildCommands, postDeployCommands}."
      },
      "startFirstDeployment": {
       "type": "boolean"
@@ -307,7 +307,7 @@
   },
   {
    "name": "create_environment",
-   "description": "Create an environment in an accessible app. Either supply component plans for every required component, or set sourceEnvironmentPublicId to clone an existing environment. Refused on an app with a payment method, because the environment would be billed: the error links to the dashboard, where the person creates it.",
+   "description": "Create an environment in an accessible app. The components come from componentPreset, from sourceEnvironmentPublicId (a clone), or else from the first, smallest preset of the app software template's preset group; components changes single ones. Refused on an app with a payment method, because the environment would be billed: the error links to the dashboard, where the person creates it.",
    "inputSchema": {
     "type": "object",
     "properties": {
@@ -343,7 +343,11 @@
      },
      "components": {
       "type": "object",
-      "description": "Size keys by component slug."
+      "description": "Size keys by component slug, on top of the preset or the clone."
+     },
+     "componentPreset": {
+      "type": "string",
+      "description": "Component preset slug from list_component_plans, e.g. \"web-app-2\"."
      },
      "autoscaling": {
       "type": "boolean",
