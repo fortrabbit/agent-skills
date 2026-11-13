@@ -18,7 +18,7 @@ compatibility: >-
   with the fortrabbit MCP server (https://mcp.fortrabbit.com/mcp) and the frbit CLI connected.
   On Windows, rsync needs WSL.
 metadata:
-  version: "2.10.0"
+  version: "2.11.0"
   author: fortrabbit
 ---
 
@@ -42,7 +42,7 @@ The MCP tools named here and in the references come from the `fortrabbit` server
 | Need | MCP (`fortrabbit` server) | frbit CLI | Other |
 |---|---|---|---|
 | Account, apps, environments, deployments, domains | `get_you`, `list_*`, `get_*` | `frbit <group> list/get --json` | |
-| Create an app or environment | `create_app`, `create_environment` | `frbit apps create`, `frbit environments create` (first `frbit regions list`, `frbit plans list --region R --currency EUR --json`, `frbit presets list`; `--dry-run` shows the price; create only after the user agreed) | |
+| Create an app or environment | `create_app`, `create_environment` | `frbit apps create`, `frbit environments create` (first `frbit regions list`, `frbit plans list --region R --currency EUR --json`, `frbit templates list`, `frbit presets list` before frbit 1.18.0; `--dry-run` shows the price; create only after the user agreed) | |
 | Environment variables | `get_environment`, `update_environment` | `frbit environments variables get/update` | |
 | Branch, build and post-deploy commands | `update_environment` | `frbit environments update` | |
 | PHP version | – | `frbit environments create --php-version`, `frbit environments update <env> --php-version` | dashboard |
@@ -72,7 +72,7 @@ Do not ask for an ID before trying this. Resolve it once per session and reuse i
 
 1. `git remote get-url origin` → `owner/repo`, and `git branch --show-current`.
 2. MCP: `list_git_repositories` → the entry with that `fullName` has `connectedAppPublicId`. `get_app` on it → `region` (e.g. `eu-w1a`) and its `environments`. `list_environments` → of those, the one whose `git.branch` is the current branch. If several match or none does, list the environments by name and ask which one.
-3. Without MCP: `frbit link --json` → `environment`, `region` and `sshHost`, from a connected repo, `FORTRABBIT_ENVIRONMENT` or `.fortrabbit/environments.yml` at the repo root (label, usually the branch → environment ID). It fails when nothing resolves: `frbit environments list --json --all`, ask which one, then `frbit link <env>` writes that file; commit it. Every `frbit` command except delete takes the environment as ID or label; read-only ones find it without it, commands that change something need it named, except `db push` and `files`, which `--confirm` guards. Name it anyway; with a label, check the `→ en-…` line on stderr. `--confirm` always takes the `en-` ID, never the label.
+3. Without MCP: `frbit link --json` → `environment`, `region` and `sshHost`, from a connected repo, `FORTRABBIT_ENVIRONMENT` or `.fortrabbit/environments.yml` at the repo root (label, usually the branch → environment ID). It fails when nothing resolves; from frbit 1.19.0 the error lists the environments as `app/environment` with their IDs, before that run `frbit environments list --json --all`. Ask which one, then `frbit link <env>` writes that file; commit it. Every `frbit` command except delete takes the environment as ID or label, from frbit 1.19.0 also as `app/environment` by name (`shop/production`). Pass the ID: names can change and repeat across apps, and a label of the same spelling wins over a name. Read-only ones find it without it, commands that change something need it named, except `db push` and `files`, which `--confirm` guards. Name it anyway; with a label or a name, check the `→ en-…` line on stderr. `--confirm` always takes the `en-` ID, never the label.
 4. Derived from that, nothing to store:
    - SSH: `<env>@ssh.<region>.frbit.app` (the CLI prints it as `sshHost`)
    - Default domain: `https://<env>.<region>.frbit.app`. The live URL is the main domain: `list_domains`, `isMain`

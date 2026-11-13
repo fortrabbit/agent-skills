@@ -22,7 +22,7 @@ Then continue here.
 ## 2. Create the app
 
 1. `list_regions`, `list_software_templates`, `list_component_plans` with `regionIdentifier` (prices are `null` without it), `list_git_branches`.
-   CLI: `frbit regions list`, `frbit plans list --region <id> --currency EUR --json` (`--component <slug>` narrows it; prices are `priceInCents`), `frbit presets list`, `frbit git branches <owner/repo>`. Run them before `frbit apps create`, never guess a region, plan size or software template.
+   CLI: `frbit regions list`, `frbit plans list --region <id> --currency EUR --json` (`--component <slug>` narrows it; prices are `priceInCents`), `frbit templates list` (`frbit presets list` before frbit 1.18.0), `frbit git branches <owner/repo>`. Run them before `frbit apps create`, never guess a region, plan size or software template.
    Check the price with `frbit apps create … --dry-run`: it prints the monthly price, or that the app is a trial at no cost, and creates nothing. Without `--dry-run`, an account without a payment method gets the trial app at once, without a question. With a payment method `apps create` prints the price and asks; without a terminal it stops with `billed change needs --yes`. Run it only after the person agreed to the price, and pass `--yes` only after their yes.
 2. Show the name, region, software, components and the **monthly price** after the trial. MCP creates a trial app without a payment method. Wait for a yes.
 3. `create_app` with `initialEnvironment.deployment.git` and `startFirstDeployment: true`.

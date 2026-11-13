@@ -12,7 +12,7 @@ With the frbit CLI, run it when you have a shell tool; otherwise (claude.ai chat
 frbit db pull <env> --output /tmp/
 ```
 
-It writes `/tmp/<env>.sql.gz` (default `./<env>.sql.gz`, so keep `--output` outside the repo), never touches a local database and refuses to overwrite a file without `--force`. Without the argument it uses the environment of the checkout (`frbit link`). It needs the local `ssh` and an SSH key registered for the person ([ssh.md](ssh.md)); an error naming `dash.fortrabbit.com/new/ssh-key` means the key was rejected or the connection failed. frbit knows the fortrabbit host key and checks it itself, so the first connection needs no confirmation. A host key mismatch error means stop: never accept a key by hand, tell the person to update frbit and contact support.
+It writes `/tmp/<env>.sql.gz` (default `./<env>.sql.gz`, so keep `--output` outside the repo), never touches a local database and refuses to overwrite a file without `--force`. Without the argument it uses the environment of the checkout (`frbit link`). From frbit 1.19.0, an environment without a database fails before any SSH call with the command to book one; booking is billed, so ask first. It needs the local `ssh` and an SSH key registered for the person ([ssh.md](ssh.md)); an error naming `dash.fortrabbit.com/new/ssh-key` means the key was rejected or the connection failed. frbit knows the fortrabbit host key and checks it itself, so the first connection needs no confirmation. A host key mismatch error means stop: never accept a key by hand, tell the person to update frbit and contact support.
 
 No frbit, or a CLI without `db pull` (`unknown command "db"`): the plain SSH command, with the IDs filled in:
 
