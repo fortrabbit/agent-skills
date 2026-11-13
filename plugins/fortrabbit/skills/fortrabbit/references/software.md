@@ -1,6 +1,6 @@
 # Software: detection, templates, local development
 
-When an app is created, fortrabbit applies a software template: root path, environment variables in the names the software expects (mapped from the platform's `FORTRABBIT_DB_*` and `FORTRABBIT_MAIN_DOMAIN`), build and post deploy commands. Read the live values with `get_environment` instead of assuming them. `list_software_presets` lists what is supported.
+When an app is created, fortrabbit applies a software template: root path, environment variables in the names the software expects (mapped from the platform's `FORTRABBIT_DB_*` and `FORTRABBIT_MAIN_DOMAIN`), build and post deploy commands. Read the live values with `get_environment` instead of assuming them. `list_software_templates` lists what is supported.
 
 ## Detect the software
 
@@ -14,7 +14,7 @@ First match wins:
 6. `symfony/framework-bundle` → Symfony
 7. Any other `composer.json` → plain PHP
 
-With a GitHub repo, `detect_repository_stack` gives the matching software template directly (`softwarePresetSlug`).
+With a GitHub repo, `detect_repository_stack` gives the matching software template directly (`softwareTemplateSlug`).
 
 ## Per software
 

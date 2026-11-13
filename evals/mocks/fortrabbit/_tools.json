@@ -19,8 +19,8 @@
    }
   },
   {
-   "name": "list_software_presets",
-   "description": "List software presets an app can be created with, including the major versions each preset supports. Use the slug value as initialEnvironment.softwarePresetName and a versions entry as initialEnvironment.softwareVersion in create_app.",
+   "name": "list_software_templates",
+   "description": "List software templates an app can be created with, including the major versions each template supports. Use the slug value as initialEnvironment.softwareTemplateName and a versions entry as initialEnvironment.softwareVersion in create_app.",
    "inputSchema": {
     "type": "object",
     "properties": {},
@@ -120,7 +120,7 @@
   },
   {
    "name": "detect_repository_stack",
-   "description": "Detect the framework and version of a GitHub repository and, when it matches one, the fortrabbit software preset to create the app with. Call it before create_app to choose initialEnvironment.softwarePresetName instead of guessing.",
+   "description": "Detect the framework and version of a GitHub repository and, when it matches one, the fortrabbit software template to create the app with. Call it before create_app to choose initialEnvironment.softwareTemplateName instead of guessing.",
    "inputSchema": {
     "type": "object",
     "properties": {
@@ -275,7 +275,7 @@
   },
   {
    "name": "create_app",
-   "description": "Create a trial app and its initial environment. The app has no payment method: it is deleted at the end of the trial unless the person adds one in the dashboard. Call list_regions and list_software_presets first to discover valid values.",
+   "description": "Create a trial app and its initial environment. The app has no payment method: it is deleted at the end of the trial unless the person adds one in the dashboard. Call list_regions and list_software_templates first to discover valid values.",
    "inputSchema": {
     "type": "object",
     "properties": {
@@ -293,7 +293,7 @@
      },
      "initialEnvironment": {
       "type": "object",
-      "description": "softwarePresetName, softwareVersion, cloudDomain, components, autoscaling, deployment {git, buildCommands, postDeployCommands}."
+      "description": "softwareTemplateName, softwareVersion, cloudDomain, components, autoscaling, deployment {git, buildCommands, postDeployCommands}."
      },
      "startFirstDeployment": {
       "type": "boolean"
@@ -413,7 +413,7 @@
      },
      "softwareVersion": {
       "type": "string",
-      "description": "Major software version only, e.g. \"11\". Must be one of the versions the software preset of the app supports; call list_software_presets. Omit to leave unchanged."
+      "description": "Major software version only, e.g. \"11\". Must be one of the versions the software template of the app supports; call list_software_templates. Omit to leave unchanged."
      }
     },
     "required": [

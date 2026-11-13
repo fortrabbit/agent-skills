@@ -7,7 +7,7 @@ Contents: [Rules](#rules) · [Tools](#tools) · [Resolving arguments](#resolving
 ## Rules
 
 1. Call `get_you` first. `client: true` cannot create environments, `gitAccountConnected: false` cannot deploy from git. Follow `next` (`{step, instruction, url}`) until its step is `ready`. `optional` lists steps that are not required, such as `add_ssh_key`: check it before SSH or database work.
-2. Every argument has a `list_*` tool behind it. Tool and argument names still say "preset" (`list_software_presets`, `softwarePresetName`); to the person it is the software template. Public IDs match `^[a-z]{2}-[0-9a-z]{6}$`.
+2. Every argument has a `list_*` tool behind it. Public IDs match `^[a-z]{2}-[0-9a-z]{6}$`.
 3. Writes create trial resources or change live ones. Show what you will send, with the monthly price after the trial for creates, and wait for a yes.
 
 ## Tools
@@ -18,11 +18,11 @@ Discovery, to resolve values before a write:
 |---|---|---|
 | `get_you` | – | `publicId`, `email`, `name`, `type`, `client`, `gitAccountConnected`, `gitUsername`, `gitInstallationAccounts`, `next`, `optional` |
 | `list_regions` | – | `identifier` (e.g. `eu-w1a`), `name`, `location`, `recommended` |
-| `list_software_presets` | – | `slug`, `name`, `versions`, `defaultVersion` |
+| `list_software_templates` | – | `slug`, `name`, `versions`, `defaultVersion` |
 | `list_component_plans` | `regionIdentifier`, `currency` (`EUR`, `USD`) | per component `slug`, `optional`, `autoscales`, and `sizes[]` with `size`, `name`, `description`, `specs`, `priceInCents`. Without `regionIdentifier` the prices are `null` |
 | `list_git_repositories` | – | `owner`, `name`, `fullName`, `defaultBranch`, `private`, `connectedAppPublicId` |
 | `list_git_branches` | `repository` (`owner/repo`) | `name`, `protected` |
-| `detect_repository_stack` | `repository`, `branch` | `hasComposerJson`, `hasPackageJson`, `nodePackageManager`, `stack`, `softwarePresetSlug` |
+| `detect_repository_stack` | `repository`, `branch` | `hasComposerJson`, `hasPackageJson`, `nodePackageManager`, `stack`, `softwareTemplateSlug` |
 
 Reads:
 
@@ -49,7 +49,7 @@ Writes:
 |---|---|
 | `create_app` | Creates a trial app and its first environment, with a cloud domain when the name is free; optionally starts the first deployment |
 | `create_environment` | Adds an environment to an app without a payment method, with a cloud domain when the name is free |
-| `update_environment` | Changes only the fields sent: `name`, `git` (branch, directory), `buildCommands`, `postDeployCommands`, `environmentVariables`, `rootPath` (folder the web server serves; an empty string resets it), `softwareVersion` (major version the software preset supports, from `list_software_presets`) |
+| `update_environment` | Changes only the fields sent: `name`, `git` (branch, directory), `buildCommands`, `postDeployCommands`, `environmentVariables`, `rootPath` (folder the web server serves; an empty string resets it), `softwareVersion` (major version the software template supports, from `list_software_templates`) |
 | `create_deployment` | Deploys the latest commit of the configured git branch of an environment (`publicId`), replacing the running release and running the post-deploy commands. Cancels a pending or running deployment of that environment. Needs git on the environment; not for client accounts. The result may already be `failed`: `get_deployment`, `get_deployment_logs` |
 | `restart_environment` | Restarts the PHP-FPM and worker containers of an environment (`publicId`) without deploying. Queued: `accepted: true` means requested, not finished. Not for client accounts |
 | `create_domain` | Adds a domain you own to an environment: `environmentPublicId`, `name`, `isMain` (default false). A bare domain such as `example.com` becomes `www.example.com` plus an apex domain forwarding to it; a subdomain gets no apex. The result lists every created domain with `dns.expected` (`type`, `host`, `value`), `dns.actual` and `dns.status`: show each expected record to the person, who sets it at their DNS provider. Not for client accounts; domains are not deleted over MCP |
@@ -65,21 +65,21 @@ Writes:
 | `teamPublicId` | `list_teams`; omit for a personal app |
 | `appPublicId` | `list_apps` |
 | `sourceEnvironmentPublicId` | `list_environments` |
-| `softwarePresetName` | `detect_repository_stack`, or `list_software_presets` → `slug` |
-| `softwareVersion` | `list_software_presets` → `versions` (major only, e.g. `"11"`) |
+| `softwareTemplateName` | `detect_repository_stack`, or `list_software_templates` → `slug` |
+| `softwareVersion` | `list_software_templates` → `versions` (major only, e.g. `"11"`) |
 | `components` | `list_component_plans` → `slug` and `size` |
 | `git.repository` | `list_git_repositories` → `fullName` |
 | `git.branch` | `list_git_branches` → `name` |
 
 ## Creating an app
 
-`create_app` provisions the app and its first environment in one call. Required: `name`, `region`. Optional: `teamPublicId`, `startFirstDeployment`, and `initialEnvironment` with `softwarePresetName`, `softwareVersion`, `cloudDomain`, `components`, `autoscaling`, `deployment` (`git`, `buildCommands`, `postDeployCommands`).
+`create_app` provisions the app and its first environment in one call. Required: `name`, `region`. Optional: `teamPublicId`, `startFirstDeployment`, and `initialEnvironment` with `softwareTemplateName`, `softwareVersion`, `cloudDomain`, `components`, `autoscaling`, `deployment` (`git`, `buildCommands`, `postDeployCommands`).
 
 For a repo that should go live:
 
 1. `get_you`: the account can create, and git is connected.
-2. `detect_repository_stack` on the repo → `softwarePresetSlug`.
-3. `list_regions`, `list_software_presets`, `list_component_plans` with the region.
+2. `detect_repository_stack` on the repo → `softwareTemplateSlug`.
+3. `list_regions`, `list_software_templates`, `list_component_plans` with the region.
 4. Show the name, region, software, components, cloud domain and the monthly price after the trial. Wait for a yes.
 5. `create_app` with `startFirstDeployment: true`, which needs `initialEnvironment.deployment.git`.
 6. `get_deployment` for `status`, `get_deployment_logs` if it failed: [deploy.md](deploy.md).

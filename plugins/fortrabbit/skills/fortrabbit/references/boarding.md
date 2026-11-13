@@ -17,12 +17,12 @@ Then continue here.
 - The site runs on another host already and you did not come from [migrate.md](migrate.md): start there. It sends you back to step 2.
 - `git remote get-url origin` and the current branch. A repo already connected to an app: go back to "Find the environment" in SKILL.md, nothing to create.
 - No GitHub remote yet: offer to create one ([git-github.md](git-github.md)), or deploy by rsync instead ([files.md](files.md)).
-- `detect_repository_stack` on the repo → `softwarePresetSlug`. Without a repo, detect locally: [software.md](software.md).
+- `detect_repository_stack` on the repo → `softwareTemplateSlug`. Without a repo, detect locally: [software.md](software.md).
 
 ## 2. Create the app
 
-1. `list_regions`, `list_software_presets`, `list_component_plans` with `regionIdentifier` (prices are `null` without it), `list_git_branches`.
-   CLI: `frbit regions list`, `frbit plans list --region <id> --currency EUR --json` (`--component <slug>` narrows it; prices are `priceInCents`), `frbit presets list`, `frbit git branches <owner/repo>`. Run them before `frbit apps create`, never guess a region, plan size or preset.
+1. `list_regions`, `list_software_templates`, `list_component_plans` with `regionIdentifier` (prices are `null` without it), `list_git_branches`.
+   CLI: `frbit regions list`, `frbit plans list --region <id> --currency EUR --json` (`--component <slug>` narrows it; prices are `priceInCents`), `frbit presets list`, `frbit git branches <owner/repo>`. Run them before `frbit apps create`, never guess a region, plan size or software template.
    Check the price with `frbit apps create … --dry-run`: it prints the monthly price, or that the app is a trial at no cost, and creates nothing. Without `--dry-run`, an account without a payment method gets the trial app at once, without a question. With a payment method `apps create` prints the price and asks; without a terminal it stops with `billed change needs --yes`. Run it only after the person agreed to the price, and pass `--yes` only after their yes.
 2. Show the name, region, software, components and the **monthly price** after the trial. MCP creates a trial app without a payment method. Wait for a yes.
 3. `create_app` with `initialEnvironment.deployment.git` and `startFirstDeployment: true`.
