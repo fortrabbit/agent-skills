@@ -18,7 +18,7 @@ compatibility: >-
   with the fortrabbit MCP server (https://mcp.fortrabbit.com/mcp) and the frbit CLI connected.
   On Windows, rsync needs WSL.
 metadata:
-  version: "2.11.0"
+  version: "2.12.0"
   author: fortrabbit
 ---
 
@@ -42,7 +42,7 @@ The MCP tools named here and in the references come from the `fortrabbit` server
 | Need | MCP (`fortrabbit` server) | frbit CLI | Other |
 |---|---|---|---|
 | Account, apps, environments, deployments, domains | `get_you`, `list_*`, `get_*` | `frbit <group> list/get --json` | |
-| Create an app or environment | `create_app`, `create_environment` | `frbit apps create`, `frbit environments create` (first `frbit regions list`, `frbit plans list --region R --currency EUR --json`, `frbit templates list`, `frbit presets list` before frbit 1.18.0; `--dry-run` shows the price; create only after the user agreed) | |
+| Create an app or environment | `create_app`, `create_environment` | `frbit apps create`, `frbit environments create` (first `frbit regions list`, `frbit component-presets list --region R --currency EUR --json` (frbit 1.20.0 and later, else `frbit plans list`), `frbit templates list`, `frbit presets list` before frbit 1.18.0; `--dry-run` shows the price; create only after the user agreed) | |
 | Environment variables | `get_environment`, `update_environment` | `frbit environments variables get/update` | |
 | Branch, build and post-deploy commands | `update_environment` | `frbit environments update` | |
 | PHP version | – | `frbit environments create --php-version`, `frbit environments update <env> --php-version` | dashboard |
