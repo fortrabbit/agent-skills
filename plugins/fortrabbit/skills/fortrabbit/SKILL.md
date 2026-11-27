@@ -18,7 +18,7 @@ compatibility: >-
   with the fortrabbit MCP server (https://mcp.fortrabbit.com/mcp) and the frbit CLI connected.
   On Windows, rsync needs WSL.
 metadata:
-  version: "2.12.0"
+  version: "2.13.0"
   author: fortrabbit
 ---
 
@@ -54,6 +54,7 @@ The MCP tools named here and in the references come from the `fortrabbit` server
 | Pull a database | – | `frbit db pull <env> --output /tmp/` | `ssh` + `mysqldump` ([database.md](references/database.md)) |
 | Push a database | – | `frbit db push <file> <env>`, `--confirm <env>` only after a yes | `ssh` + `mysql` ([database.md](references/database.md)) |
 | Sync files | – | `frbit files pull <folder> -e <env>`, `frbit files push <folder> -e <env>`, always with a content folder; `--confirm <env>` (push, `--delete`) only after a yes | `rsync` ([files.md](references/files.md)) |
+| Personal SSH keys | – | `frbit ssh-keys list`, `frbit ssh-keys add` after a yes (frbit 1.24.0 and later) | dashboard ([ssh.md](references/ssh.md)) |
 | Remote commands | – | – | `ssh`, `mysql` |
 | Runtime logs (PHP, Apache, access, jobs) | `get_environment_logs` | `frbit environments logs <env> --source php --since 1h` | dashboard Logs tab, or log files over SSH |
 | Metrics (usage, errors, response times, memory) | `get_environment_metrics` | `frbit environments metrics <env>`, `--metric <slug> --range 7d` | dashboard metrics tab |

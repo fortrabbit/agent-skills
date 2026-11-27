@@ -30,7 +30,7 @@ Rules on the environment:
 `Permission denied (publickey)` means no matching key is registered.
 
 1. Existing key? `ls ~/.ssh/*.pub`. None: `ssh-keygen -t ed25519 -C "<name>@fortrabbit"`, after asking.
-2. The person opens the `.pub` file from step 1, copies its content and adds it at `https://dash.fortrabbit.com/new/ssh-key`. Don't read key files yourself, the private key least of all.
+2. After asking, `frbit ssh-keys add` (frbit 1.24.0 and later) adds `~/.ssh/id_ed25519.pub`, then `~/.ssh/id_rsa.pub`, or the `.pub` file named. It needs a `frbit auth login` not limited to apps; an API token or a limited login gets 403. On a 403 or with an older frbit, the person opens the `.pub` file, copies its content and adds it at `https://dash.fortrabbit.com/new/ssh-key`. Don't read key files yourself, the private key least of all.
 3. Test: `ssh -o ConnectTimeout=10 <env>@ssh.<region>.frbit.app echo ok`.
 
 Personal keys work on every environment the person has developer access to. With several keys, pin the right one in `~/.ssh/config`:
